@@ -1,0 +1,47 @@
+name: 盤後自動更新處置股儀表板
+
+on:
+  schedule:
+    # 每週一至週五 13:00 UTC = 台灣時間 21:00
+    # 台股收盤 13:30，盤後公告約 17:00，21:00 確保所有公告已發布
+    - cron: "0 13 * * 1-5"
+
+  # 允許手動觸發（測試用）
+  workflow_dispatch:
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run update script
+        run: python scripts/update_dashboard.py
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet index.html; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DATE=$(TZ=Asia/Taipei date "+%Y/%m/%d %H:%M")
+          git add index.html
+          git commit -m "auto: 盤後更新處置股資料 ${DATE}"
+          git push

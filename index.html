@@ -505,9 +505,11 @@
     </div>
     <div class="text-right">
       <div class="text-[10px] tracking-widest text-amber-400 uppercase mono">Updated</div>
-      <div class="mono text-sm font-bold text-slate-200">2026.06.18</div>
-      <div class="mono text-[10px] text-slate-500">資料截止 6/18</div>
-      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">處置最新公告 6/17（6/18 待補）</div>
+      <!-- AUTO:DATE_START -->
+      <div class="mono text-sm font-bold text-slate-200">2026.06.20</div>
+      <div class="mono text-[10px] text-slate-500">資料截止 6/20</div>
+      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">自動更新 盤後 21:00</div>
+<!-- AUTO:DATE_END -->
     </div>
   </div>
 </header>
@@ -535,32 +537,34 @@
   </div>
 
   <!-- SUMMARY STATS -->
+  <!-- AUTO:STATS_START -->
   <div class="grid grid-cols-3 gap-3 mb-6">
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">處置中</div>
       <div class="flex items-baseline gap-2 mt-1">
-        <span class="num-display text-3xl text-red-400">42</span>
+        <span class="num-display text-3xl text-red-400">39</span>
         <span class="text-xs text-slate-400">檔</span>
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">上市 27 · 上櫃 15</div>
+      <div class="text-[10px] text-slate-500 mt-1">上市 16 · 上櫃 23</div>
     </div>
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">最近一批</div>
       <div class="flex items-baseline gap-2 mt-1">
-        <span class="num-display text-3xl text-amber-400">12</span>
+        <span class="num-display text-3xl text-amber-400">7</span>
         <span class="text-xs text-slate-400">檔</span>
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">6/17 公告·6/18待補</div>
+      <div class="text-[10px] text-slate-500 mt-1">6/18 公告</div>
     </div>
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">二次處置</div>
       <div class="flex items-baseline gap-2 mt-1">
-        <span class="num-display text-3xl text-yellow-400">22</span>
+        <span class="num-display text-3xl text-yellow-400">6</span>
         <span class="text-xs text-slate-400">檔</span>
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">含延長/升級多檔</div>
+      <div class="text-[10px] text-slate-500 mt-1">含升級/延長</div>
     </div>
   </div>
+<!-- AUTO:STATS_END -->
 
   <!-- TAB NAVIGATION -->
   <div class="tab-section">
@@ -575,12 +579,12 @@
       <button class="tab" data-tab="1" data-active="true" onclick="switchTab(1)" role="tab">
         <span class="tab-num">01 / ENFORCING</span>
         <span class="tab-label">處置中</span>
-        <span class="tab-count" data-count="1">42 檔</span>
+        <span class="tab-count" data-count="1">39 檔</span>
       </button>
       <button class="tab" data-tab="2" onclick="switchTab(2)" role="tab">
         <span class="tab-num">02 / NEW</span>
         <span class="tab-label">即將被處置</span>
-        <span class="tab-count" data-count="2">12 檔</span>
+        <span class="tab-count" data-count="2">7 檔</span>
       </button>
       <button class="tab" data-tab="3" onclick="switchTab(3)" role="tab">
         <span class="tab-num">03 / WATCHLIST</span>
@@ -630,235 +634,139 @@
         </div>
       </div>
       <div class="text-right">
-        <div class="mono text-2xl font-bold text-red-400">42</div>
+        <div class="mono text-2xl font-bold text-red-400">39</div>
         <div class="text-[10px] text-slate-500">unique stocks</div>
       </div>
     </div>
 
-    <!-- 6/18-7/2 最新公告 -->
+    <!-- AUTO:TAB1_BATCHES_START -->
     <details class="card mb-3" open>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
           <span class="pill pill-amber">最新公告 🆕</span>
           <span class="text-sm font-semibold">處置期 6/18 – 7/2</span>
           <span class="text-[10px] text-slate-500 mono">12 檔</span>
-          <span class="pill pill-red">⚠ 含持股鈦昇</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/17</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="px-3 py-2 bg-red-900/10 border-b border-red-900/30 text-[11px] leading-relaxed">
-          <span class="text-red-300 font-bold">⚠ 鈦昇(8027) 持股警示：</span><span class="text-slate-300">PBR 9.47、週轉率9.14%，20分撮合，6/18-7/2。</span>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2383</span></div><div><div class="text-sm font-semibold">台光電</div><div class="sector">CCL（90日漲173.68%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2493</span></div><div><div class="text-sm font-semibold">揚博</div><div class="sector">CCL（6日漲40.43%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3026</span></div><div><div class="text-sm font-semibold">禾伸堂 <span class="pill pill-red ml-1">3rd+</span></div><div class="sector">MLCC（今收漲停・90日漲737%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3285</span></div><div><div class="text-sm font-semibold">微端</div><div class="sector">電子零組件（6日漲42.34%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然</div><div class="sector">衛星零組件（60日漲155.59%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4991</span></div><div><div class="text-sm font-semibold">環宇-KY</div><div class="sector">衛星寬頻（PER 231・PBR 15.88）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="power"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5227</span></div><div><div class="text-sm font-semibold">立凱-KY</div><div class="sector">EV電池材料（6日漲46%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5468</span></div><div><div class="text-sm font-semibold">凱鈺</div><div class="sector">IC設計 Display Driver（6日漲48.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6613</span></div><div><div class="text-sm font-semibold">朋億*</div><div class="sector">創新板（6日漲34.38%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">7828</span></div><div><div class="text-sm font-semibold">創新服務 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">資訊服務（6日漲30.22%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker font-bold" style="color:#fb923c">8027</span></div><div><div class="text-sm font-semibold" style="color:#fbbf24">🔴 鈦昇 <span class="pill pill-blue ml-1">持股</span></div><div class="sector">導線架封測材料（PBR 9.47・週轉率9.14%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8042</span></div><div><div class="text-sm font-semibold">金山電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">被動元件（90日漲203%・週轉率15.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2383</span></div><div><div class="text-sm font-semibold">台光電</div><div class="sector">CCL（銅箔基板）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2493</span></div><div><div class="text-sm font-semibold">揚博</div><div class="sector">CCL（銅箔基板）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3026</span></div><div><div class="text-sm font-semibold">禾伸堂 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">MLCC</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3285</span></div><div><div class="text-sm font-semibold">微端(../../mainboard/listed/company-detail.html?code=3285)</div><div class="sector">電子零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然(../../mainboard/listed/company-detail.html?code=4556)</div><div class="sector">衛星零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4991</span></div><div><div class="text-sm font-semibold">環宇-KY(../../mainboard/listed/company-detail.html?code=4991)</div><div class="sector">衛星寬頻</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="power"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5227</span></div><div><div class="text-sm font-semibold">立凱-KY(../../mainboard/listed/company-detail.html?code=5227)</div><div class="sector">EV電池材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5468</span></div><div><div class="text-sm font-semibold">凱鈺(../../mainboard/listed/company-detail.html?code=5468)</div><div class="sector">IC設計 Display Driver</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6613</span></div><div><div class="text-sm font-semibold">朋億*(../../mainboard/listed/company-detail.html?code=6613)</div><div class="sector">創新板</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">7828</span></div><div><div class="text-sm font-semibold">創新服務(../../mainboard/listed/company-detail.html?code=7828)</div><div class="sector">資訊服務</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8027</span></div><div><div class="text-sm font-semibold">鈦昇(../../mainboard/listed/company-detail.html?code=8027)</div><div class="sector">導線架封測材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div><div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8042</span></div><div><div class="text-sm font-semibold">金山電(../../mainboard/listed/company-detail.html?code=8042)</div><div class="sector">被動元件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/17-7/1 -->
     <details class="card mb-3" open>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/17 – 7/1</span>
-          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/17 – 7/1</span>
+          <span class="text-[10px] text-slate-500 mono">6 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/16</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2243</span></div><div><div class="text-sm font-semibold">宏旭-KY</div><div class="sector">車身模具</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-          <div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6187</span></div><div><div class="text-sm font-semibold">萬潤</div><div class="sector">半導體設備（90日漲203%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6241</span></div><div><div class="text-sm font-semibold">鑫永洋</div><div class="sector">網通</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
-        <div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3167</span></div><div><div class="text-sm font-semibold">大量 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB檢測（出關即再犯）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6173</span></div><div><div class="text-sm font-semibold">信昌電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">MLCC（出關即再犯）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2243</span></div><div><div class="text-sm font-semibold">宏旭-KY</div><div class="sector">車身模具</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div><div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3167</span></div><div><div class="text-sm font-semibold">大量 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB 檢測設備</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6173</span></div><div><div class="text-sm font-semibold">信昌電(../../mainboard/listed/company-detail.html?code=6173)</div><div class="sector">MLCC</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div><div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6187</span></div><div><div class="text-sm font-semibold">萬潤(../../mainboard/listed/company-detail.html?code=6187)</div><div class="sector">半導體設備</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6241</span></div><div><div class="text-sm font-semibold">鑫永洋(../../mainboard/listed/company-detail.html?code=6241)</div><div class="sector">網通</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8291</span></div><div><div class="text-sm font-semibold">尚茂(../../mainboard/listed/company-detail.html?code=8291)</div><div class="sector">電子材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/16-6/30 -->
     <details class="card mb-3" open>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/16 – 6/30</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/16 – 6/30</span>
           <span class="text-[10px] text-slate-500 mono">2 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/15</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1714</span></div><div><div class="text-sm font-semibold">和桐</div><div class="sector">化學</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8021</span></div><div><div class="text-sm font-semibold">尖點 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB鑽針</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1714</span></div><div><div class="text-sm font-semibold">和桐</div><div class="sector">化學工業</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div><div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8021</span></div><div><div class="text-sm font-semibold">尖點 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB 鑽針</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/15-6/29 -->
-    <details class="card mb-3" open>
+    <details class="card mb-3">
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/15 – 6/29</span>
-          <span class="text-[10px] text-slate-500 mono">5 檔（3 確認）</span>
-        </div>
-        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-      </summary>
-      <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4402</span></div><div><div class="text-sm font-semibold">郡都開發</div><div class="sector">營建</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
-        <div>
-          <div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6830</span></div><div><div class="text-sm font-semibold">汎銓</div><div class="sector">半導體材料分析/CPO檢測</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6924</span></div><div><div class="text-sm font-semibind">榮惠-KY創</div><div class="sector">創新板</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">非5分</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-slate-500" style="height:32px;"></span><span class="ticker text-slate-400 font-bold">??</span></div><div><div class="text-sm font-semibold text-slate-400">+ 2 檔待確認</div><div class="sector">請查證交所/櫃買6/12公告原文</div></div><div class="end-date-desktop text-right"><span class="pill pill-gray">待確認</span></div></div>
-        </div>
-      </div>
-    </details>
-
-    <!-- 6/12-7/1 -->
-    <details class="card mb-3" open>
-      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/12 – 7/1</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/15 – 6/29</span>
           <span class="text-[10px] text-slate-500 mono">5 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/12</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
-        <div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4542</span></div><div><div class="text-sm font-semibold">科嶠 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子零組件（20分）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5321</span></div><div><div class="text-sm font-semibold">美而快 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
-          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6127</span></div><div><div class="text-sm font-semibold">九豪</div><div class="sector">精密陶瓷被動元件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
-          <div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8291</span></div><div><div class="text-sm font-semibold">尚茂 <span class="pill pill-red ml-1">5th</span></div><div class="sector">電子材料（延長至7/1）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">25分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6890</span></div><div><div class="text-sm font-semibold">來億-KY <span class="pill pill-red ml-1">2nd</span></div><div class="sector">製鞋代工（世足概念）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6830</span></div><div><div class="text-sm font-semibold">汎銓</div><div class="sector">半導體材料分析</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6924</span></div><div><div class="text-sm font-semibold">榮惠-KY創 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">創新板</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4402</span></div><div><div class="text-sm font-semibold">郡都開發(../../mainboard/listed/company-detail.html?code=4402)</div><div class="sector">建設</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div><div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然(../../mainboard/listed/company-detail.html?code=4556)</div><div class="sector">衛星零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5345</span></div><div><div class="text-sm font-semibold">馥鴻(../../mainboard/listed/company-detail.html?code=5345)</div><div class="sector">建設</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/11-6/25 -->
-    <details class="card mb-3" open>
+    <details class="card mb-3">
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/11 – 6/25</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/12 – 6/26</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/11</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6890</span></div><div><div class="text-sm font-semibold">來億-KY <span class="pill pill-red ml-1">2nd</span></div><div class="sector">精密五金</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4542</span></div><div><div class="text-sm font-semibold">科嶠(../../mainboard/listed/company-detail.html?code=4542)</div><div class="sector">精密零件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5321</span></div><div><div class="text-sm font-semibold">美而快(../../mainboard/listed/company-detail.html?code=5321)</div><div class="sector">汽車配件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div><div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6127</span></div><div><div class="text-sm font-semibold">九豪(../../mainboard/listed/company-detail.html?code=6127)</div><div class="sector">精密陶瓷</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8291</span></div><div><div class="text-sm font-semibold">尚茂(../../mainboard/listed/company-detail.html?code=8291)</div><div class="sector">電子材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div></div>
+      </div>
+    </details>
+    <details class="card mb-3">
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/11 – 6/25</span>
           <span class="text-[10px] text-slate-500 mono">2 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/10</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3147</span></div><div><div class="text-sm font-semibold">大綜 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子通路</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div>
-          <div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3581</span></div><div><div class="text-sm font-semibold">博磊 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">半導體</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3147</span></div><div><div class="text-sm font-semibold">大綜(../../mainboard/listed/company-detail.html?code=3147)</div><div class="sector">電腦周邊</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div><div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3581</span></div><div><div class="text-sm font-semibold">博磊(../../mainboard/listed/company-detail.html?code=3581)</div><div class="sector">IC設計</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/10-6/24 -->
-    <details class="card mb-3" open>
+    <details class="card mb-3">
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/10 – 6/24</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/10 – 6/24</span>
           <span class="text-[10px] text-slate-500 mono">1 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/9</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row" data-tags="t50"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8454</span></div><div><div class="text-sm font-semibold">富邦媒 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電商（延長至6/24）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/24</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8454</span></div><div><div class="text-sm font-semibold">富邦媒 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電商</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/24</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/09-6/22 -->
-    <details class="card mb-3" open>
+    <details class="card mb-3">
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/09 – 6/22</span>
-          <span class="text-[10px] text-slate-500 mono">2 檔</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/9 – 6/23</span>
+          <span class="text-[10px] text-slate-500 mono">4 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/8</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3114</span></div><div><div class="text-sm font-semibold">好德</div><div class="sector">電子材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5426</span></div><div><div class="text-sm font-semibind">振發</div><div class="sector">實業</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6890</span></div><div><div class="text-sm font-semibold">來億-KY</div><div class="sector">精密五金</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/23</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3114</span></div><div><div class="text-sm font-semibold">好德(../../mainboard/listed/company-detail.html?code=3114)</div><div class="sector">電子零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/23</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5426</span></div><div><div class="text-sm font-semibold">振發(../../mainboard/listed/company-detail.html?code=5426)</div><div class="sector">電子零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/23</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8291</span></div><div><div class="text-sm font-semibold">尚茂(../../mainboard/listed/company-detail.html?code=8291)</div><div class="sector">電子材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/23</div></div></div></div>
       </div>
     </details>
-
-    <!-- 6/08-6/22 -->
-    <details class="card mb-3" open>
+    <details class="card mb-3">
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <span class="pill pill-gray">處置期 6/08 – 6/22</span>
-          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+          <span class="pill pill-gray">處置中</span>
+          <span class="text-sm font-semibold">處置期 6/8 – 6/22</span>
+          <span class="text-[10px] text-slate-500 mono">8 檔</span>
+          <span class="text-[10px] text-slate-500 mono">公告 6/5</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
       <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1718</span></div><div><div class="text-sm font-semibind">中纖</div><div class="sector">化纖</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2491</span></div><div><div class="text-sm font-semibind">吉祥全</div><div class="sector">資訊服務</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3149</span></div><div><div class="text-sm font-semibind">正達</div><div class="sector">光學玻璃</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4807</span></div><div><div class="text-sm font-semibind">日成-KY</div><div class="sector">其他電子</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
-        <div>
-          <div class="table-row" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6442</span></div><div><div class="text-sm font-semibold">光聖 <span class="pill pill-blue ml-1">千金股</span></div><div class="sector">光通訊</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
-        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1718</span></div><div><div class="text-sm font-semibold">中纖</div><div class="sector">化學纖維</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2491</span></div><div><div class="text-sm font-semibold">吉祥全</div><div class="sector">電子配件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3149</span></div><div><div class="text-sm font-semibold">正達</div><div class="sector">光學玻璃</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4807</span></div><div><div class="text-sm font-semibold">日成-KY</div><div class="sector">工業電腦</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6442</span></div><div><div class="text-sm font-semibold">光聖</div><div class="sector">光通訊元件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3147</span></div><div><div class="text-sm font-semibold">大綜(../../mainboard/listed/company-detail.html?code=3147)</div><div class="sector">電腦周邊</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3581</span></div><div><div class="text-sm font-semibold">博磊(../../mainboard/listed/company-detail.html?code=3581)</div><div class="sector">IC設計</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5701</span></div><div><div class="text-sm font-semibold">劍湖山(../../mainboard/listed/company-detail.html?code=5701)</div><div class="sector">觀光遊樂</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div></div>
       </div>
     </details>
-
-    <!-- 今日出關 6/05-6/18 -->
-    <details class="card mb-3" open>
-      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="pill pill-red">今日出關 ⏰</span>
-          <span class="text-sm font-semibold">處置期 6/05 – 6/18</span>
-          <span class="text-[10px] text-slate-500 mono">5 檔</span>
-        </div>
-        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-      </summary>
-      <div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
-        <div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3535</span></div><div><div class="text-sm font-semibind">晶彩科</div><div class="sector">光電（今日最後一天）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4707</span></div><div><div class="text-sm font-semibind">磐亞</div><div class="sector">化學工業</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
-        </div>
-        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
-        <div>
-          <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3288</span></div><div><div class="text-sm font-semibold">點晶</div><div class="sector">IC設計</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
-          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3523</span></div><div><div class="text-sm font-semibold">迎輝 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">光電材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
-          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5358</span></div><div><div class="text-sm font-semibold">金居 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB銅箔</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
-        </div>
-      </div>
-    </details>
-
+<!-- AUTO:TAB1_BATCHES_END -->
     <!-- Empty state -->
     <div class="empty-state" id="empty-1" style="display:none;">
       <div class="empty-state-icon">🔍</div>
@@ -871,55 +779,29 @@
         <div class="w-1 h-8 bg-amber-500 rounded-full"></div>
         <div>
           <div class="text-[10px] text-amber-400 mono uppercase tracking-widest">02 / JUST EFFECTIVE</div>
-          <h2 class="text-xl font-bold">即將被處置 <span class="text-xs font-normal text-slate-400 ml-1">(最新公告 · 6/17 起算)</span></h2>
+          <h2 class="text-xl font-bold">即將被處置</h2>
         </div>
       </div>
       <div class="text-right">
-        <div class="mono text-2xl font-bold text-amber-400">12</div>
+        <div class="mono text-2xl font-bold text-amber-400">7</div>
         <div class="text-[10px] text-slate-500">new entries</div>
       </div>
     </div>
 
+    <!-- AUTO:TAB2_CONTENT_START -->
     <div class="card">
       <div class="p-3 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
         <div class="flex items-center gap-2">
-          <span class="pill pill-amber">6/17 公告</span>
-          <span class="text-sm font-semibold">處置期 6/18 – 7/2</span>
-          <span class="pill pill-red">⚠ 持股鈦昇入列</span>
+          <span class="pill pill-amber">6/18 公告</span>
+          <span class="text-sm font-semibold">處置期 6/22 – 7/7</span>
         </div>
-        <div class="text-[10px] text-slate-500 mono">11 個營業日</div>
+        <div class="text-[10px] text-slate-500 mono">7 檔</div>
       </div>
-      <div class="px-3 py-2 bg-red-900/20 border-b border-red-900/40 text-[11px] leading-relaxed">
-        <span class="text-red-300 font-bold">⚠ 鈦昇(8027) 持股警示：</span><span class="text-slate-300">PBR 9.47、週轉率9.14%，20分撮合，6/18-7/2。持有中請留意流動性風險。</span>
-      </div>
-
-      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市（8檔）</div>
       <div>
-        <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2383</span></div><div><div class="text-sm font-semibold">台光電</div><div class="sector">CCL（90日漲173.68%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2493</span></div><div><div class="text-sm font-semibold">揚博</div><div class="sector">CCL（6日漲40.43%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3026</span></div><div><div class="text-sm font-semibold">禾伸堂 <span class="pill pill-red ml-1">3rd+</span></div><div class="sector">MLCC（今收漲停・90日漲737%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3285</span></div><div><div class="text-sm font-semibold">微端</div><div class="sector">電子零組件（6日漲42.34%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然</div><div class="sector">衛星零組件（6日漲40.14%・60日漲155.59%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4991</span></div><div><div class="text-sm font-semibold">環宇-KY</div><div class="sector">衛星寬頻（PER 231・PBR 15.88）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="power"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5227</span></div><div><div class="text-sm font-semibold">立凱-KY</div><div class="sector">EV電池材料（6日漲46%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5468</span></div><div><div class="text-sm font-semibold">凱鈺</div><div class="sector">IC設計 Display Driver（6日漲48.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-      </div>
-
-      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃（4檔）</div>
-      <div>
-        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6613</span></div><div><div class="text-sm font-semibold">朋億*</div><div class="sector">創新板（6日漲34.38%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">7828</span></div><div><div class="text-sm font-semibold">創新服務 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">資訊服務（6/12出關即再犯・6日漲30.22%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
-        <div class="table-row" data-tags="packaging">
-          <div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px; background: linear-gradient(to bottom, #ef4444, #f97316);"></span><span class="ticker font-bold" style="color:#fb923c">8027</span></div>
-          <div>
-            <div class="text-sm font-semibold" style="color:#fbbf24">🔴 鈦昇 <span class="pill pill-blue ml-1">持股</span></div>
-            <div class="sector">導線架封測材料（PBR 9.47・週轉率9.14%）</div>
-          </div>
-          <div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div>
-        </div>
-        <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8042</span></div><div><div class="text-sm font-semibold">金山電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">被動元件（90日漲203%・週轉率15.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市（4檔）</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1714</span></div><div><div class="text-sm font-semibold">和桐 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">化學工業</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div><div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2455</span></div><div><div class="text-sm font-semibold">全新 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">GaAs磊晶</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div><div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2478</span></div><div><div class="text-sm font-semibold">大毅 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電阻器</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div><div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3532</span></div><div><div class="text-sm font-semibold">台勝科 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">矽晶圓</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃（3檔）</div><div><div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3163</span></div><div><div class="text-sm font-semibold">波若威(../../mainboard/listed/company-detail.html?code=3163)</div><div class="sector">網路設備</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div><div class="table-row" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3441</span></div><div><div class="text-sm font-semibold">聯一光(../../mainboard/listed/company-detail.html?code=3441)</div><div class="sector">光通訊</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/7</div></div></div><div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6488</span></div><div><div class="text-sm font-semibold">環球晶(../../mainboard/listed/company-detail.html?code=6488)</div><div class="sector">矽晶圓</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/3</div></div></div></div>
       </div>
     </div>
+<!-- AUTO:TAB2_CONTENT_END -->
 
     <div class="empty-state" id="empty-2" style="display:none;">
       <div class="empty-state-icon">🔍</div>
