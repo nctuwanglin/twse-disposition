@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>台股-處置股｜Updated 2026/06/17</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* === Reset === */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+  button { font: inherit; cursor: pointer; }
+  a { color: inherit; }
+  details, summary { outline: none; }
+
+  /* === Utility classes (Tailwind-equivalent, only what's used) === */
+  .min-h-screen { min-height: 100vh; }
+  .max-w-6xl { max-width: 72rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+
+  .p-3 { padding: 0.75rem; }
+  .p-4 { padding: 1rem; }
+  .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .px-4 { padding-left: 1rem; padding-right: 1rem; }
+  .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+  .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  .pt-3 { padding-top: 0.75rem; }
+  .pt-4 { padding-top: 1rem; }
+  .pb-1 { padding-bottom: 0.25rem; }
+
+  .mb-1 { margin-bottom: 0.25rem; }
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mb-3 { margin-bottom: 0.75rem; }
+  .mb-6 { margin-bottom: 1.5rem; }
+  .mb-8 { margin-bottom: 2rem; }
+  .mt-1 { margin-top: 0.25rem; }
+  .mt-3 { margin-top: 0.75rem; }
+  .mt-6 { margin-top: 1.5rem; }
+  .ml-1 { margin-left: 0.25rem; }
+
+  .flex { display: flex; }
+  .grid { display: grid; }
+  .block { display: block; }
+  .inline-flex { display: inline-flex; }
+
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .items-baseline { align-items: baseline; }
+  .justify-between { justify-content: space-between; }
+  .flex-col { flex-direction: column; }
+  .flex-wrap { flex-wrap: wrap; }
+  .flex-1 { flex: 1 1 0%; }
+
+  .gap-1\.5 { gap: 0.375rem; }
+  .gap-2 { gap: 0.5rem; }
+  .gap-3 { gap: 0.75rem; }
+
+  .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+
+  .text-\[10px\] { font-size: 10px; }
+  .text-\[11px\] { font-size: 11px; }
+  .text-xs { font-size: 0.75rem; line-height: 1rem; }
+  .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+  .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+  .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+  .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+
+  .font-normal { font-weight: 400; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+
+  .tracking-tight { letter-spacing: -0.025em; }
+  .tracking-widest { letter-spacing: 0.1em; }
+  .leading-relaxed { line-height: 1.625; }
+  .uppercase { text-transform: uppercase; }
+  .underline { text-decoration: underline; }
+
+  /* Slate */
+  .text-slate-300 { color: #cbd5e1; }
+  .text-slate-400 { color: #94a3b8; }
+  .text-slate-500 { color: #64748b; }
+  .border-slate-800 { border-color: #1e293b; }
+  .bg-slate-900\/40 { background-color: rgba(15, 23, 42, 0.4); }
+
+  /* Red */
+  .text-red-400 { color: #f87171; }
+  .text-red-500 { color: #ef4444; }
+  .bg-red-500 { background-color: #ef4444; }
+  .border-red-900\/40 { border-color: rgba(127, 29, 29, 0.4); }
+
+  /* Amber */
+  .text-amber-200 { color: #fde68a; }
+  .text-amber-300 { color: #fcd34d; }
+  .text-amber-400 { color: #fbbf24; }
+  .text-amber-500\/80 { color: rgba(245, 158, 11, 0.8); }
+  .bg-amber-500 { background-color: #f59e0b; }
+  .border-amber-900\/40 { border-color: rgba(120, 53, 15, 0.4); }
+
+  /* Yellow */
+  .text-yellow-300 { color: #fde047; }
+  .text-yellow-400 { color: #facc15; }
+  .text-yellow-500 { color: #eab308; }
+  .bg-yellow-500 { background-color: #eab308; }
+  .border-yellow-900\/40 { border-color: rgba(113, 63, 18, 0.4); }
+
+  /* Blue */
+  .text-blue-300 { color: #93c5fd; }
+  .text-blue-400 { color: #60a5fa; }
+
+  .border { border-width: 1px; border-style: solid; }
+  .border-t { border-top-width: 1px; border-top-style: solid; }
+  .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+  .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+  .rounded-full { border-radius: 9999px; }
+
+  .w-1 { width: 0.25rem; }
+  .w-2 { width: 0.5rem; }
+  .w-4 { width: 1rem; }
+  .h-2 { height: 0.5rem; }
+  .h-4 { height: 1rem; }
+  .h-8 { height: 2rem; }
+
+  .sticky { position: sticky; }
+  .top-0 { top: 0; }
+  .z-10 { z-index: 10; }
+  .z-20 { z-index: 20; }
+  .relative { position: relative; }
+
+  .bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
+
+  .backdrop-blur { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+  .animate-pulse { animation: tw-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  @keyframes tw-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (min-width: 640px) {
+    .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* === Custom styles === */
+  :root {
+    --bg: #0a0e17;
+    --panel: #111827;
+    --panel-2: #1a2233;
+    --line: #1f2937;
+    --ink: #e5e7eb;
+    --ink-dim: #94a3b8;
+    --ink-mute: #64748b;
+    --red: #ef4444;
+    --red-soft: #7f1d1d;
+    --amber: #f59e0b;
+    --amber-soft: #78350f;
+    --yellow: #eab308;
+    --yellow-soft: #713f12;
+    --green: #10b981;
+    --blue: #3b82f6;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', 'Noto Sans TC', sans-serif;
+    font-feature-settings: "tnum" 1, "cv11" 1;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .ticker { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em; }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .section-rail {
+    background: linear-gradient(180deg, var(--from) 0%, transparent 100%);
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .pill-red { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .pill-amber { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .pill-yellow { background: rgba(234, 179, 8, 0.12); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.25); }
+  .pill-blue { background: rgba(59, 130, 246, 0.12); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.25); }
+  .pill-gray { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); }
+  .pill-green { background: rgba(16, 185, 129, 0.12); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .card:hover { border-color: rgba(148, 163, 184, 0.3); background: var(--panel-2); }
+
+  .severity-bar { width: 3px; border-radius: 3px 0 0 3px; }
+
+  .table-row { display: grid; grid-template-columns: 80px 1fr 110px; gap: 12px; padding: 14px 12px; border-bottom: 1px solid var(--line); }
+  .table-row:last-child { border-bottom: none; }
+
+  .num-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 640px) {
+    .table-row { grid-template-columns: 70px 1fr; }
+    .end-date-mobile { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-dim); }
+    .end-date-desktop { display: none; }
+  }
+  @media (min-width: 641px) {
+    .end-date-mobile { display: none; }
+  }
+
+  .section-head {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    background: rgba(10, 14, 23, 0.85);
+    z-index: 10;
+  }
+
+  details summary { list-style: none; cursor: pointer; }
+  details summary::-webkit-details-marker { display: none; }
+  details[open] .chev { transform: rotate(180deg); }
+  .chev { transition: transform 0.2s; }
+
+  /* Tag chips for sector */
+  .sector { font-size: 10px; color: var(--ink-mute); font-weight: 500; }
+
+  .stat-block { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
+
+  .marquee-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+  /* === Tab Navigation === */
+  .tab-section {
+    position: sticky;
+    top: 56px;
+    z-index: 15;
+    background: linear-gradient(180deg, var(--bg) 70%, transparent 100%);
+    padding: 14px 0 18px;
+    margin-bottom: 8px;
+  }
+  .tab-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .tab-hint-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tab-hint-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--amber);
+    animation: pulse-dot 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .tab-hint-arrow {
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .tab {
+    position: relative;
+    padding: 14px 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    user-select: none;
+    background: var(--panel);
+    border: 1.5px solid var(--line);
+    color: var(--ink-dim);
+    font-family: inherit;
+    overflow: hidden;
+  }
+  .tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-active, transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .tab:hover {
+    background: var(--panel-2);
+    border-color: rgba(148, 163, 184, 0.35);
+    color: var(--ink);
+    transform: translateY(-1px);
+  }
+  .tab:active { transform: translateY(0); }
+
+  .tab-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    opacity: 0.55;
+    display: block;
+  }
+  .tab-label {
+    font-size: 15px;
+    font-weight: 800;
+    margin-top: 3px;
+    display: block;
+    letter-spacing: 0.02em;
+  }
+  .tab-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 4px;
+    opacity: 0.75;
+    display: block;
+  }
+
+  .tab[data-active="true"] {
+    background: var(--bg-active);
+    border-color: var(--border-active);
+    color: var(--ink);
+    box-shadow: 0 8px 24px var(--shadow-active), inset 0 0 0 1px var(--border-active);
+  }
+  .tab[data-active="true"]::before { opacity: 1; }
+  .tab[data-active="true"] .tab-num { opacity: 1; color: var(--accent-active); }
+  .tab[data-active="true"] .tab-label { color: var(--accent-active); }
+  .tab[data-active="true"] .tab-count { opacity: 1; color: var(--accent-active); }
+
+  /* Tab color schemes */
+  .tab[data-tab="1"] {
+    --bg-active: rgba(239, 68, 68, 0.18);
+    --border-active: rgba(239, 68, 68, 0.55);
+    --shadow-active: rgba(239, 68, 68, 0.25);
+    --accent-active: #fca5a5;
+  }
+  .tab[data-tab="2"] {
+    --bg-active: rgba(245, 158, 11, 0.18);
+    --border-active: rgba(245, 158, 11, 0.55);
+    --shadow-active: rgba(245, 158, 11, 0.25);
+    --accent-active: #fcd34d;
+  }
+  .tab[data-tab="3"] {
+    --bg-active: rgba(234, 179, 8, 0.15);
+    --border-active: rgba(234, 179, 8, 0.5);
+    --shadow-active: rgba(234, 179, 8, 0.2);
+    --accent-active: #fde047;
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.25s ease-out; }
+  .tab-panel[data-active="true"] { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .tab { padding: 12px 6px 10px; border-radius: 8px; }
+    .tab-label { font-size: 13px; }
+    .tab-num { font-size: 8px; }
+    .tab-count { font-size: 10px; }
+  }
+
+  /* === Filter Chips === */
+  .filter-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(148, 163, 184, 0.15);
+  }
+  .filter-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .filter-label-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .filter-status {
+    font-size: 10px;
+    color: var(--ink-mute);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .filter-status .num { color: #93c5fd; font-weight: 700; }
+  .chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 0 6px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips::-webkit-scrollbar { height: 4px; }
+  .chips::-webkit-scrollbar-track { background: transparent; }
+  .chips::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 2px; }
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .chip:hover {
+    border-color: rgba(148, 163, 184, 0.4);
+    color: var(--ink);
+    background: var(--panel-2);
+  }
+  .chip[data-active="true"] {
+    background: rgba(96, 165, 250, 0.18);
+    border-color: rgba(96, 165, 250, 0.55);
+    color: #bfdbfe;
+    box-shadow: 0 0 12px rgba(96, 165, 250, 0.15);
+  }
+  .chip[data-tag=""][data-active="true"] {
+    background: rgba(148, 163, 184, 0.15);
+    border-color: rgba(148, 163, 184, 0.4);
+    color: #e2e8f0;
+    box-shadow: none;
+  }
+  .chip-icon { margin-right: 3px; }
+
+  /* === Empty State === */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--panel);
+    border: 1px dashed rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+  }
+  .empty-state-icon { font-size: 32px; opacity: 0.35; }
+  .empty-state-title { font-size: 14px; color: var(--ink); font-weight: 600; margin-top: 12px; }
+  .empty-state-hint { font-size: 12px; color: var(--ink-mute); margin-top: 6px; }
+</style>
+</head>
+<body class="grid-bg min-h-screen">
+
+<!-- HEADER -->
+<header class="border-b border-slate-800 bg-black/40 backdrop-blur sticky top-0 z-20">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+      <div>
+        <div class="text-[11px] tracking-widest text-slate-400 uppercase mono">TWSE / TPEx · Disposition Monitor</div>
+        <h1 class="text-lg font-bold tracking-tight">台股-處置股</h1>
+      </div>
+    </div>
+    <div class="text-right">
+      <div class="text-[10px] tracking-widest text-amber-400 uppercase mono">Updated</div>
+      <div class="mono text-sm font-bold text-slate-200">2026.06.18</div>
+      <div class="mono text-[10px] text-slate-500">資料截止 6/18</div>
+      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">處置最新公告 6/17（6/18 待補）</div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-6">
+
+  <!-- CONTEXT BANNER -->
+  <div class="card mb-6 p-4 border-l-4" style="border-left-color: var(--amber);">
+    <div class="flex items-start gap-3">
+      <div class="text-amber-400 text-xl">⚠</div>
+      <div class="flex-1">
+        <div class="text-sm font-semibold mb-1 text-amber-200">市場脈絡更新</div>
+        <div class="text-xs text-slate-300 leading-relaxed mb-2">
+          <span class="text-green-400 font-bold">6/15</span> +1,228收45,397創歷史新高 → <span class="text-green-400 font-bold">6/16</span> +412收<span class="mono font-bold text-green-400">45,809</span>再創新高 → <span class="text-green-400 font-bold">6/17</span> <span class="mono font-bold text-green-400">+68</span>(+0.15%)收<span class="mono font-bold text-green-400">45,877</span>（連3漲；盤中最低45,160後收斂，非跌日，外資賣超206億）→ <span class="text-green-400 font-bold">6/18</span> 噴出<span class="mono font-bold text-green-400">+588</span>(+1.28%)收<span class="mono font-bold text-green-400">46,465</span>，<span class="text-amber-300">史上首破46K！</span>國巨*千元觸漲停，10檔被動元件攻高亮燈，0050換股掀尾盤。
+        </div>
+        <div class="text-xs text-slate-400 leading-relaxed">
+          <span class="text-amber-300">📌 處置股逆勢崩跌：</span>
+          <span class="text-slate-300">6/12 大盤狂漲下，富邦媒(8454)跌9.97%、來億-KY(6890)跌9.86%，雙雙逼近跌停 — 籌碼出清賣壓未解，雖大盤反彈仍重摔，反映處置股「易跌難漲」的籌碼特性。</span>
+          <span class="text-amber-300">📌 處置批次更新：</span>
+          <span class="text-slate-300">6/16 宏旭-KY/萬潤/鑫永洋等；6/17 禾伸堂3026、金山電8042、台光電2383、<b>鈦昇8027⚠持股</b>等12檔(6/18-7/2)；<span class="text-amber-300">6/18 盤後公告待補（大漲+588，國巨*千元觸漲停，被動元件多檔漲停，預計新增批次）。</span>晶彩科3535/磐亞4707/點晶3288/迎輝3523/金居5358 今日(6/18)出關。</span>
+          <span class="text-slate-500">6/01-6/12批次(10檔)已於6/12出關；6/16大漲下大量(3167)、信昌電(6173)雖剛出關即被列二次處置，警示籌碼尚未平息。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="stat-block">
+      <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">處置中</div>
+      <div class="flex items-baseline gap-2 mt-1">
+        <span class="num-display text-3xl text-red-400">42</span>
+        <span class="text-xs text-slate-400">檔</span>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-1">上市 27 · 上櫃 15</div>
+    </div>
+    <div class="stat-block">
+      <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">最近一批</div>
+      <div class="flex items-baseline gap-2 mt-1">
+        <span class="num-display text-3xl text-amber-400">12</span>
+        <span class="text-xs text-slate-400">檔</span>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-1">6/17 公告·6/18待補</div>
+    </div>
+    <div class="stat-block">
+      <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">二次處置</div>
+      <div class="flex items-baseline gap-2 mt-1">
+        <span class="num-display text-3xl text-yellow-400">22</span>
+        <span class="text-xs text-slate-400">檔</span>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-1">含延長/升級多檔</div>
+    </div>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <div class="tab-section">
+    <div class="tab-hint">
+      <span class="tab-hint-label">
+        <span class="tab-hint-dot"></span>
+        切換檢視類別
+      </span>
+      <span class="tab-hint-arrow">↓ 點擊切換</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="1" data-active="true" onclick="switchTab(1)" role="tab">
+        <span class="tab-num">01 / ENFORCING</span>
+        <span class="tab-label">處置中</span>
+        <span class="tab-count" data-count="1">42 檔</span>
+      </button>
+      <button class="tab" data-tab="2" onclick="switchTab(2)" role="tab">
+        <span class="tab-num">02 / NEW</span>
+        <span class="tab-label">即將被處置</span>
+        <span class="tab-count" data-count="2">12 檔</span>
+      </button>
+      <button class="tab" data-tab="3" onclick="switchTab(3)" role="tab">
+        <span class="tab-num">03 / WATCHLIST</span>
+        <span class="tab-label">未來有機會</span>
+        <span class="tab-count" data-count="3">~90 注意股</span>
+      </button>
+    </nav>
+
+    <!-- INDUSTRY FILTER -->
+    <div class="filter-section">
+      <div class="filter-label">
+        <span class="filter-label-text">
+          <span style="color: #60a5fa;">⊕</span>
+          篩選關注產業
+        </span>
+        <span class="filter-status" id="filterStatus">顯示全部</span>
+      </div>
+      <div class="chips" role="group">
+        <button class="chip" data-tag="" data-active="true" onclick="toggleChip(this)">全部</button>
+        <button class="chip" data-tag="t50" onclick="toggleChip(this)">台股50</button>
+        <button class="chip" data-tag="memory" onclick="toggleChip(this)">記憶體</button>
+        <button class="chip" data-tag="icdesign" onclick="toggleChip(this)">IC設計</button>
+        <button class="chip" data-tag="icmanufacturing" onclick="toggleChip(this)">IC製造</button>
+        <button class="chip" data-tag="packaging" onclick="toggleChip(this)">封測</button>
+        <button class="chip" data-tag="pcb" onclick="toggleChip(this)">PCB/ABF</button>
+        <button class="chip" data-tag="passive" onclick="toggleChip(this)">被動元件</button>
+        <button class="chip" data-tag="power" onclick="toggleChip(this)">電源/散熱</button>
+        <button class="chip" data-tag="optical" onclick="toggleChip(this)">光通訊</button>
+        <button class="chip" data-tag="satellite" onclick="toggleChip(this)">衛星</button>
+        <button class="chip" data-tag="shipping" onclick="toggleChip(this)">航運</button>
+        <button class="chip" data-tag="finance" onclick="toggleChip(this)">金融</button>
+        <button class="chip" data-tag="telecom" onclick="toggleChip(this)">電信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 1️⃣ 處置中 (CURRENTLY UNDER DISPOSITION)   -->
+  <!-- ========================================== -->
+  <section class="tab-panel mb-8" data-panel="1" data-active="true">
+    <div class="section-head py-3 mb-3 flex items-center justify-between border-b border-red-900/40">
+      <div class="flex items-center gap-3">
+        <div class="w-1 h-8 bg-red-500 rounded-full"></div>
+        <div>
+          <div class="text-[10px] text-red-400 mono uppercase tracking-widest">01 / IN ENFORCEMENT</div>
+          <h2 class="text-xl font-bold">處置中</h2>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="mono text-2xl font-bold text-red-400">42</div>
+        <div class="text-[10px] text-slate-500">unique stocks</div>
+      </div>
+    </div>
+
+    <!-- 6/18-7/2 最新公告 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-amber">最新公告 🆕</span>
+          <span class="text-sm font-semibold">處置期 6/18 – 7/2</span>
+          <span class="text-[10px] text-slate-500 mono">12 檔</span>
+          <span class="pill pill-red">⚠ 含持股鈦昇</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="px-3 py-2 bg-red-900/10 border-b border-red-900/30 text-[11px] leading-relaxed">
+          <span class="text-red-300 font-bold">⚠ 鈦昇(8027) 持股警示：</span><span class="text-slate-300">PBR 9.47、週轉率9.14%，20分撮合，6/18-7/2。</span>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2383</span></div><div><div class="text-sm font-semibold">台光電</div><div class="sector">CCL（90日漲173.68%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2493</span></div><div><div class="text-sm font-semibold">揚博</div><div class="sector">CCL（6日漲40.43%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3026</span></div><div><div class="text-sm font-semibold">禾伸堂 <span class="pill pill-red ml-1">3rd+</span></div><div class="sector">MLCC（今收漲停・90日漲737%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3285</span></div><div><div class="text-sm font-semibold">微端</div><div class="sector">電子零組件（6日漲42.34%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然</div><div class="sector">衛星零組件（60日漲155.59%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4991</span></div><div><div class="text-sm font-semibold">環宇-KY</div><div class="sector">衛星寬頻（PER 231・PBR 15.88）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="power"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5227</span></div><div><div class="text-sm font-semibold">立凱-KY</div><div class="sector">EV電池材料（6日漲46%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5468</span></div><div><div class="text-sm font-semibold">凱鈺</div><div class="sector">IC設計 Display Driver（6日漲48.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6613</span></div><div><div class="text-sm font-semibold">朋億*</div><div class="sector">創新板（6日漲34.38%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">7828</span></div><div><div class="text-sm font-semibold">創新服務 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">資訊服務（6日漲30.22%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker font-bold" style="color:#fb923c">8027</span></div><div><div class="text-sm font-semibold" style="color:#fbbf24">🔴 鈦昇 <span class="pill pill-blue ml-1">持股</span></div><div class="sector">導線架封測材料（PBR 9.47・週轉率9.14%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8042</span></div><div><div class="text-sm font-semibold">金山電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">被動元件（90日漲203%・週轉率15.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/17-7/1 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/17 – 7/1</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2243</span></div><div><div class="text-sm font-semibold">宏旭-KY</div><div class="sector">車身模具</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+          <div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6187</span></div><div><div class="text-sm font-semibold">萬潤</div><div class="sector">半導體設備（90日漲203%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6241</span></div><div><div class="text-sm font-semibold">鑫永洋</div><div class="sector">網通</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
+        <div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3167</span></div><div><div class="text-sm font-semibold">大量 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB檢測（出關即再犯）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6173</span></div><div><div class="text-sm font-semibold">信昌電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">MLCC（出關即再犯）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/16-6/30 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/16 – 6/30</span>
+          <span class="text-[10px] text-slate-500 mono">2 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1714</span></div><div><div class="text-sm font-semibold">和桐</div><div class="sector">化學</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8021</span></div><div><div class="text-sm font-semibold">尖點 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB鑽針</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/30</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/15-6/29 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/15 – 6/29</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔（3 確認）</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4402</span></div><div><div class="text-sm font-semibold">郡都開發</div><div class="sector">營建</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
+        <div>
+          <div class="table-row" data-tags="icmanufacturing packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6830</span></div><div><div class="text-sm font-semibold">汎銓</div><div class="sector">半導體材料分析/CPO檢測</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6924</span></div><div><div class="text-sm font-semibind">榮惠-KY創</div><div class="sector">創新板</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">非5分</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/29</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-slate-500" style="height:32px;"></span><span class="ticker text-slate-400 font-bold">??</span></div><div><div class="text-sm font-semibold text-slate-400">+ 2 檔待確認</div><div class="sector">請查證交所/櫃買6/12公告原文</div></div><div class="end-date-desktop text-right"><span class="pill pill-gray">待確認</span></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/12-7/1 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/12 – 7/1</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
+        <div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4542</span></div><div><div class="text-sm font-semibold">科嶠 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子零組件（20分）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5321</span></div><div><div class="text-sm font-semibold">美而快 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子零組件</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
+          <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6127</span></div><div><div class="text-sm font-semibold">九豪</div><div class="sector">精密陶瓷被動元件</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
+          <div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8291</span></div><div><div class="text-sm font-semibold">尚茂 <span class="pill pill-red ml-1">5th</span></div><div class="sector">電子材料（延長至7/1）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">25分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/1</div></div></div>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6890</span></div><div><div class="text-sm font-semibold">來億-KY <span class="pill pill-red ml-1">2nd</span></div><div class="sector">製鞋代工（世足概念）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/26</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/11-6/25 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/11 – 6/25</span>
+          <span class="text-[10px] text-slate-500 mono">2 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3147</span></div><div><div class="text-sm font-semibold">大綜 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電子通路</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div>
+          <div class="table-row" data-tags="icmanufacturing"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3581</span></div><div><div class="text-sm font-semibold">博磊 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">半導體</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/25</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/10-6/24 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/10 – 6/24</span>
+          <span class="text-[10px] text-slate-500 mono">1 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row" data-tags="t50"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8454</span></div><div><div class="text-sm font-semibold">富邦媒 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">電商（延長至6/24）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/24</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/09-6/22 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/09 – 6/22</span>
+          <span class="text-[10px] text-slate-500 mono">2 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3114</span></div><div><div class="text-sm font-semibold">好德</div><div class="sector">電子材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5426</span></div><div><div class="text-sm font-semibind">振發</div><div class="sector">實業</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 6/08-6/22 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-gray">處置期 6/08 – 6/22</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">1718</span></div><div><div class="text-sm font-semibind">中纖</div><div class="sector">化纖</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2491</span></div><div><div class="text-sm font-semibind">吉祥全</div><div class="sector">資訊服務</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3149</span></div><div><div class="text-sm font-semibind">正達</div><div class="sector">光學玻璃</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4807</span></div><div><div class="text-sm font-semibind">日成-KY</div><div class="sector">其他電子</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
+        <div>
+          <div class="table-row" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6442</span></div><div><div class="text-sm font-semibold">光聖 <span class="pill pill-blue ml-1">千金股</span></div><div class="sector">光通訊</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/22</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- 今日出關 6/05-6/18 -->
+    <details class="card mb-3" open>
+      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-red">今日出關 ⏰</span>
+          <span class="text-sm font-semibold">處置期 6/05 – 6/18</span>
+          <span class="text-[10px] text-slate-500 mono">5 檔</span>
+        </div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div>
+        <div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3535</span></div><div><div class="text-sm font-semibind">晶彩科</div><div class="sector">光電（今日最後一天）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4707</span></div><div><div class="text-sm font-semibind">磐亞</div><div class="sector">化學工業</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
+        </div>
+        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div>
+        <div>
+          <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3288</span></div><div><div class="text-sm font-semibold">點晶</div><div class="sector">IC設計</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
+          <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3523</span></div><div><div class="text-sm font-semibold">迎輝 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">光電材料</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
+          <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5358</span></div><div><div class="text-sm font-semibold">金居 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">PCB銅箔</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 6/18</div></div></div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-1" style="display:none;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">所選關注產業在「處置中」無符合個股</div>
+      <div class="empty-state-hint">試試其他族群，或點擊「全部」</div>
+    </div>
+  </section>  <section class="tab-panel mb-8" data-panel="2">
+    <div class="section-head py-3 mb-3 flex items-center justify-between border-b border-amber-900/40">
+      <div class="flex items-center gap-3">
+        <div class="w-1 h-8 bg-amber-500 rounded-full"></div>
+        <div>
+          <div class="text-[10px] text-amber-400 mono uppercase tracking-widest">02 / JUST EFFECTIVE</div>
+          <h2 class="text-xl font-bold">即將被處置 <span class="text-xs font-normal text-slate-400 ml-1">(最新公告 · 6/17 起算)</span></h2>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="mono text-2xl font-bold text-amber-400">12</div>
+        <div class="text-[10px] text-slate-500">new entries</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="p-3 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <span class="pill pill-amber">6/17 公告</span>
+          <span class="text-sm font-semibold">處置期 6/18 – 7/2</span>
+          <span class="pill pill-red">⚠ 持股鈦昇入列</span>
+        </div>
+        <div class="text-[10px] text-slate-500 mono">11 個營業日</div>
+      </div>
+      <div class="px-3 py-2 bg-red-900/20 border-b border-red-900/40 text-[11px] leading-relaxed">
+        <span class="text-red-300 font-bold">⚠ 鈦昇(8027) 持股警示：</span><span class="text-slate-300">PBR 9.47、週轉率9.14%，20分撮合，6/18-7/2。持有中請留意流動性風險。</span>
+      </div>
+
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市（8檔）</div>
+      <div>
+        <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2383</span></div><div><div class="text-sm font-semibold">台光電</div><div class="sector">CCL（90日漲173.68%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2493</span></div><div><div class="text-sm font-semibold">揚博</div><div class="sector">CCL（6日漲40.43%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3026</span></div><div><div class="text-sm font-semibold">禾伸堂 <span class="pill pill-red ml-1">3rd+</span></div><div class="sector">MLCC（今收漲停・90日漲737%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3285</span></div><div><div class="text-sm font-semibold">微端</div><div class="sector">電子零組件（6日漲42.34%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4556</span></div><div><div class="text-sm font-semibold">旭然</div><div class="sector">衛星零組件（6日漲40.14%・60日漲155.59%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="satellite"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4991</span></div><div><div class="text-sm font-semibold">環宇-KY</div><div class="sector">衛星寬頻（PER 231・PBR 15.88）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="power"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5227</span></div><div><div class="text-sm font-semibold">立凱-KY</div><div class="sector">EV電池材料（6日漲46%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">5468</span></div><div><div class="text-sm font-semibold">凱鈺</div><div class="sector">IC設計 Display Driver（6日漲48.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+      </div>
+
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃（4檔）</div>
+      <div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">6613</span></div><div><div class="text-sm font-semibold">朋億*</div><div class="sector">創新板（6日漲34.38%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">5分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">7828</span></div><div><div class="text-sm font-semibold">創新服務 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">資訊服務（6/12出關即再犯・6日漲30.22%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+        <div class="table-row" data-tags="packaging">
+          <div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px; background: linear-gradient(to bottom, #ef4444, #f97316);"></span><span class="ticker font-bold" style="color:#fb923c">8027</span></div>
+          <div>
+            <div class="text-sm font-semibold" style="color:#fbbf24">🔴 鈦昇 <span class="pill pill-blue ml-1">持股</span></div>
+            <div class="sector">導線架封測材料（PBR 9.47・週轉率9.14%）</div>
+          </div>
+          <div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div>
+        </div>
+        <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-red-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8042</span></div><div><div class="text-sm font-semibold">金山電 <span class="pill pill-red ml-1">2nd</span></div><div class="sector">被動元件（90日漲203%・週轉率15.2%）</div></div><div class="end-date-desktop text-right"><span class="pill pill-red">20分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 7/2</div></div></div>
+      </div>
+    </div>
+
+    <div class="empty-state" id="empty-2" style="display:none;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">所選關注產業無新公告</div>
+      <div class="empty-state-hint">本批以PCB/CCL、被動元件、衛星、IC設計為主</div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3️⃣ 未來有機會被處置 (HIGH-RISK CANDIDATES)-->
+  <!-- ========================================== -->
+  <section class="tab-panel mb-8" data-panel="3">
+    <div class="section-head py-3 mb-3 flex items-center justify-between border-b border-yellow-900/40">
+      <div class="flex items-center gap-3">
+        <div class="w-1 h-8 bg-yellow-500 rounded-full"></div>
+        <div>
+          <div class="text-[10px] text-yellow-400 mono uppercase tracking-widest">03 / WATCHLIST / 注意股累積中</div>
+          <h2 class="text-xl font-bold">未來有機會被處置</h2>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="mono text-2xl font-bold text-yellow-400">~90</div>
+        <div class="text-[10px] text-slate-500">注意股+近期出關追蹤</div>
+      </div>
+    </div>
+
+    <!-- Criteria card -->
+    <div class="card mb-3 p-4">
+      <div class="text-xs font-semibold mb-2 flex items-center gap-2">
+        <span class="text-yellow-400">⚙</span> 觸發處置門檻（達一即可）
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300">
+        <div class="flex items-start gap-2"><span class="text-yellow-500 mono">①</span><span>連續 <span class="mono font-bold">3</span> 個營業日達注意標準</span></div>
+        <div class="flex items-start gap-2"><span class="text-yellow-500 mono">②</span><span>連續 <span class="mono font-bold">5</span> 個營業日達注意標準</span></div>
+        <div class="flex items-start gap-2"><span class="text-yellow-500 mono">③</span><span>最近 <span class="mono font-bold">10</span> 個營業日有 <span class="mono font-bold">6</span> 次達注意</span></div>
+        <div class="flex items-start gap-2"><span class="text-yellow-500 mono">④</span><span>最近 <span class="mono font-bold">30</span> 個營業日有 <span class="mono font-bold">12</span> 次達注意</span></div>
+      </div>
+    </div>
+
+    <!-- High-risk candidates -->
+    <div class="card">
+      <div class="p-3 border-b border-slate-800">
+        <div class="text-sm font-semibold">高風險候選名單</div>
+        <div class="text-[11px] text-slate-400 mt-1">6/3 注意股榜上、且接近處置門檻者（依新聞公開資訊整理）</div>
+      </div>
+
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">市場焦點族群</div>
+      <div>
+        <div class="table-row" data-tags="t50 icdesign">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">2454</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">聯發科</div>
+            <div class="sector">IC 設計 · 已列注意股</div>
+            <div class="end-date-mobile">注意股 · 觀察累積次數</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-yellow">注意股</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="t50">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">3533</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">嘉澤</div>
+            <div class="sector">連接器 · 已列注意股</div>
+            <div class="end-date-mobile">注意股 · 觀察累積次數</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-yellow">注意股</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="t50">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">2382</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">廣達</div>
+            <div class="sector">AI 伺服器 · 已列注意股</div>
+            <div class="end-date-mobile">注意股 · 觀察累積次數</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-yellow">注意股</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">近期處置出關 → 30 日內再犯升級風險</div>
+      <div>
+        <div class="table-row" data-tags="t50 passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">2327</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">國巨*</div>
+            <div class="sector">被動元件龍頭 · 5/26–6/8 處置結束</div>
+            <div class="end-date-mobile">剛出關 · 再犯升級 20 分撮合</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-yellow">剛出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/8 解禁</div>
+          </div>
+        </div>
+                        <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">🆕 今日 (6/18) 剛出關 → 6/05-6/18 批次（5 檔）</div>
+      <div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3535</span></div><div><div class="text-sm font-semibold">晶彩科</div><div class="sector">光電・今日出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">4707</span></div><div><div class="text-sm font-semibold">磐亞</div><div class="sector">化學工業・今日出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span></div></div>
+        <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3288</span></div><div><div class="text-sm font-semibold">點晶</div><div class="sector">IC設計・今日出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3523</span></div><div><div class="text-sm font-semibind">迎輝</div><div class="sector">光電材料（2nd）・今日出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span></div></div>
+        <div class="table-row" data-tags="pcb"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">5358</span></div><div><div class="text-sm font-semibold">金居</div><div class="sector">PCB銅箔（2nd）・今日出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span></div></div>
+      </div>
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">📋 昨日 (6/17) 出關 → 6/04-6/17 批次（12 檔）</div>
+      <div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">1409</span></div><div><div class="text-sm font-semibold">新纖</div><div class="sector">化纖→半導體特化・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">1568</span></div><div><div class="text-sm font-semibold">倉佑</div><div class="sector">汽車零組件・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row" data-tags="passive"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">2492</span></div><div><div class="text-sm font-semibold">華新科</div><div class="sector">被動元件・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3021</span></div><div><div class="text-sm font-semibold">鴻名</div><div class="sector">電子零組件・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3346</span></div><div><div class="text-sm font-semibold">麗清</div><div class="sector">車用LED・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3481</span></div><div><div class="text-sm font-semibold">群創</div><div class="sector">面板・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">6116</span></div><div><div class="text-sm font-semibold">彩晶</div><div class="sector">面板・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row" data-tags="icdesign"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">3556</span></div><div><div class="text-sm font-semibold">禾瑞亞</div><div class="sector">IC設計 觸控・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row" data-tags="packaging"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">6548</span></div><div><div class="text-sm font-semibold">長科*</div><div class="sector">封測 導線架・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">7709</span></div><div><div class="text-sm font-semibold">榮田</div><div class="sector">電子零組件・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">8277</span></div><div><div class="text-sm font-semibold">商丞</div><div class="sector">電子通路・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+        <div class="table-row"><div class="flex items-center gap-2"><span class="severity-bar bg-yellow-500" style="height:32px;"></span><span class="ticker text-yellow-300 font-bold">7610</span></div><div><div class="text-sm font-semibold">聯友金屬-創</div><div class="sector">創新板・6/17 出關</div></div><div class="end-date-desktop text-right"><span class="pill pill-yellow">今日出關</span><div class="text-[10px] text-slate-500 mt-1 mono">6/17 解禁</div></div></div>
+      </div>
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">📋 近期 (6/16) 出關 → 6/03-6/16 批次</div>
+      <div>
+        <div class="table-row" data-tags="memory optical">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">2337</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">旺宏</div>
+            <div class="sector">記憶體（NOR Flash）・6/3-6/16 出關 · 90日漲188%</div>
+            <div class="end-date-mobile">6/16出關 · 30日內再犯升級</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/16出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/16 解禁</div>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">1563</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">巧新</div>
+            <div class="sector">汽車鍛造 · 6/3-6/16 出關</div>
+            <div class="end-date-mobile">6/16出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/16出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/16 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="optical">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">4979</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">華星光</div>
+            <div class="sector">光通訊 · 6/3-6/16 出關</div>
+            <div class="end-date-mobile">6/16出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/16出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/16 解禁</div>
+          </div>
+        </div>
+      </div>
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">📋 近期 (6/10) 出關 → 30 日內再犯升級風險</div>
+      <div>
+        <div class="table-row" data-tags="packaging">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">3189</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">景碩</div>
+            <div class="sector">封測 IC 載板 · 5/28–6/10 剛出關</div>
+            <div class="end-date-mobile">昨剛出關 · 30 日內再犯升級</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="icdesign">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">4919</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">新唐</div>
+            <div class="sector">IC 設計（MCU/類比）· 6/10 剛出關</div>
+            <div class="end-date-mobile">6/10出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="pcb">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">4958</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">臻鼎-KY</div>
+            <div class="sector">PCB 軟板龍頭 · 6/10 剛出關</div>
+            <div class="end-date-mobile">6/10出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="packaging">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6271</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">同欣電</div>
+            <div class="sector">封測 · 6/10 剛出關</div>
+            <div class="end-date-mobile">6/10出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="icmanufacturing">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6182</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">合晶</div>
+            <div class="sector">矽晶圓（IC 製造上游）· 6/10 剛出關</div>
+            <div class="end-date-mobile">6/10出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">3236</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">千如</div>
+            <div class="sector">被動元件（磁性）· 6/10 剛出關</div>
+            <div class="end-date-mobile">6/10出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/10出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/10 解禁</div>
+          </div>
+        </div>
+      </div>
+
+            <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">📋 近期 (6/12) 出關 → 6/01-6/12 批次（10 檔）</div>
+      <div>
+        <div class="table-row" data-tags="passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">2375</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">凱美</div>
+            <div class="sector">被動元件 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">2472</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">立隆電</div>
+            <div class="sector">被動元件 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">2492</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">華新科</div>
+            <div class="sector">被動元件 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="passive">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">6449</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">鈺邦</div>
+            <div class="sector">被動元件 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="t50 icmanufacturing">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">6488</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">環球晶</div>
+            <div class="sector">矽晶圓 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+        <div class="table-row" data-tags="icdesign">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-slate-500" style="height: 32px;"></span>
+            <span class="ticker text-slate-400 font-bold">6291</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">沛亨</div>
+            <div class="sector">IC設計 · 6/12 出關</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/12出關</span>
+          </div>
+        </div>
+      <div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">📋 近期 (6/11) 出關 → 5/29-6/11 批次</div>
+      <div>
+        <div class="table-row" data-tags="icmanufacturing">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">3532</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">台勝科</div>
+            <div class="sector">矽晶圓（再生）· 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+        <div class="table-row" data-tags="packaging">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6239</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">力成</div>
+            <div class="sector">封測（記憶體封裝龍頭）· 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6405</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">悅城</div>
+            <div class="sector">化學工業 · 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6806</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">森崴能源</div>
+            <div class="sector">能源（首季淨損18億，6/23終止上市）· 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 高風險(6/23下市)</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">3191</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">雲嘉南</div>
+            <div class="sector">機電工程 · 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+        <div class="table-row">
+          <div class="flex items-center gap-2">
+            <span class="severity-bar bg-yellow-500" style="height: 32px;"></span>
+            <span class="ticker text-yellow-300 font-bold">6821</span>
+          </div>
+          <div>
+            <div class="text-sm font-semibold">聯寶</div>
+            <div class="sector">食品 · 6/11 剛出關</div>
+            <div class="end-date-mobile">6/11出關 · 觀察中</div>
+          </div>
+          <div class="end-date-desktop text-right">
+            <span class="pill pill-gray">6/11出關</span>
+            <div class="text-[10px] text-slate-500 mt-1 mono">6/11 解禁</div>
+          </div>
+        </div>
+      </div>
+        <div class="text-[11px] text-slate-400 leading-relaxed">
+          <span class="text-yellow-400 font-semibold">📍 完整 6/3 注意股名單共 83 檔</span>（上市 47 / 上櫃 36），涵蓋大盤 AI 供應鏈、被動元件、面板、CCL/PCB 等族群。即時清單建議查詢
+          <a class="text-blue-400 underline" href="https://www.twse.com.tw/zh/announcement/notice.html" target="_blank">證交所注意股公告</a> 與
+          <a class="text-blue-400 underline" href="https://www.tpex.org.tw/zh-tw/announce/market/warning.html" target="_blank">櫃買中心注意股</a>。
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state for filter -->
+    <div class="empty-state" id="empty-3" style="display:none;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">所選關注產業無高風險候選股</div>
+      <div class="empty-state-hint">完整 83 檔注意股需查證交所/櫃買中心官網</div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- LEGEND / FOOTER                            -->
+  <!-- ========================================== -->
+  <section class="mb-8">
+    <details class="card p-4">
+      <summary class="flex items-center justify-between">
+        <div class="text-sm font-semibold">圖例 & 處置機制說明</div>
+        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </summary>
+      <div class="mt-3 pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <div class="text-slate-400 mb-2 font-semibold">撮合方式</div>
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2"><span class="pill pill-amber">5分撮合</span><span class="text-slate-400">第一次處置，每 5 分鐘撮合</span></div>
+            <div class="flex items-center gap-2"><span class="pill pill-yellow">10分撮合</span><span class="text-slate-400">創新板處置</span></div>
+            <div class="flex items-center gap-2"><span class="pill pill-red">20分撮合</span><span class="text-slate-400">第二次處置，每 20 分鐘撮合</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="text-slate-400 mb-2 font-semibold">交易限制</div>
+          <div class="text-slate-300 leading-relaxed">處置期間券商會對委託達門檻者「收足全部款券」，信用交易需收足融資自備款／融券保證金。處置期 <span class="mono text-amber-300">10 個營業日</span>。</div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <footer class="text-[10px] text-slate-500 leading-relaxed border-t border-slate-800 pt-4 mt-6">
+    <div class="mb-2">
+      <span class="text-slate-400 font-semibold">資料來源：</span>
+      臺灣證券交易所、證券櫃檯買賣中心、ETtoday 財經雲、FTNN 新聞網、處置王、豐雲學堂、Yahoo 股市
+    </div>
+    <div class="mb-2">
+      <span class="text-slate-400 font-semibold">資料截止：</span>
+      證交所／櫃買中心公告至 6/17（6/18-7/2 批次生效）為止。6/18 今日出關：晶彩科3535/磐亞4707/點晶3288/迎輝3523/金居5358（6/05-6/18批次）；6/18 盤後公告待補（今日史上首破46K，預計有新批次）。鈦昇(8027)持股20分撮合至7/2。「未來有機會被處置」係依注意股累積次數推估，非官方預測。5/29 公告之 7 檔（含力成6239、禾伸堂等）已於 6/11 出關，列入「未來有機會 → 昨日剛出關」追蹤；5/27 公告之 15 檔已於 6/10 出關，列入「近期(6/10)出關」追蹤。「未來有機會被處置」係依注意股累積次數與近期出關推估，非官方預測。
+    </div>
+    <div class="text-amber-500/80 font-semibold">
+      ⚠ 本資訊僅供研究參考，不構成投資建議。實際資料請以證交所／櫃買中心官方公告為準。
+    </div>
+  </footer>
+</main>
+
+<script>
+  // Map tag -> display name for status text
+  const TAG_NAMES = {
+    t50: '台股50',
+    memory: '記憶體',
+    icdesign: 'IC設計',
+    icmanufacturing: 'IC製造',
+    packaging: '封測',
+    pcb: 'PCB/ABF',
+    passive: '被動元件',
+    power: '電源/散熱',
+    optical: '光通訊',
+    satellite: '衛星',
+    shipping: '航運',
+    finance: '金融',
+    telecom: '電信'
+  };
+
+  function switchTab(n) {
+    document.querySelectorAll('.tab').forEach(t => {
+      t.setAttribute('data-active', t.dataset.tab === String(n) ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.setAttribute('data-active', p.dataset.panel === String(n) ? 'true' : 'false');
+    });
+  }
+
+  function toggleChip(el) {
+    // Single-select: activate only the clicked chip, deactivate all others
+    const clickedTag = el.dataset.tag;
+    document.querySelectorAll('.chip').forEach(c => {
+      c.setAttribute('data-active', c.dataset.tag === clickedTag ? 'true' : 'false');
+    });
+    applyFilter();
+  }
+
+  function applyFilter() {
+    // Single-select: find the one active chip
+    const activeChip = document.querySelector('.chip[data-active="true"]');
+    const activeTag = activeChip ? activeChip.dataset.tag : '';
+    const showAll = activeTag === '';
+
+    // Filter rows
+    document.querySelectorAll('.table-row').forEach(row => {
+      if (showAll) {
+        row.style.display = '';
+      } else {
+        const rowTags = (row.dataset.tags || '').split(/\s+/).filter(Boolean);
+        row.style.display = rowTags.includes(activeTag) ? '' : 'none';
+      }
+    });
+
+    // Hide empty sub-groups (details) and cards inside tab panels
+    document.querySelectorAll('.tab-panel details, .tab-panel > .card').forEach(g => {
+      const rows = g.querySelectorAll('.table-row');
+      if (rows.length === 0) return; // skip non-stock cards (e.g. criteria card)
+      const anyVisible = Array.from(rows).some(r => r.style.display !== 'none');
+      g.style.display = anyVisible ? '' : 'none';
+    });
+
+    // Per-tab: count unique visible tickers, show empty state if 0; update tab count badge
+    [1, 2, 3].forEach(n => {
+      const panel = document.querySelector(`.tab-panel[data-panel="${n}"]`);
+      if (!panel) return;
+      const rows = panel.querySelectorAll('.table-row');
+      const visibleRows = Array.from(rows).filter(r => r.style.display !== 'none');
+      const uniqueTickers = new Set();
+      visibleRows.forEach(r => {
+        const tickerEl = r.querySelector('.ticker');
+        if (tickerEl) uniqueTickers.add(tickerEl.textContent.trim());
+      });
+      const count = uniqueTickers.size;
+      const empty = panel.querySelector('.empty-state');
+      if (empty) empty.style.display = count === 0 ? 'block' : 'none';
+      const badge = document.querySelector(`.tab-count[data-count="${n}"]`);
+      if (badge) {
+        if (showAll) {
+          badge.textContent = n === 1 ? '42 檔' : n === 2 ? '12 檔' : '~90 注意股';
+        } else {
+          badge.textContent = count + ' 檔';
+        }
+      }
+    });
+
+    // Update filter status text
+    const status = document.getElementById('filterStatus');
+    if (status) {
+      if (showAll) {
+        status.innerHTML = '顯示全部';
+      } else {
+        status.innerHTML = '篩選中 · <span class="num">' + (TAG_NAMES[activeTag] || activeTag) + '</span>';
+      }
+    }
+  }
+</script>
+</body>
+</html>
