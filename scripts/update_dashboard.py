@@ -30,6 +30,8 @@ from collections import defaultdict
 TWSE_PUNISH_API  = "https://openapi.twse.com.tw/v1/announcement/punish"
 TWSE_NOTETRANS   = "https://openapi.twse.com.tw/v1/announcement/notetrans"
 TWSE_MI_INDEX    = "https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX"
+TWSE_STOCK_DAY   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
+TWSE_STOCK_AVG   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL"
 TPEX_DISPOSAL    = "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
 TPEX_WARNING     = "https://www.tpex.org.tw/www/zh-tw/bulletin/warning"
 TPEX_REFERER_D   = "https://www.tpex.org.tw/zh-tw/announce/market/disposal.html"
@@ -201,6 +203,39 @@ def fetch_taiex():
     return None
 
 
+def fetch_twse_stock_quotes():
+    """
+    回傳 TWSE 全股日資料 dict：{code: {close, change, change_pct, vol_k, monthly_avg}}.
+    - vol_k: 成交量（千股 = 張）
+    - monthly_avg: 月均價（STOCK_DAY_AVG_ALL）
+    TPEx 股票不在此資料中，呼叫後查不到會回傳 None。
+    """
+    day_data = safe_fetch_json(TWSE_STOCK_DAY, default=[])
+    avg_data = safe_fetch_json(TWSE_STOCK_AVG, default=[])
+    avg_map  = {r.get("Code",""): r.get("MonthlyAveragePrice","") for r in avg_data}
+
+    result = {}
+    for r in day_data:
+        code = r.get("Code","")
+        if not code:
+            continue
+        try:
+            close  = float(r["ClosingPrice"]) if r.get("ClosingPrice") else None
+            change = float(r["Change"])        if r.get("Change")       else 0.0
+            vol_k  = int(r.get("TradeVolume", 0)) // 1000
+            prev   = close - change if close is not None else None
+            pct    = (change / prev * 100) if (prev and prev != 0) else None
+            mavg   = float(avg_map[code]) if avg_map.get(code) else None
+        except (ValueError, TypeError):
+            continue
+        result[code] = {
+            "close": close, "change": change, "change_pct": pct,
+            "vol_k": vol_k, "monthly_avg": mavg,
+            "date": r.get("Date",""),
+        }
+    return result
+
+
 _CN_INT = {"一":1,"二":2,"三":3,"四":4,"五":5,
            "六":6,"七":7,"八":8,"九":9,"十":10,"十一":11,"十二":12}
 _DOW_ZH = ["一","二","三","四","五","六","日"]
@@ -245,19 +280,19 @@ def analyze_criteria(raw):
     return {"entries": entries, "max_consecutive": max_consec, "latest_end": latest_end}
 
 
-def render_risk_detail(analysis, today):
+def render_risk_detail(analysis, today, quote=None):
     """
     生成處置門檻進度詳情，放在 .table-row 內 grid-column: 1/-1 的欄位。
+    quote: dict {close, change, change_pct, vol_k, monthly_avg} 或 None
     """
     if not analysis:
         return ""
 
     max_c       = analysis["max_consecutive"]
     latest_end  = analysis["latest_end"]
-    next_imm    = next_weekday(latest_end)   # latest_end 之後第一個交易日
+    next_imm    = next_weekday(latest_end)
 
-    # 如果那個日期已經過去，風險日改為今天之後的下一個交易日
-    streak_broken = next_imm <= today        # 連續可能已中斷
+    streak_broken = next_imm <= today
     risk_date     = next_weekday(today) if next_imm <= today else next_imm
 
     # ── 達標摘要 ──
@@ -276,8 +311,42 @@ def render_risk_detail(analysis, today):
         f'</div>'
     )
 
+    # ── 最後交易日數值（收盤、漲跌、量、偏離月均）──
+    if quote and quote.get("close") is not None:
+        close = quote["close"]
+        chg   = quote.get("change", 0) or 0
+        pct   = quote.get("change_pct")
+        vol_k = quote.get("vol_k", 0)
+        mavg  = quote.get("monthly_avg")
+
+        sign  = "+" if chg >= 0 else ""
+        clr   = "text-green-400" if chg >= 0 else "text-red-400"
+        pct_s = f" ({sign}{pct:.1f}%)" if pct is not None else ""
+        vol_s = f"{vol_k:,} 張" if vol_k else "—"
+
+        # 偏離月均價
+        dev_s = ""
+        if mavg and mavg > 0:
+            dev = (close - mavg) / mavg * 100
+            dev_clr = "text-red-400" if dev > 20 else ("text-amber-400" if dev > 10 else "text-slate-300")
+            dev_s = f'<span class="text-slate-500 ml-2">偏離月均</span><span class="mono {dev_clr} ml-0.5">{"+" if dev>=0 else ""}{dev:.1f}%</span>'
+
+        quote_html = (
+            f'<div class="flex flex-wrap gap-x-4 gap-y-0.5 mb-1.5 border-l-2 border-slate-700 pl-2">'
+            f'<span class="text-slate-500">收盤</span>'
+            f'<span class="mono {clr} font-semibold">{close:.2f}</span>'
+            f'<span class="mono {clr}">{sign}{chg:.2f}{pct_s}</span>'
+            f'<span class="text-slate-500 ml-2">量</span>'
+            f'<span class="mono text-slate-200">{vol_s}</span>'
+            + dev_s
+            + f'<span class="text-slate-600 ml-1">（{fmt_weekday(latest_end)} 收盤）</span>'
+            f'</div>'
+        )
+    else:
+        quote_html = ""
+
     # ── 風險預警 ──
-    streak_note = "（需維持連續，週末後首個交易日）" if streak_broken and max_c < 3 else ""
+    streak_note = "（需維持連續）" if streak_broken and max_c < 3 else ""
 
     if max_c >= 5:
         warn_html = (
@@ -339,7 +408,7 @@ def render_risk_detail(analysis, today):
     return (
         f'<div style="grid-column:1/-1" '
         f'class="mt-1 pt-2 border-t border-slate-800/50 text-[11px] leading-5 pb-1">'
-        + summary_html + warn_html + bar_html
+        + summary_html + quote_html + warn_html + bar_html
         + '</div>'
     )
 
@@ -672,9 +741,10 @@ def render_tab2_content(latest_batch, stock_info, today):
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 3
 # ──────────────────────────────────────────────
-def render_notetrans_rows(notetrans_list, stock_info, today):
+def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None):
     if not notetrans_list:
         return ""
+    sq = stock_quotes or {}
     rows = []
     for r in notetrans_list:
         meta     = get_stock_meta(r["code"], stock_info)
@@ -682,8 +752,8 @@ def render_notetrans_rows(notetrans_list, stock_info, today):
         sector   = meta["sector"] or r.get("exchange","")
         analysis = analyze_criteria(r.get("raw_criteria",""))
         max_c    = analysis["max_consecutive"] if analysis else 0
+        quote    = sq.get(r["code"])            # None for TPEx stocks
 
-        # 嚴重度顏色
         if max_c >= 3:
             sev_color = "bg-red-500"
             ticker_cl = "text-red-300 font-bold"
@@ -691,7 +761,6 @@ def render_notetrans_rows(notetrans_list, stock_info, today):
             sev_color = "bg-yellow-500"
             ticker_cl = "text-yellow-300 font-bold"
 
-        # 右上方 pill 顯示離門檻距離
         if max_c >= 3:
             pill_extra = f'<span class="pill pill-red ml-1">超門檻</span>'
         elif max_c == 2:
@@ -699,33 +768,31 @@ def render_notetrans_rows(notetrans_list, stock_info, today):
         else:
             pill_extra = ''
 
-        detail_html = render_risk_detail(analysis, today)
+        detail_html = render_risk_detail(analysis, today, quote=quote)
 
         rows.append(
             f'<div class="table-row"{tags}>'
-            # col 1: code
             f'<div class="flex items-center gap-2">'
             f'<span class="severity-bar {sev_color}" style="height:32px;"></span>'
             f'<span class="ticker {ticker_cl}">{r["code"]}</span>'
             f'</div>'
-            # col 2: name + sector
             f'<div>'
             f'<div class="text-sm font-semibold">{r["name"]}</div>'
             f'<div class="sector">{sector}</div>'
             f'</div>'
-            # col 3: pill
             f'<div class="end-date-desktop text-right">'
             f'<span class="pill pill-yellow">注意累計</span>{pill_extra}'
             f'</div>'
-            # span-all detail row
             + detail_html
             + '</div>'
         )
     return "".join(rows)
 
 
-def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today):
+def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
+                stock_quotes=None):
     sections = []
+    sq = stock_quotes or {}
 
     # ── Section 1: 注意累計（接近處置門檻）──
     all_notetrans = notetrans_twse + notetrans_tpex
@@ -737,14 +804,14 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             nt_rows += (
                 '<div class="text-[10px] tracking-widest text-slate-500 uppercase '
                 'px-3 pt-3 pb-1 mono">TWSE 注意累計</div>'
-                f'<div>{render_notetrans_rows(twse_nt, stock_info, today)}</div>'
+                f'<div>{render_notetrans_rows(twse_nt, stock_info, today, sq)}</div>'
             )
         if tpex_nt:
             border = " border-t border-slate-800" if twse_nt else ""
             nt_rows += (
                 f'<div class="text-[10px] tracking-widest text-slate-500 uppercase '
                 f'px-3 pt-3 pb-1 mono{border}">TPEx 注意累計</div>'
-                f'<div>{render_notetrans_rows(tpex_nt, stock_info, today)}</div>'
+                f'<div>{render_notetrans_rows(tpex_nt, stock_info, today, sq)}</div>'
             )
         sections.append(f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
@@ -877,13 +944,15 @@ def main():
     all_rows  = normalize_twse_rows(twse_raw) + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")
 
-    # 抓大盤 & 注意累計
+    # 抓大盤 & 注意累計 & 個股報價
     print("  大盤指數...")
     taiex = fetch_taiex()
     print("  TWSE 注意累計...")
     notetrans_twse = fetch_twse_notetrans()
     print("  TPEx 注意累計...")
     notetrans_tpex = fetch_tpex_warning()
+    print("  TWSE 個股報價...")
+    stock_quotes   = fetch_twse_stock_quotes()
 
     # 分組
     active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
@@ -935,7 +1004,8 @@ def main():
                               twse_count, tpex_count, latest_ann)
     tab1_html  = render_tab1_batches(active_groups, stock_info, today)
     tab2_html  = render_tab2_content(latest_batch, stock_info, today)
-    tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today)
+    tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
+                             stock_quotes=stock_quotes)
     date_html  = render_date_block(today)
 
     # 讀 HTML
