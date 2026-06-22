@@ -201,19 +201,160 @@ def fetch_taiex():
     return None
 
 
-def parse_criteria(criteria_str):
+_CN_INT = {"一":1,"二":2,"三":3,"四":4,"五":5,
+           "六":6,"七":7,"八":8,"九":9,"十":10,"十一":11,"十二":12}
+_DOW_ZH = ["一","二","三","四","五","六","日"]
+
+def cn_to_int(s):
+    return _CN_INT.get(s, 0)
+
+def next_weekday(d):
+    """返回 d 之後的下一個交易日（僅跳週末，不排除假日）。"""
+    nxt = d + timedelta(days=1)
+    while nxt.weekday() >= 5:
+        nxt += timedelta(days=1)
+    return nxt
+
+def fmt_weekday(d):
+    return f"{d.month}/{d.day}（{_DOW_ZH[d.weekday()]}）"
+
+
+def analyze_criteria(raw):
     """
-    將累計標準字串轉為簡短標籤。
-    輸入：'115年6月17日至115年6月18日連續二次115年6月15日至115年6月18日連續四次'
-    輸出：'連續二次 (6/17–6/18) + 連續四次 (6/15–6/18)'
+    解析原始累計標準字串，回傳結構化資料。
+    例：'115年6月17日至115年6月18日連續二次115年6月15日至115年6月18日連續四次'
+    回傳：{entries, max_consecutive, latest_end}
     """
-    pattern = r'\d+年(\d+)月(\d+)日至\d+年(\d+)月(\d+)日(連續[^\d\s]+次|累計[^\d\s]+次)'
-    matches = re.findall(pattern, criteria_str)
-    if matches:
-        return " + ".join(f"{count} ({m1}/{d1}–{m2}/{d2})"
-                          for m1, d1, m2, d2, count in matches)
-    m = re.search(r'(連續.+?次|累計.+?次)', criteria_str)
-    return m.group(1) if m else criteria_str[:30]
+    pattern = r'(\d+)年(\d+)月(\d+)日至(\d+)年(\d+)月(\d+)日(連續|累計)([一二三四五六七八九十]+)次'
+    matches = re.findall(pattern, raw)
+    if not matches:
+        return None
+    entries = []
+    for y1, m1, d1, y2, m2, d2, kind, cn in matches:
+        try:
+            start = date(int(y1)+1911, int(m1), int(d1))
+            end   = date(int(y2)+1911, int(m2), int(d2))
+            cnt   = cn_to_int(cn)
+            entries.append({"start": start, "end": end, "kind": kind, "count": cnt, "cn": cn})
+        except Exception:
+            pass
+    if not entries:
+        return None
+    max_consec = max((e["count"] for e in entries if e["kind"] == "連續"), default=0)
+    latest_end = max(e["end"] for e in entries)
+    return {"entries": entries, "max_consecutive": max_consec, "latest_end": latest_end}
+
+
+def render_risk_detail(analysis, today):
+    """
+    生成處置門檻進度詳情，放在 .table-row 內 grid-column: 1/-1 的欄位。
+    """
+    if not analysis:
+        return ""
+
+    max_c       = analysis["max_consecutive"]
+    latest_end  = analysis["latest_end"]
+    next_imm    = next_weekday(latest_end)   # latest_end 之後第一個交易日
+
+    # 如果那個日期已經過去，風險日改為今天之後的下一個交易日
+    streak_broken = next_imm <= today        # 連續可能已中斷
+    risk_date     = next_weekday(today) if next_imm <= today else next_imm
+
+    # ── 達標摘要 ──
+    parts = []
+    for e in analysis["entries"]:
+        parts.append(
+            f'<span class="mono text-yellow-200">{e["kind"]}{e["cn"]}次</span>'
+            f'<span class="text-slate-500"> ({fmt_short(e["start"])}–{fmt_short(e["end"])})</span>'
+        )
+    summary_html = (
+        f'<div class="flex flex-wrap gap-x-3 gap-y-0.5 mb-1.5">'
+        f'<span class="text-slate-500">最近達標：</span>'
+        + "、".join(parts)
+        + f'<span class="text-slate-500 ml-2">最後達標日：</span>'
+        f'<span class="mono text-slate-300">{fmt_weekday(latest_end)}</span>'
+        f'</div>'
+    )
+
+    # ── 風險預警 ──
+    streak_note = "（需維持連續，週末後首個交易日）" if streak_broken and max_c < 3 else ""
+
+    if max_c >= 5:
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-red-400 shrink-0 font-bold">！</span>'
+            f'<span class="text-red-300">已達連續{max_c}日 ≥ 門檻，隨時可能收到盤後處置公告</span>'
+            f'</div>'
+        )
+    elif max_c >= 3:
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-red-400 shrink-0 font-bold">！</span>'
+            f'<span class="text-red-300">已達連續{max_c}日門檻，'
+            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> 盤後可能收到處置公告'
+            f'（第一次：5分撮合）</span>'
+            f'</div>'
+        )
+    elif max_c == 2:
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-amber-400 shrink-0">⚠</span>'
+            f'<span class="text-amber-200">'
+            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> '
+            f'若再達注意標準{streak_note} → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
+            f' → <span class="text-red-300">第一次處置（5分撮合）</span></span>'
+            f'</div>'
+        )
+    elif max_c == 1:
+        risk_date2 = next_weekday(risk_date)
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-yellow-500 shrink-0">●</span>'
+            f'<span class="text-slate-300">'
+            f'需 <span class="mono">{fmt_weekday(risk_date)}</span> +'
+            f' <span class="mono">{fmt_weekday(risk_date2)}</span> 連續達標，'
+            f'才觸發連續3日門檻</span>'
+            f'</div>'
+        )
+    else:
+        warn_html = ""
+
+    # ── 進度條（連續3日門檻）──
+    filled    = min(max_c, 3)
+    empty     = max(0, 3 - filled)
+    exceeded  = max_c >= 3
+    bar_color = "bg-red-500" if exceeded else "bg-yellow-500"
+    bar = ("".join(f'<span class="inline-block w-5 h-1.5 rounded-sm {bar_color} mr-0.5"></span>'
+                   for _ in range(filled))
+           + "".join(f'<span class="inline-block w-5 h-1.5 rounded-sm bg-slate-700 mr-0.5"></span>'
+                     for _ in range(empty)))
+    status_txt = "已達門檻" if exceeded else f"{max_c}/3"
+    bar_html = (
+        f'<div class="flex items-center gap-2 mt-1.5">'
+        f'<div class="flex items-center">{bar}</div>'
+        f'<span class="text-slate-500">{status_txt} 連續3日門檻</span>'
+        f'</div>'
+    )
+
+    return (
+        f'<div style="grid-column:1/-1" '
+        f'class="mt-1 pt-2 border-t border-slate-800/50 text-[11px] leading-5 pb-1">'
+        + summary_html + warn_html + bar_html
+        + '</div>'
+    )
+
+
+def parse_criteria(raw):
+    """
+    供 fetch 函數使用的短標籤版，仍保留向後相容。
+    """
+    a = analyze_criteria(raw)
+    if a:
+        parts = [f"{e['kind']}{e['cn']}次 ({fmt_short(e['start'])}–{fmt_short(e['end'])})"
+                 for e in a["entries"]]
+        return " + ".join(parts)
+    m = re.search(r'(連續.+?次|累計.+?次)', raw)
+    return m.group(1) if m else raw[:30]
 
 
 def fetch_twse_notetrans():
@@ -222,7 +363,8 @@ def fetch_twse_notetrans():
     return [
         {"code": r.get("Code",""), "name": clean_name(r.get("Name","")),
          "exchange": "TWSE",
-         "criteria": parse_criteria(r.get("RecentlyMetAttentionSecuritiesCriteria",""))}
+         "criteria":     parse_criteria(r.get("RecentlyMetAttentionSecuritiesCriteria","")),
+         "raw_criteria": r.get("RecentlyMetAttentionSecuritiesCriteria","")}
         for r in data if r.get("Code") and is_regular_stock(r.get("Code",""))
     ]
 
@@ -241,9 +383,9 @@ def fetch_tpex_warning():
         name = clean_name(d.get("證券名稱", ""))
         if not code or not is_regular_stock(code):
             continue
-        raw_criteria = d.get("近期達本公司「公布注意交易資訊」標準之情形", "")
+        rc = d.get("近期達本公司「公布注意交易資訊」標準之情形", "")
         result.append({"code": code, "name": name, "exchange": "TPEx",
-                        "criteria": parse_criteria(raw_criteria)})
+                        "criteria": parse_criteria(rc), "raw_criteria": rc})
     return result
 
 
@@ -535,27 +677,49 @@ def render_notetrans_rows(notetrans_list, stock_info, today):
         return ""
     rows = []
     for r in notetrans_list:
-        meta    = get_stock_meta(r["code"], stock_info)
-        tags    = f' data-tags="{meta["tags"]}"' if meta["tags"] else ""
-        sector  = meta["sector"] or r.get("exchange","")
-        # 簡化累計說明（只取第一行，避免過長）
-        criteria = r.get("criteria","").split("115年")[1] if "115年" in r.get("criteria","") else r.get("criteria","")
-        criteria = re.sub(r"\s+", " ", criteria.strip())[:50]
+        meta     = get_stock_meta(r["code"], stock_info)
+        tags     = f' data-tags="{meta["tags"]}"' if meta["tags"] else ""
+        sector   = meta["sector"] or r.get("exchange","")
+        analysis = analyze_criteria(r.get("raw_criteria",""))
+        max_c    = analysis["max_consecutive"] if analysis else 0
+
+        # 嚴重度顏色
+        if max_c >= 3:
+            sev_color = "bg-red-500"
+            ticker_cl = "text-red-300 font-bold"
+        else:
+            sev_color = "bg-yellow-500"
+            ticker_cl = "text-yellow-300 font-bold"
+
+        # 右上方 pill 顯示離門檻距離
+        if max_c >= 3:
+            pill_extra = f'<span class="pill pill-red ml-1">超門檻</span>'
+        elif max_c == 2:
+            pill_extra = f'<span class="pill pill-amber ml-1">差1日</span>'
+        else:
+            pill_extra = ''
+
+        detail_html = render_risk_detail(analysis, today)
+
         rows.append(
             f'<div class="table-row"{tags}>'
+            # col 1: code
             f'<div class="flex items-center gap-2">'
-            f'<span class="severity-bar bg-yellow-500" style="height:32px;"></span>'
-            f'<span class="ticker text-yellow-300 font-bold">{r["code"]}</span>'
+            f'<span class="severity-bar {sev_color}" style="height:32px;"></span>'
+            f'<span class="ticker {ticker_cl}">{r["code"]}</span>'
             f'</div>'
+            # col 2: name + sector
             f'<div>'
             f'<div class="text-sm font-semibold">{r["name"]}</div>'
             f'<div class="sector">{sector}</div>'
             f'</div>'
+            # col 3: pill
             f'<div class="end-date-desktop text-right">'
-            f'<span class="pill pill-yellow">注意累計</span>'
-            f'<div class="text-[10px] text-slate-500 mt-1">{criteria}</div>'
+            f'<span class="pill pill-yellow">注意累計</span>{pill_extra}'
             f'</div>'
-            f'</div>'
+            # span-all detail row
+            + detail_html
+            + '</div>'
         )
     return "".join(rows)
 
