@@ -1130,13 +1130,16 @@ def replace_between(html, start_marker, end_marker, new_content):
     return result
 
 
-def update_inline_counts(html, tab1_total, tab1_latest):
-    html = re.sub(r'(data-count="1">)\d+ 檔(<)', rf'\g<1>{tab1_total} 檔\2', html)
-    html = re.sub(r'(data-count="2">)\d+ 檔(<)', rf'\g<1>{tab1_latest} 檔\2', html)
-    html = re.sub(r'(class="mono text-2xl font-bold text-red-400">)\d+(<)',
+def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0):
+    html = re.sub(r'(data-count="1">)[^<]+(<)', rf'\g<1>{tab1_total} 檔\2', html)
+    html = re.sub(r'(data-count="2">)[^<]+(<)', rf'\g<1>{tab1_latest} 檔\2', html)
+    html = re.sub(r'(data-count="3">)[^<]+(<)', rf'\g<1>{tab3_nt} 注意累計\2', html)
+    html = re.sub(r'(class="mono text-2xl font-bold text-red-400">)[^<]+(<)',
                   rf'\g<1>{tab1_total}\2', html)
-    html = re.sub(r'(class="mono text-2xl font-bold text-amber-400">)\d+(<)',
+    html = re.sub(r'(class="mono text-2xl font-bold text-amber-400">)[^<]+(<)',
                   rf'\g<1>{tab1_latest}\2', html)
+    html = re.sub(r'(class="mono text-2xl font-bold text-yellow-400">)[^<]+(<)',
+                  rf'\g<1>{tab3_nt}\2', html)
     return html
 
 
@@ -1240,7 +1243,8 @@ def main():
     html = replace_between(html, "<!-- AUTO:TAB3_CONTENT_START -->",  "<!-- AUTO:TAB3_CONTENT_END -->",  tab3_html)
 
     # 更新 tab nav 數字
-    html = update_inline_counts(html, total_active, latest_count)
+    tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
+    html = update_inline_counts(html, total_active, latest_count, tab3_nt)
 
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
