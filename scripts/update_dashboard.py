@@ -29,9 +29,9 @@ from collections import defaultdict
 # ──────────────────────────────────────────────
 TWSE_PUNISH_API  = "https://openapi.twse.com.tw/v1/announcement/punish"
 TWSE_NOTETRANS   = "https://openapi.twse.com.tw/v1/announcement/notetrans"
-TWSE_MI_INDEX    = "https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX"
-TWSE_STOCK_DAY   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
-TWSE_STOCK_AVG   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL"
+TWSE_MI_INDEX    = "https://www.twse.com.tw/rwd/zh/afterTrading/FMTQIK?response=json"
+TWSE_STOCK_DAY   = "https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=json"
+TWSE_STOCK_AVG   = "https://www.twse.com.tw/exchangeReport/STOCK_DAY_AVG_ALL?response=json"
 TWSE_STOCK_HIST  = "https://www.twse.com.tw/exchangeReport/STOCK_DAY"  # 個股月資料
 TPEX_DISPOSAL    = "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
 TPEX_WARNING     = "https://www.tpex.org.tw/www/zh-tw/bulletin/warning"
@@ -197,11 +197,26 @@ def fetch_and_normalize_tpex(referer):
 
 def fetch_taiex():
     """回傳最新一日加權指數資料，找不到時回傳 None。"""
-    data = safe_fetch_json(TWSE_MI_INDEX, default=[])
-    for row in data:
-        if row.get("指數") == "發行量加權股價指數":
-            return row
-    return None
+    data = safe_fetch_json(TWSE_MI_INDEX, default={})
+    rows = data.get("data", [])
+    if not rows:
+        return None
+    last = rows[-1]
+    try:
+        close  = float(last[4].replace(",", ""))
+        change = float(last[5].replace(",", ""))
+        prev   = close - change
+        pct    = (change / prev * 100) if prev != 0 else 0.0
+        roc_date = last[0].replace("/", "")  # '115/06/23' → '1150623'
+        return {
+            "收盤指數":   f"{close:.2f}",
+            "漲跌點數":   f"{abs(change):.2f}",
+            "漲跌百分比": f"{abs(pct):.2f}",
+            "漲跌":       "+" if change >= 0 else "-",
+            "日期":       roc_date,
+        }
+    except (ValueError, IndexError):
+        return None
 
 
 def fetch_twse_stock_quotes():
@@ -211,28 +226,36 @@ def fetch_twse_stock_quotes():
     - monthly_avg: 月均價（STOCK_DAY_AVG_ALL）
     TPEx 股票不在此資料中，呼叫後查不到會回傳 None。
     """
-    day_data = safe_fetch_json(TWSE_STOCK_DAY, default=[])
-    avg_data = safe_fetch_json(TWSE_STOCK_AVG, default=[])
-    avg_map  = {r.get("Code",""): r.get("MonthlyAveragePrice","") for r in avg_data}
+    day_resp = safe_fetch_json(TWSE_STOCK_DAY, default={})
+    avg_resp = safe_fetch_json(TWSE_STOCK_AVG, default={})
 
+    avg_map = {}
+    for row in avg_resp.get("data", []):
+        if len(row) >= 4 and row[0] and row[3]:
+            avg_map[row[0]] = row[3]
+
+    resp_date = day_resp.get("date", "")
     result = {}
-    for r in day_data:
-        code = r.get("Code","")
+    for row in day_resp.get("data", []):
+        if len(row) < 9:
+            continue
+        code = row[0]
         if not code:
             continue
         try:
-            close  = float(r["ClosingPrice"]) if r.get("ClosingPrice") else None
-            change = float(r["Change"])        if r.get("Change")       else 0.0
-            vol_k  = int(r.get("TradeVolume", 0)) // 1000
+            close  = float(row[7].replace(",", "")) if row[7] else None
+            change = float(row[8].replace(",", "")) if row[8] else 0.0
+            vol_k  = int(row[2].replace(",", "")) // 1000 if row[2] else 0
             prev   = close - change if close is not None else None
             pct    = (change / prev * 100) if (prev and prev != 0) else None
-            mavg   = float(avg_map[code]) if avg_map.get(code) else None
+            mavg_s = avg_map.get(code, "")
+            mavg   = float(mavg_s.replace(",", "")) if mavg_s else None
         except (ValueError, TypeError):
             continue
         result[code] = {
             "close": close, "change": change, "change_pct": pct,
             "vol_k": vol_k, "monthly_avg": mavg,
-            "date": r.get("Date",""),
+            "date": resp_date,
         }
     return result
 
