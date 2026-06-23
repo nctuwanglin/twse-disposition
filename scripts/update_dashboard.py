@@ -717,14 +717,69 @@ def group_into_batches(all_rows, today):
 # ──────────────────────────────────────────────
 # HTML 生成 — 共用
 # ──────────────────────────────────────────────
+_SECTOR_TAG_RULES = [
+    # IC 設計
+    ("IC設計",       "icdesign"),
+    ("類比",         "icdesign"),
+    # IC 製造 / 晶圓 / 面板 / 記憶體
+    ("矽晶圓",       "icmanufacturing"),
+    ("晶圓",         "icmanufacturing"),
+    ("面板",         "icmanufacturing"),
+    ("功率半導體",   "icmanufacturing"),
+    ("記憶體",       "icmanufacturing"),
+    ("DRAM",         "icmanufacturing"),
+    ("NOR",          "icmanufacturing"),
+    ("磊晶",         "icmanufacturing"),
+    ("GaAs",         "icmanufacturing"),
+    ("分離式",       "icmanufacturing"),
+    ("整流器",       "icmanufacturing"),
+    # 封裝測試
+    ("封測",         "packaging"),
+    ("封裝",         "packaging"),
+    ("導線架",       "packaging"),
+    # PCB / 基板
+    ("PCB",          "pcb"),
+    ("銅箔",         "pcb"),
+    ("CCL",          "pcb"),
+    ("基板",         "pcb"),
+    # 被動元件
+    ("MLCC",         "passive"),
+    ("被動元件",     "passive"),
+    ("電阻",         "passive"),
+    ("電容",         "passive"),
+    ("陶瓷",         "passive"),
+    ("電感",         "passive"),
+    # 光電 / 光學
+    ("光通訊",       "optical"),
+    ("光學",         "optical"),
+    ("光電",         "optical"),
+    # 衛星
+    ("衛星",         "satellite"),
+    # 電動車 / 電池 / 電源
+    ("EV",           "power"),
+    ("電源",         "power"),
+    ("電池",         "power"),
+    ("儲能",         "power"),
+]
+
+
+def sector_to_tags(sector: str) -> set:
+    """根據 sector 文字自動推導 tag 集合。"""
+    return {tag for kw, tag in _SECTOR_TAG_RULES if kw in sector}
+
+
 def load_stock_info():
     with open(STOCK_INFO_PATH, encoding="utf-8") as f:
         return json.load(f)
 
 
 def get_stock_meta(code, stock_info):
-    meta = stock_info.get(code, {})
-    return {"tags": meta.get("tags",""), "sector": meta.get("sector","")}
+    meta   = stock_info.get(code, {})
+    sector = meta.get("sector", "")
+    manual = set(meta.get("tags", "").split())
+    auto   = sector_to_tags(sector)
+    tags   = " ".join(sorted(manual | auto))
+    return {"tags": tags, "sector": sector}
 
 
 def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_label_override=None):
