@@ -6,6 +6,8 @@
   "1714": { "name": "和桐", "exchange": "TWSE", "tags": "", "sector": "化學工業" },
   "1718": { "name": "中纖", "exchange": "TWSE", "tags": "", "sector": "化學纖維" },
   "2243": { "name": "宏旭-KY", "exchange": "TWSE", "tags": "", "sector": "車身模具" },
+  "3090": { "name": "日電貿", "exchange": "TWSE", "tags": "", "sector": "IC 通路代理" },
+  "4551": { "name": "智伸科", "exchange": "TWSE", "tags": "", "sector": "精密機械零件" },
   "2383": { "name": "台光電", "exchange": "TWSE", "tags": "pcb", "sector": "CCL（銅箔基板）" },
   "2455": { "name": "全新", "exchange": "TWSE", "tags": "icmanufacturing", "sector": "GaAs磊晶" },
   "2478": { "name": "大毅", "exchange": "TWSE", "tags": "passive", "sector": "電阻器" },
