@@ -32,6 +32,7 @@ TWSE_NOTETRANS   = "https://openapi.twse.com.tw/v1/announcement/notetrans"
 TWSE_MI_INDEX    = "https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX"
 TWSE_STOCK_DAY   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
 TWSE_STOCK_AVG   = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL"
+TWSE_STOCK_HIST  = "https://www.twse.com.tw/exchangeReport/STOCK_DAY"  # 個股月資料
 TPEX_DISPOSAL    = "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
 TPEX_WARNING     = "https://www.tpex.org.tw/www/zh-tw/bulletin/warning"
 TPEX_REFERER_D   = "https://www.tpex.org.tw/zh-tw/announce/market/disposal.html"
@@ -280,10 +281,11 @@ def analyze_criteria(raw):
     return {"entries": entries, "max_consecutive": max_consec, "latest_end": latest_end}
 
 
-def render_risk_detail(analysis, today, quote=None):
+def render_risk_detail(analysis, today, quote=None, extra_html=""):
     """
     生成處置門檻進度詳情，放在 .table-row 內 grid-column: 1/-1 的欄位。
     quote: dict {close, change, change_pct, vol_k, monthly_avg} 或 None
+    extra_html: 在進度條後追加的額外內容（如觸發條件區塊）
     """
     if not analysis:
         return ""
@@ -408,7 +410,7 @@ def render_risk_detail(analysis, today, quote=None):
     return (
         f'<div style="grid-column:1/-1" '
         f'class="mt-1 pt-2 border-t border-slate-800/50 text-[11px] leading-5 pb-1">'
-        + summary_html + quote_html + warn_html + bar_html
+        + summary_html + quote_html + warn_html + bar_html + extra_html
         + '</div>'
     )
 
@@ -456,6 +458,209 @@ def fetch_tpex_warning():
         result.append({"code": code, "name": name, "exchange": "TPEx",
                         "criteria": parse_criteria(rc), "raw_criteria": rc})
     return result
+
+
+def fetch_twse_stock_history(code, today):
+    """
+    抓取個股最近 2 個月日成交資料（TWSE 舊版 exchangeReport/STOCK_DAY API）。
+    回傳 [{date, close, vol_k}] 由舊到新排列，已去重。
+    Fields: [日期, 成交股數, 成交金額, 開盤價, 最高價, 最低價, 收盤價, 漲跌價差, 成交筆數, 註記]
+    """
+    records = {}
+    for months_back in range(2):
+        y, m = today.year, today.month - months_back
+        if m <= 0:
+            m += 12
+            y -= 1
+        url = f"{TWSE_STOCK_HIST}?response=json&date={y}{m:02d}01&stockNo={code}"
+        data = safe_fetch_json(url, default={})
+        if not isinstance(data, dict) or data.get("stat") != "OK":
+            continue
+        for row in data.get("data", []):
+            try:
+                d      = roc_to_date(row[0].replace("/", ""))
+                close  = float(row[6].replace(",", ""))
+                vol_k  = int(row[1].replace(",", "")) // 1000
+                if close > 0:
+                    records[d] = {"date": d, "close": close, "vol_k": vol_k}
+            except (ValueError, IndexError):
+                pass
+    return sorted(records.values(), key=lambda x: x["date"])
+
+
+def calculate_attention_thresholds(history):
+    """
+    依 TWSE 注意交易資訊標準計算觸發門檻（使用免費資料可計算的條款）。
+    - 第一款: 最近 6 個營業日收盤累積漲幅 ≥ 20%
+    - 第二款: 最近 30 個營業日收盤累積漲幅 ≥ 30%
+    - 量參考: 60 日平均量（第三/六款部分依據，集中度條件不在此計算）
+    回傳 dict 或 None（資料不足時）。
+    """
+    if len(history) < 7:
+        return None
+
+    latest       = history[-1]
+    current_close = latest["close"]
+
+    def nth_before(n):
+        idx = len(history) - 1 - n
+        return history[idx] if idx >= 0 else None
+
+    result = {
+        "current_close": current_close,
+        "latest_date":   latest["date"],
+        "history_days":  len(history),
+    }
+
+    ref6 = nth_before(6)
+    if ref6:
+        cum6 = (current_close - ref6["close"]) / ref6["close"] * 100
+        thr6 = ref6["close"] * 1.20
+        result["clause1"] = {
+            "ref_date":  ref6["date"],
+            "ref_close": ref6["close"],
+            "cum_pct":   cum6,
+            "threshold": thr6,
+            "diff_pct":  (thr6 - current_close) / current_close * 100,
+            "triggered": current_close >= thr6,
+        }
+
+    ref30 = nth_before(30)
+    if ref30:
+        cum30 = (current_close - ref30["close"]) / ref30["close"] * 100
+        thr30 = ref30["close"] * 1.30
+        result["clause2"] = {
+            "ref_date":  ref30["date"],
+            "ref_close": ref30["close"],
+            "cum_pct":   cum30,
+            "threshold": thr30,
+            "diff_pct":  (thr30 - current_close) / current_close * 100,
+            "triggered": current_close >= thr30,
+        }
+
+    # 量：60 日均量（不含今日，作為第三/六款量條件參考）
+    past = history[-min(60, len(history)):-1]
+    if len(past) >= 10:
+        avg_vol = sum(r["vol_k"] for r in past) / len(past)
+        result["vol_avg"] = avg_vol
+        result["vol_days"] = len(past)
+
+    return result
+
+
+def render_attention_conditions(thresholds, next_trade_date):
+    """
+    生成注意股觸發條件 HTML。不含外層 grid-column wrapper。
+    next_trade_date: 下一個交易日（用於標題顯示）。
+    """
+    if not thresholds:
+        return ""
+
+    lines = []
+    current = thresholds["current_close"]
+
+    lines.append(
+        f'<div class="text-[10px] text-slate-500 uppercase tracking-wider mt-2.5 mb-1 mono '
+        f'border-t border-slate-700/50 pt-2">'
+        f'注意股觸發條件 {fmt_weekday(next_trade_date)}（任一即可）</div>'
+    )
+
+    def condition_row(label, cum_pct, cum_threshold_pct, thr_price, diff_pct, triggered):
+        cum_s   = f"{cum_pct:+.1f}%"
+        cum_clr = "text-red-400" if cum_pct >= cum_threshold_pct else (
+                  "text-amber-300" if cum_pct >= cum_threshold_pct * 0.7 else "text-slate-400")
+        if triggered:
+            status_s = '<span class="text-red-300 font-semibold">今日已達標</span>'
+        elif diff_pct <= 0:
+            # threshold below current (stock can fall and still trigger)
+            gap_s    = f"{abs(diff_pct):.1f}%"
+            status_s = (
+                f'收盤需 ≥ <span class="mono text-amber-300 font-semibold">{thr_price:.2f}</span>'
+                f'<span class="text-green-600">（跌 {gap_s} 仍觸發）</span>'
+            )
+        elif diff_pct <= 5:
+            status_s = (
+                f'收盤需 ≥ <span class="mono text-amber-300 font-semibold">{thr_price:.2f}</span>'
+                f'<span class="text-slate-500">（還差 {diff_pct:.1f}%）</span>'
+            )
+        else:
+            status_s = (
+                f'收盤需 ≥ <span class="mono text-slate-300">{thr_price:.2f}</span>'
+                f'<span class="text-slate-600">（還差 {diff_pct:.1f}%）</span>'
+            )
+        return (
+            f'<div class="flex items-start gap-2 mb-0.5">'
+            f'<span class="mono text-slate-600 shrink-0 w-10">{label}</span>'
+            f'<span class="text-slate-400">'
+            f'累積 <span class="mono {cum_clr}">{cum_s}</span>'
+            f'<span class="text-slate-600">（門檻≥{cum_threshold_pct:.0f}%）</span>'
+            f' → {status_s}'
+            f'</span></div>'
+        )
+
+    c1 = thresholds.get("clause1")
+    if c1:
+        ref_s = fmt_short(c1["ref_date"])
+        lines.append(
+            f'<div class="flex items-start gap-2 mb-0.5">'
+            f'<span class="mono text-slate-600 shrink-0 w-10">第一款</span>'
+            f'<span class="text-slate-400">'
+            f'6日累積 <span class="mono {"text-red-400" if c1["cum_pct"]>=20 else ("text-amber-300" if c1["cum_pct"]>=14 else "text-slate-400")}">'
+            f'{c1["cum_pct"]:+.1f}%</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻≥20%）</span>'
+            f' → '
+            + (
+                '<span class="text-red-300 font-semibold">今日已達標</span>'
+                if c1["triggered"] else
+                (
+                    f'收盤需 ≥ <span class="mono {"text-amber-300" if c1["diff_pct"]<=5 else "text-slate-300"} font-semibold">{c1["threshold"]:.2f}</span>'
+                    + (f'<span class="text-green-600">（跌 {abs(c1["diff_pct"]):.1f}% 仍觸發）</span>'
+                       if c1["diff_pct"] <= 0 else
+                       f'<span class="text-slate-500">（還差 {c1["diff_pct"]:.1f}%）</span>')
+                )
+            )
+            + f'</span></div>'
+        )
+
+    c2 = thresholds.get("clause2")
+    if c2:
+        ref_s = fmt_short(c2["ref_date"])
+        lines.append(
+            f'<div class="flex items-start gap-2 mb-0.5">'
+            f'<span class="mono text-slate-600 shrink-0 w-10">第二款</span>'
+            f'<span class="text-slate-400">'
+            f'30日累積 <span class="mono {"text-red-400" if c2["cum_pct"]>=30 else ("text-amber-300" if c2["cum_pct"]>=21 else "text-slate-400")}">'
+            f'{c2["cum_pct"]:+.1f}%</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻≥30%）</span>'
+            f' → '
+            + (
+                '<span class="text-red-300 font-semibold">今日已達標</span>'
+                if c2["triggered"] else
+                (
+                    f'收盤需 ≥ <span class="mono {"text-amber-300" if c2["diff_pct"]<=5 else "text-slate-300"} font-semibold">{c2["threshold"]:.2f}</span>'
+                    + (f'<span class="text-green-600">（跌 {abs(c2["diff_pct"]):.1f}% 仍觸發）</span>'
+                       if c2["diff_pct"] <= 0 else
+                       f'<span class="text-slate-500">（還差 {c2["diff_pct"]:.1f}%）</span>')
+                )
+            )
+            + f'</span></div>'
+        )
+
+    vol_avg = thresholds.get("vol_avg")
+    if vol_avg is not None:
+        days = thresholds.get("vol_days", 0)
+        vol3x = vol_avg * 3
+        lines.append(
+            f'<div class="flex items-start gap-2 mb-0.5">'
+            f'<span class="mono text-slate-600 shrink-0 w-10">量條件</span>'
+            f'<span class="text-slate-400">'
+            f'{days}日均量 <span class="mono text-slate-300">{vol_avg:,.0f} 張</span>'
+            f' → 量需 > <span class="mono text-slate-300">{vol3x:,.0f} 張</span>'
+            f'<span class="text-slate-600 text-[10px]">（×3，另需集中度條件）</span>'
+            f'</span></div>'
+        )
+
+    return "".join(lines)
 
 
 # ──────────────────────────────────────────────
@@ -741,10 +946,11 @@ def render_tab2_content(latest_batch, stock_info, today):
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 3
 # ──────────────────────────────────────────────
-def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None):
+def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, nt_thresholds=None):
     if not notetrans_list:
         return ""
-    sq = stock_quotes or {}
+    sq  = stock_quotes   or {}
+    thr = nt_thresholds  or {}
     rows = []
     for r in notetrans_list:
         meta     = get_stock_meta(r["code"], stock_info)
@@ -752,7 +958,7 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None):
         sector   = meta["sector"] or r.get("exchange","")
         analysis = analyze_criteria(r.get("raw_criteria",""))
         max_c    = analysis["max_consecutive"] if analysis else 0
-        quote    = sq.get(r["code"])            # None for TPEx stocks
+        quote    = sq.get(r["code"])
 
         if max_c >= 3:
             sev_color = "bg-red-500"
@@ -768,7 +974,11 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None):
         else:
             pill_extra = ''
 
-        detail_html = render_risk_detail(analysis, today, quote=quote)
+        # 觸發條件（僅 TWSE 有歷史 API）
+        t_data      = thr.get(r["code"])
+        next_td     = next_weekday(today)
+        cond_html   = render_attention_conditions(t_data, next_td) if t_data else ""
+        detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
 
         rows.append(
             f'<div class="table-row"{tags}>'
@@ -790,9 +1000,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None):
 
 
 def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                stock_quotes=None):
+                stock_quotes=None, nt_thresholds=None):
     sections = []
-    sq = stock_quotes or {}
+    sq  = stock_quotes  or {}
+    thr = nt_thresholds or {}
 
     # ── Section 1: 注意累計（接近處置門檻）──
     all_notetrans = notetrans_twse + notetrans_tpex
@@ -804,7 +1015,7 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             nt_rows += (
                 '<div class="text-[10px] tracking-widest text-slate-500 uppercase '
                 'px-3 pt-3 pb-1 mono">TWSE 注意累計</div>'
-                f'<div>{render_notetrans_rows(twse_nt, stock_info, today, sq)}</div>'
+                f'<div>{render_notetrans_rows(twse_nt, stock_info, today, sq, thr)}</div>'
             )
         if tpex_nt:
             border = " border-t border-slate-800" if twse_nt else ""
@@ -952,7 +1163,15 @@ def main():
     print("  TPEx 注意累計...")
     notetrans_tpex = fetch_tpex_warning()
     print("  TWSE 個股報價...")
-    stock_quotes   = fetch_twse_stock_quotes()
+    stock_quotes = fetch_twse_stock_quotes()
+    print("  TWSE 注意累計歷史（計算觸發門檻）...")
+    nt_thresholds = {}
+    for r in notetrans_twse:
+        hist = fetch_twse_stock_history(r["code"], today)
+        if hist:
+            t = calculate_attention_thresholds(hist)
+            if t:
+                nt_thresholds[r["code"]] = t
 
     # 分組
     active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
@@ -1005,7 +1224,7 @@ def main():
     tab1_html  = render_tab1_batches(active_groups, stock_info, today)
     tab2_html  = render_tab2_content(latest_batch, stock_info, today)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                             stock_quotes=stock_quotes)
+                             stock_quotes=stock_quotes, nt_thresholds=nt_thresholds)
     date_html  = render_date_block(today)
 
     # 讀 HTML
