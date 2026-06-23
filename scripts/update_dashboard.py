@@ -548,10 +548,10 @@ def calculate_attention_thresholds(history):
     return result
 
 
-def render_attention_conditions(thresholds, next_trade_date):
+def render_attention_conditions(thresholds, trade_date):
     """
     生成注意股觸發條件 HTML。不含外層 grid-column wrapper。
-    next_trade_date: 下一個交易日（用於標題顯示）。
+    trade_date: 資料所屬的交易日（用於標題顯示）。
     """
     if not thresholds:
         return ""
@@ -562,7 +562,7 @@ def render_attention_conditions(thresholds, next_trade_date):
     lines.append(
         f'<div class="text-[10px] text-slate-500 uppercase tracking-wider mt-2.5 mb-1 mono '
         f'border-t border-slate-700/50 pt-2">'
-        f'注意股觸發條件 {fmt_weekday(next_trade_date)}（任一即可）</div>'
+        f'注意股觸發條件 {fmt_weekday(trade_date)}（任一即可）</div>'
     )
 
     def condition_row(label, cum_pct, cum_threshold_pct, thr_price, diff_pct, triggered):
@@ -975,9 +975,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             pill_extra = ''
 
         # 觸發條件（僅 TWSE 有歷史 API）
-        t_data      = thr.get(r["code"])
-        next_td     = next_weekday(today)
-        cond_html   = render_attention_conditions(t_data, next_td) if t_data else ""
+        t_data    = thr.get(r["code"])
+        # 用最新資料日期作為標題日期；若資料是今日則顯示今日
+        cond_date = t_data["latest_date"] if t_data else today
+        cond_html = render_attention_conditions(t_data, cond_date) if t_data else ""
         detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
 
         rows.append(
