@@ -928,7 +928,7 @@ def render_context_banner(taiex, total_active, today_released_count,
           <div><span class="text-slate-400">{taiex_label}</span> {taiex_html}</div>
           <div><span class="text-slate-400">處置中</span> <span class="text-red-400 font-bold mono">{total_active} 檔</span></div>
           <div><span class="text-slate-400">今日出關</span> <span class="text-yellow-400 font-bold mono">{today_released_count} 檔</span></div>
-          <div><span class="text-slate-400">即將加入</span> {upcoming_html}</div>
+          {f'<div><span class="text-slate-400">即將加入</span> {upcoming_html}</div>' if upcoming_count else ''}
         </div>
         <div class="text-[11px] text-slate-500">
           注意累計 {nt_detail}：<span class="text-slate-400">{nt_codes}</span>
@@ -1192,7 +1192,6 @@ def render_stats(total_active, latest_count, second_count,
 def render_date_block(today):
     return (
         f'      <div class="mono text-sm font-bold text-slate-200">{today.strftime("%Y.%m.%d")}</div>\n'
-        f'      <div class="mono text-[10px] text-slate-500">資料截止 {fmt_short(today)}</div>\n'
         f'      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">自動更新 盤後 21:00</div>'
     )
 
