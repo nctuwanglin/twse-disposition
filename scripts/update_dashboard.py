@@ -1319,6 +1319,10 @@ def main():
     html = replace_between(html, "<!-- AUTO:TAB2_CONTENT_START -->",  "<!-- AUTO:TAB2_CONTENT_END -->",  tab2_html)
     html = replace_between(html, "<!-- AUTO:TAB3_CONTENT_START -->",  "<!-- AUTO:TAB3_CONTENT_END -->",  tab3_html)
 
+    # 更新 <title> 日期
+    html = re.sub(r'(Updated )\d{4}/\d{2}/\d{2}(</title>)',
+                  rf'\g<1>{today.strftime("%Y/%m/%d")}\2', html)
+
     # 更新 tab nav 數字
     tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
     html = update_inline_counts(html, total_active, latest_count, tab3_nt)
