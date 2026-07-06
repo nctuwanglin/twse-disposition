@@ -16,6 +16,8 @@
 """
 
 import json
+import csv
+import io
 import re
 import sys
 import urllib.request
@@ -67,6 +69,26 @@ def fetch_json(url, extra_headers=None):
 def safe_fetch_json(url, extra_headers=None, default=None):
     try:
         return fetch_json(url, extra_headers)
+    except Exception as e:
+        print(f"  WARNING: 無法取得 {url}: {e}", file=sys.stderr)
+        return default
+
+
+def fetch_text(url, extra_headers=None):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "Accept": "text/csv,application/json,*/*",
+    }
+    if extra_headers:
+        headers.update(extra_headers)
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        return resp.read().decode("utf-8")
+
+
+def safe_fetch_text(url, extra_headers=None, default=""):
+    try:
+        return fetch_text(url, extra_headers)
     except Exception as e:
         print(f"  WARNING: 無法取得 {url}: {e}", file=sys.stderr)
         return default
@@ -226,26 +248,19 @@ def fetch_twse_stock_quotes():
     - monthly_avg: 月均價（STOCK_DAY_AVG_ALL）
     TPEx 股票不在此資料中，呼叫後查不到會回傳 None。
     """
-    day_resp = safe_fetch_json(TWSE_STOCK_DAY, default={})
-    avg_resp = safe_fetch_json(TWSE_STOCK_AVG, default={})
+    # STOCK_DAY_ALL 已由 TWSE 改為 CSV 格式（欄位：日期,證券代號,證券名稱,
+    # 成交股數,成交金額,開盤價,最高價,最低價,收盤價,漲跌價差,成交筆數）
+    resp_date, day_quotes = _fetch_twse_stock_day_csv()
 
+    avg_resp = safe_fetch_json(TWSE_STOCK_AVG, default={})
     avg_map = {}
     for row in avg_resp.get("data", []):
         if len(row) >= 4 and row[0] and row[3]:
             avg_map[row[0]] = row[3]
 
-    resp_date = day_resp.get("date", "")
     result = {}
-    for row in day_resp.get("data", []):
-        if len(row) < 9:
-            continue
-        code = row[0]
-        if not code:
-            continue
+    for code, (close, change, vol_k) in day_quotes.items():
         try:
-            close  = float(row[7].replace(",", "")) if row[7] else None
-            change = float(row[8].replace(",", "")) if row[8] else 0.0
-            vol_k  = int(row[2].replace(",", "")) // 1000 if row[2] else 0
             prev   = close - change if close is not None else None
             pct    = (change / prev * 100) if (prev and prev != 0) else None
             mavg_s = avg_map.get(code, "")
@@ -258,6 +273,36 @@ def fetch_twse_stock_quotes():
             "date": resp_date,
         }
     return result
+
+
+def _fetch_twse_stock_day_csv():
+    """
+    抓取 STOCK_DAY_ALL（TWSE 全股當日收盤）CSV，回傳
+    (resp_date_yyyymmdd, {code: (close, change, vol_k)})。
+    CSV 欄位索引：0=日期(民國) 1=代號 2=名稱 3=成交股數 8=收盤價 9=漲跌價差
+    """
+    text = safe_fetch_text(TWSE_STOCK_DAY, default="")
+    resp_date = ""
+    quotes = {}
+    if not text:
+        return resp_date, quotes
+    for r in csv.reader(io.StringIO(text)):
+        # 僅接受資料列：第一欄為 7 碼民國日期（跳過標題與雜訊列）
+        if len(r) < 11 or not (r[0].isdigit() and len(r[0]) == 7):
+            continue
+        if not resp_date:
+            resp_date = str(int(r[0][:3]) + 1911) + r[0][3:]  # 民國→西元 yyyymmdd
+        code = r[1].strip()
+        if not code:
+            continue
+        try:
+            close  = float(r[8].replace(",", "")) if r[8].strip() not in ("", "--", "---") else None
+            change = float(r[9].replace(",", "")) if r[9].strip() not in ("", "--", "---") else 0.0
+            vol_k  = int(r[3].replace(",", "")) // 1000 if r[3].strip() else 0
+        except (ValueError, TypeError):
+            continue
+        quotes[code] = (close, change, vol_k)
+    return resp_date, quotes
 
 
 _CN_INT = {"一":1,"二":2,"三":3,"四":4,"五":5,
