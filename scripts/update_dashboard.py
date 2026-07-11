@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 台股處置股儀表板自動更新腳本
-每個交易日盤後 (21:00 台灣時間) 由 GitHub Actions 執行。
+每個交易日盤後由 GitHub Actions 執行（排程 17:37 台灣時間，20:17 補跑一次；
+GitHub scheduled workflows 為 best-effort，實際起跑可能再延遲數小時）。
 
 自動更新範圍：
   - Header 日期
@@ -22,7 +23,8 @@ import re
 import sys
 import urllib.request
 import urllib.error
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from collections import defaultdict
 
@@ -43,6 +45,7 @@ TPEX_REFERER_W   = "https://www.tpex.org.tw/zh-tw/announce/market/warning.html"
 REPO_ROOT        = Path(__file__).parent.parent
 HTML_PATH        = REPO_ROOT / "index.html"
 STOCK_INFO_PATH  = REPO_ROOT / "data" / "stock_info.json"
+LAST_COUNTS_PATH = REPO_ROOT / "data" / "last_counts.json"  # 資料源健康度狀態檔
 
 SVG_CHEV = (
     '<svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" '
@@ -1269,16 +1272,28 @@ def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0):
 # 主流程
 # ──────────────────────────────────────────────
 def main():
-    from datetime import datetime
-    today = date.today()
-    print(f"[{datetime.now():%Y-%m-%d %H:%M:%S}] 開始更新，今天: {today}")
+    force = "--force" in sys.argv
+    # GitHub Actions runner 是 UTC；排程延遲可能跨日，一律以台灣時區取「今天」
+    now_tw = datetime.now(ZoneInfo("Asia/Taipei"))
+    today  = now_tw.date()
+    print(f"[{now_tw:%Y-%m-%d %H:%M:%S}] 開始更新，今天: {today}" + ("（--force）" if force else ""))
 
     # 抓處置股資料
     print("  TWSE 處置股...")
-    twse_raw = safe_fetch_json(TWSE_PUNISH_API, default=[])
+    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=[])
+    twse_rows = normalize_twse_rows(twse_raw)
     print(f"  TPEx 處置股...")
     tpex_rows = fetch_and_normalize_tpex(TPEX_REFERER_D)
-    all_rows  = normalize_twse_rows(twse_raw) + tpex_rows
+
+    # 資料源防呆：任一處置源為空幾乎必是 API 故障（正常時兩市場都有處置股）。
+    # 缺一源仍往下走會發佈「只剩半個市場」的錯誤頁面，寧可中止讓 workflow 亮紅燈。
+    if not force:
+        if not twse_rows:
+            sys.exit("ERROR: TWSE 處置股資料為空，疑似 API 故障，中止更新（確認正常可用 --force）")
+        if not tpex_rows:
+            sys.exit("ERROR: TPEx 處置股資料為空，疑似 API 故障，中止更新（確認正常可用 --force）")
+
+    all_rows = twse_rows + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")
 
     # 抓大盤 & 注意累計 & 個股報價
@@ -1319,6 +1334,19 @@ def main():
     twse_count    = sum(1 for s in all_active if s["exchange"] == "TWSE")
     tpex_count    = sum(1 for s in all_active if s["exchange"] == "TPEx")
     second_count  = sum(1 for s in all_active if s["disp_count"] >= 2)
+
+    # 檔數驟降保險：處置批次出關是漸進的（單日約 10 檔級別），單日驟降過半
+    # 幾乎必是資料源回傳不完整。與上次成功執行的檔數比對，異常即中止。
+    if LAST_COUNTS_PATH.exists() and not force:
+        try:
+            prev = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
+            prev_total = int(prev.get("total_active", 0))
+        except Exception:
+            prev_total = 0
+        if prev_total >= 10 and total_active < prev_total * 0.5:
+            sys.exit(f"ERROR: 處置中檔數驟降 {prev_total} → {total_active}"
+                     f"（上次: {prev.get('date','?')}），疑似資料源不完整，"
+                     f"中止更新（確認正常可用 --force）")
 
     # 今日出關
     today_released = sum(len(g["stocks"]) for pe, g in released_groups.items() if pe == today)
@@ -1374,6 +1402,15 @@ def main():
 
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
+
+    # 記錄本次檔數，供下次執行做驟降比對（隨 commit 入庫）
+    LAST_COUNTS_PATH.write_text(json.dumps({
+        "date": today.isoformat(),
+        "total_active": total_active,
+        "twse": twse_count,
+        "tpex": tpex_count,
+        "notetrans": len(notetrans_twse) + len(notetrans_tpex),
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("更新完成！")
 
 

@@ -2,9 +2,11 @@ name: 盤後自動更新處置股儀表板
 
 on:
   schedule:
-    # 每週一至週五 13:00 UTC = 台灣時間 21:00
-    # 台股收盤 13:30，盤後公告約 17:00，21:00 確保所有公告已發布
-    - cron: "0 13 * * 1-5"
+    # GitHub scheduled workflows 為 best-effort，整點（尤其 :00）壅塞時實測延遲 5-6.5 小時，
+    # 故 (1) 錯峰選非整點分鐘 (2) 提早排程 (3) 排兩班互為備援（腳本冪等，重跑無害）。
+    # 台股收盤 13:30，處置公告約 17:00 發布。
+    - cron: "37 9 * * 1-5"   # 台灣 17:37 主跑
+    - cron: "17 12 * * 1-5"  # 台灣 20:17 補跑（主跑延遲或失敗時的備援）
 
   # 允許手動觸發（測試用）
   workflow_dispatch:
@@ -14,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
 
     steps:
       - name: Checkout repository
@@ -30,7 +33,7 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          if git diff --quiet index.html; then
+          if git diff --quiet index.html data/last_counts.json; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -42,6 +45,49 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           DATE=$(TZ=Asia/Taipei date "+%Y/%m/%d %H:%M")
-          git add index.html
+          git add index.html data/last_counts.json
           git commit -m "auto: 盤後更新處置股資料 ${DATE}"
           git push
+
+      # Pages 部署間歇性出現 "Deployment failed, try again later."（2026/07/03、07/06 各一次），
+      # workflow 綠燈但線上是舊資料。這裡以「repo 內 index.html 的 Updated 日期」為基準
+      # 驗證線上頁面，不符時依序：等待 → Pages API 重建 → 空 commit 觸發全新部署 → 仍失敗才亮紅燈。
+      - name: Verify live deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          URL="https://nctuwanglin.github.io/twse-disposition/"
+          EXPECTED=$(grep -oE 'Updated [0-9]{4}/[0-9]{2}/[0-9]{2}' index.html | head -1)
+          echo "預期線上版本: $EXPECTED"
+
+          check_live() {
+            curl -fsS --max-time 20 "${URL}?nocache=$(date +%s)" 2>/dev/null \
+              | grep -oE 'Updated [0-9]{4}/[0-9]{2}/[0-9]{2}' | head -1
+          }
+
+          poll() {  # poll <次數> <間隔秒>
+            for i in $(seq 1 "$1"); do
+              sleep "$2"
+              LIVE=$(check_live || true)
+              echo "  第 $i 次檢查: live='$LIVE'"
+              if [ "$LIVE" = "$EXPECTED" ]; then return 0; fi
+            done
+            return 1
+          }
+
+          if poll 10 15; then echo "✅ 線上已是最新"; exit 0; fi
+
+          echo "⚠️ 線上未更新，透過 Pages API 觸發重建..."
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
+          if poll 8 15; then echo "✅ 重建後已更新"; exit 0; fi
+
+          echo "⚠️ 重建仍未生效，推空 commit 觸發全新部署..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: 觸發 Pages 重新部署（自動補救）"
+          git push
+          if poll 12 15; then echo "✅ 空 commit 部署後已更新"; exit 0; fi
+
+          echo "❌ 部署驗證失敗：線上仍為 '$(check_live || echo 無法取得)'，預期 '$EXPECTED'"
+          exit 1
