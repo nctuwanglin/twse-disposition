@@ -71,6 +71,7 @@ REPO_ROOT        = Path(__file__).parent.parent
 HTML_PATH        = REPO_ROOT / "index.html"
 STOCK_INFO_PATH  = REPO_ROOT / "data" / "stock_info.json"
 LAST_COUNTS_PATH = REPO_ROOT / "data" / "last_counts.json"  # 資料源健康度狀態檔
+PERF_STATS_PATH  = REPO_ROOT / "data" / "perf_stats.json"   # 出關股績效快取
 
 SVG_CHEV = (
     '<svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" '
@@ -402,6 +403,18 @@ def next_weekday(d):
         nxt += timedelta(days=1)
     return nxt
 
+
+# 最後實際交易日（main 由報價資料日填入）。連續達標是否中斷的正確判準：
+# 最後達標日 >= 最後交易日 ⇒ 未有交易日空手而過，連續仍活著。
+# 僅靠 next_weekday 會把颱風假等非週末休市誤判為中斷。
+LAST_TRADE_DATE = None
+
+
+def streak_is_alive(latest_end, today):
+    if LAST_TRADE_DATE is not None:
+        return latest_end >= LAST_TRADE_DATE
+    return next_weekday(latest_end) > today
+
 def fmt_weekday(d):
     return f"{d.month}/{d.day}（{_DOW_ZH[d.weekday()]}）"
 
@@ -445,7 +458,7 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
     latest_end  = analysis["latest_end"]
     next_imm    = next_weekday(latest_end)
 
-    streak_broken = next_imm <= today
+    streak_broken = not streak_is_alive(latest_end, today)
     risk_date     = next_weekday(today) if next_imm <= today else next_imm
 
     # ── 達標摘要 ──
@@ -821,6 +834,142 @@ def render_attention_conditions(thresholds, trade_date):
 
 
 # ──────────────────────────────────────────────
+# 前科追蹤（#13）：歷史庫觀測以來每檔的 distinct 處置期數
+# ──────────────────────────────────────────────
+CAREER_COUNTS = {}  # code -> 期數；main() 填入後供 render/_stock_entry 讀取
+
+
+def load_career_counts(active_records):
+    periods = defaultdict(set)
+    hist_dir = REPO_ROOT / "data" / "history"
+    if hist_dir.exists():
+        for f in sorted(hist_dir.glob("*.json")):
+            try:
+                snap = json.loads(f.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            for s in snap.get("active", []):
+                if s.get("code") and s.get("period_start"):
+                    periods[s["code"]].add(s["period_start"])
+    for s in active_records:
+        periods[s["code"]].add(s["period_start"].isoformat())
+    return {c: len(v) for c, v in periods.items()}
+
+
+# ──────────────────────────────────────────────
+# 出關股績效（#12）：處置期間報酬 / 出關後5日報酬，個股歷史只抓一次入快取
+# ──────────────────────────────────────────────
+def _idx_on_or_before(history, d):
+    """history（由舊到新）中日期 ≤ d 的最後一筆 index；無則 -1。"""
+    idx = -1
+    for i, r in enumerate(history):
+        if r["date"] <= d:
+            idx = i
+        else:
+            break
+    return idx
+
+
+def update_perf_stats(released_groups, today):
+    """
+    對近期出關股計算：處置期間報酬（處置前一交易日收盤 → 處置末日收盤）與
+    出關後 5 交易日報酬。結果存 data/perf_stats.json 累積；after5 尚無法計算
+    （未滿 5 個交易日）者，之後的執行會重抓補算，補齊後永久跳過。
+    """
+    try:
+        stats = (json.loads(PERF_STATS_PATH.read_text(encoding="utf-8"))
+                 if PERF_STATS_PATH.exists() else {})
+    except Exception:
+        stats = {}
+
+    todo = []
+    for pe, grp in released_groups.items():
+        for s in grp["stocks"]:
+            key = f'{s["code"]}:{s["period_start"]}:{s["period_end"]}'
+            e = stats.get(key)
+            if e and e.get("after5_pct") is not None:
+                continue
+            todo.append((key, s))
+
+    if todo:
+        print(f"  出關股績效（{len(todo)} 檔待算/補算）...")
+    for key, s in todo:
+        fetch = (fetch_twse_stock_history if s["exchange"] == "TWSE"
+                 else fetch_tpex_stock_history)
+        hist = fetch(s["code"], today)
+        if not hist:
+            continue
+        i_entry = _idx_on_or_before(hist, s["period_start"] - timedelta(days=1))
+        i_exit  = _idx_on_or_before(hist, s["period_end"])
+        if i_exit < 0:
+            continue
+        entry_c = hist[i_entry]["close"] if i_entry >= 0 else None
+        exit_c  = hist[i_exit]["close"]
+        during  = (exit_c / entry_c - 1) * 100 if entry_c else None
+        i_a5    = i_exit + 5
+        after5  = (hist[i_a5]["close"] / exit_c - 1) * 100 if i_a5 < len(hist) else None
+        stats[key] = {
+            "code": s["code"], "name": s["name"], "exchange": s["exchange"],
+            "period_start": s["period_start"].isoformat(),
+            "period_end":   s["period_end"].isoformat(),
+            "entry_close": entry_c, "exit_close": exit_c,
+            "during_pct": during, "after5_pct": after5,
+        }
+
+    if todo:
+        PERF_STATS_PATH.write_text(
+            json.dumps(stats, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+            encoding="utf-8")
+    return stats
+
+
+def _agg(xs):
+    xs = sorted(xs)
+    if not xs:
+        return None
+    n = len(xs)
+    med = xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
+    return {"n": n, "avg": sum(xs) / n, "med": med,
+            "win": sum(1 for x in xs if x > 0) / n * 100}
+
+
+def perf_stats_summary(stats):
+    """回傳 {'during': agg, 'after5': agg}（樣本不足回傳空欄位）。"""
+    during = _agg([e["during_pct"] for e in stats.values()
+                   if e.get("during_pct") is not None])
+    after5 = _agg([e["after5_pct"] for e in stats.values()
+                   if e.get("after5_pct") is not None])
+    return {"during": during, "after5": after5}
+
+
+def render_perf_stats_card(summary, sample_since="2026-06"):
+    d, a = summary.get("during"), summary.get("after5")
+    if not d or d["n"] < 3:
+        return ""
+    def line(label, g):
+        if not g:
+            return ""
+        clr = "text-green-400" if g["avg"] > 0 else "text-red-400"
+        return (f'<div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[12px]">'
+                f'<span class="text-slate-400 w-24">{label}</span>'
+                f'<span>平均 <span class="mono {clr} font-semibold">{g["avg"]:+.1f}%</span></span>'
+                f'<span>中位 <span class="mono text-slate-300">{g["med"]:+.1f}%</span></span>'
+                f'<span>上漲比例 <span class="mono text-slate-300">{g["win"]:.0f}%</span></span>'
+                f'<span class="text-slate-600 mono">n={g["n"]}</span>'
+                f'</div>')
+    return f"""    <div class="card mb-3">
+      <div class="p-3 border-b border-slate-800">
+        <div class="text-sm font-semibold">📊 處置績效統計</div>
+        <div class="text-[11px] text-slate-400 mt-1">出關樣本自 {sample_since} 起累積 · 報酬以處置前一日收盤為基準</div>
+      </div>
+      <div class="p-3 flex flex-col gap-1.5">
+        {line("處置期間", d)}
+        {line("出關後5日", a)}
+      </div>
+    </div>"""
+
+
+# ──────────────────────────────────────────────
 # 批次分組
 # ──────────────────────────────────────────────
 def group_into_batches(all_rows, today):
@@ -893,6 +1042,7 @@ def _stock_entry(s, stock_quotes):
         "period_start": s["period_start"].isoformat(),
         "period_end": s["period_end"].isoformat(),
         "auction": s["auction"], "disp_count": s["disp_count"],
+        "career_count": CAREER_COUNTS.get(s["code"], 1),
         "close": q.get("close"), "change_pct": q.get("change_pct"),
         "vol_k": q.get("vol_k"),
     }
@@ -1092,6 +1242,10 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
     if is_second and not is_yellow:
         nth = "3rd+" if stock.get("disp_count",1) >= 3 else "2nd"
         name_html += f' <span class="pill pill-red ml-1">{nth}</span>'
+    career = CAREER_COUNTS.get(stock["code"], 0)
+    if career >= 2:
+        name_html += (f' <span class="pill pill-gray ml-1" '
+                      f'title="歷史庫觀測以來共 {career} 段處置期">前科{career}</span>')
 
     end_html = ""
     if "period_end" in stock and not is_yellow:
@@ -1252,7 +1406,7 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
 
 def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
     sorted_batches = sorted(active_groups.values(), key=lambda b: b["period_start"], reverse=True)
-    blocks = []
+    blocks = [render_release_schedule(active_groups, today)]
     for i, batch in enumerate(sorted_batches):
         blocks.append(render_batch_block(batch, stock_info, today,
                                          is_latest=(i == 0), is_open=(i < 3),
@@ -1263,7 +1417,114 @@ def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 2
 # ──────────────────────────────────────────────
-def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None):
+def render_radar(notetrans_all, stock_info, today, stock_quotes=None, nt_thresholds=None):
+    """
+    下一批雷達（#14）：注意累計股按觸發距離排序。
+    危險度 = (還需連續達標日數 asc, 第一款門檻距離% asc)。
+    """
+    if not notetrans_all:
+        return ""
+    sq, thr = stock_quotes or {}, nt_thresholds or {}
+    items = []
+    for r in notetrans_all:
+        a = analyze_criteria(r.get("raw_criteria", ""))
+        max_c = a["max_consecutive"] if a else 0
+        streak_alive = bool(a) and streak_is_alive(a["latest_end"], today)
+        need = 0 if max_c >= 3 else (3 - max_c if streak_alive else 3)
+        t  = thr.get(r["code"])
+        c1 = t.get("clause1") if t else None
+        diff = c1["diff_pct"] if c1 else None
+        items.append((need, diff if diff is not None else 999, r, max_c, c1))
+    items.sort(key=lambda x: (x[0], x[1]))
+
+    rows = []
+    for rank, (need, _, r, max_c, c1) in enumerate(items, 1):
+        meta   = get_stock_meta(r["code"], stock_info)
+        sector = meta["sector"] or r["exchange"]
+        if need == 0:
+            status = '<span class="pill pill-red">已達處置條件・待公告</span>'
+        elif need == 1:
+            status = '<span class="pill pill-amber">差 1 日</span>'
+        else:
+            status = f'<span class="pill pill-gray">差 {need} 日</span>'
+        prog = "".join(
+            f'<span class="inline-block" style="width:18px;height:5px;border-radius:2px;'
+            f'margin-right:2px;background:{"#eab308" if i < max_c else "#334155"}"></span>'
+            for i in range(3))
+        cond = ""
+        if c1 and not c1["triggered"]:
+            cond = (f'<span class="text-slate-500 text-[11px]">明日收盤 ≥ '
+                    f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
+                    f'（差 {c1["diff_pct"]:.1f}%）</span>')
+        elif c1:
+            cond = '<span class="text-red-300 text-[11px]">最新收盤已達第一款門檻</span>'
+        cond_html = f'<div class="mt-0.5">{cond}</div>' if cond else ""
+        rows.append(
+            f'<div class="table-row">'
+            f'<div class="flex items-center gap-2">'
+            f'<span class="mono text-slate-600">{rank}</span>'
+            f'<span class="ticker text-yellow-300 font-bold">{r["code"]}</span>'
+            f'</div>'
+            f'<div><div class="text-sm font-semibold">{r["name"]}'
+            f'{_quote_span(sq.get(r["code"]))}</div>'
+            f'<div class="sector">{sector}</div></div>'
+            f'<div class="end-date-desktop text-right">'
+            f'{status}'
+            f'<div class="mt-1">{prog}<span class="text-[10px] text-slate-500 ml-1">連續 {max_c}/3</span></div>'
+            f'{cond_html}'
+            f'</div>'
+            f'</div>')
+
+    return f"""    <div class="card mt-3">
+      <div class="p-3 border-b border-slate-800">
+        <div class="text-sm font-semibold">⚡ 下一批雷達 — 依觸發距離排序</div>
+        <div class="text-[11px] text-slate-400 mt-1">注意累計股：連續 3 次（或 30 日累計 6 次）達注意標準即進處置。門檻為第一款絕對條件（必要非充分）。</div>
+      </div>
+      <div>{"".join(rows)}</div>
+    </div>"""
+
+
+def render_release_schedule(active_groups, today):
+    """出關時間軸（#18）：現行有效管制（每檔取 period_end 最大）按出關日分組。"""
+    best = {}
+    for b in active_groups.values():
+        for s in b["stocks"]:
+            cur = best.get(s["code"])
+            if cur is None or (s["period_end"], s.get("disp_count", 1)) > \
+                              (cur["period_end"], cur.get("disp_count", 1)):
+                best[s["code"]] = s
+    by_end = defaultdict(list)
+    for s in best.values():
+        by_end[s["period_end"]].append(s)
+    if not by_end:
+        return ""
+    rows = []
+    for pe in sorted(by_end):
+        stocks = sorted(by_end[pe], key=lambda s: s["code"])
+        days   = (pe - today).days
+        tag    = ('<span class="pill pill-red">今日</span>' if days == 0
+                  else f'<span class="mono text-slate-500">D+{days}</span>')
+        names  = "、".join(f'{s["name"]}({s["code"]})' for s in stocks[:8])
+        if len(stocks) > 8:
+            names += f" …等{len(stocks)}檔"
+        rows.append(
+            f'<div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]">'
+            f'<span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">{fmt_weekday(pe)}</span>'
+            f'<span class="shrink-0" style="width:44px">{tag}</span>'
+            f'<span class="mono text-amber-300 shrink-0">{len(stocks)}檔</span>'
+            f'<span class="text-slate-400">{names}</span>'
+            f'</div>')
+    return f"""    <div class="card mb-3">
+      <div class="p-3 border-b border-slate-800">
+        <div class="text-sm font-semibold">📅 出關排程</div>
+        <div class="text-[11px] text-slate-400 mt-1">依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
+      </div>
+      <div>{"".join(rows)}</div>
+    </div>"""
+
+
+def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None,
+                        radar_html=""):
     ps     = latest_batch["period_start"]
     pe     = latest_batch["period_end"]
     stocks = latest_batch["stocks"]
@@ -1287,7 +1548,8 @@ def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None):
         <div class="text-[10px] text-slate-500 mono">{count} 檔</div>
       </div>
       <div>{rows_html}</div>
-    </div>"""
+    </div>
+{radar_html}"""
 
 
 # ──────────────────────────────────────────────
@@ -1348,7 +1610,7 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
 
 
 def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                stock_quotes=None, nt_thresholds=None):
+                stock_quotes=None, nt_thresholds=None, perf_html=""):
     sections = []
     sq  = stock_quotes  or {}
     thr = nt_thresholds or {}
@@ -1379,6 +1641,10 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
       </div>
       <div>{nt_rows}</div>
     </div>""")
+
+    # ── Section 1.5: 處置績效統計（歷史庫樣本）──
+    if perf_html:
+        sections.append(perf_html)
 
     # ── Section 2: 近期出關（按出關日期分組）──
     if released_groups:
@@ -1427,15 +1693,24 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
 # ──────────────────────────────────────────────
 # HTML 生成 — 其他
 # ──────────────────────────────────────────────
+def _delta_span(d):
+    """KPI 昨日對比：增=amber（管制壓力升）、減=green，0 或無基準不顯示。"""
+    if not d:
+        return ""
+    clr = "text-amber-400" if d > 0 else "text-green-400"
+    return f'<span class="text-sm {clr} mono ml-1">({d:+d})</span>'
+
+
 def render_stats(total_active, latest_count, second_count,
-                 twse_count, tpex_count, latest_ann_date):
+                 twse_count, tpex_count, latest_ann_date, deltas=None):
     ann_str = fmt_short(latest_ann_date) if latest_ann_date else "—"
+    dl = deltas or {}
     return f"""  <div class="grid grid-cols-3 gap-3 mb-6">
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">處置中</div>
       <div class="flex items-baseline gap-2 mt-1">
         <span class="num-display text-3xl text-red-400">{total_active}</span>
-        <span class="text-xs text-slate-400">檔</span>
+        <span class="text-xs text-slate-400">檔</span>{_delta_span(dl.get("total_active"))}
       </div>
       <div class="text-[10px] text-slate-500 mt-1">上市 {twse_count} · 上櫃 {tpex_count}</div>
     </div>
@@ -1451,7 +1726,7 @@ def render_stats(total_active, latest_count, second_count,
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">二次處置</div>
       <div class="flex items-baseline gap-2 mt-1">
         <span class="num-display text-3xl text-yellow-400">{second_count}</span>
-        <span class="text-xs text-slate-400">檔</span>
+        <span class="text-xs text-slate-400">檔</span>{_delta_span(dl.get("second"))}
       </div>
       <div class="text-[10px] text-slate-500 mt-1">含升級/延長</div>
     </div>
@@ -1537,6 +1812,20 @@ def main():
     else:
         stock_quotes = {**stock_quotes, **tpex_quotes}
 
+    # 非交易日守則：全股報價資料日 ≠ 今日代表今日休市（假日/颱風停市），
+    # 名單無新內容，若照常執行會蓋上錯誤日期戳、產生誤導的「明日觸發」文字。
+    if (not force and twse_qdate
+            and twse_qdate != today.strftime("%Y%m%d")):
+        print(f"  今日 {today} 非交易日（最新報價日 {twse_qdate}），"
+              f"跳過更新（確要執行可用 --force）")
+        return
+
+    # 連續達標判斷的基準日（處理颱風假等非週末休市）
+    global LAST_TRADE_DATE
+    if twse_qdate:
+        LAST_TRADE_DATE = date(int(twse_qdate[:4]), int(twse_qdate[4:6]),
+                               int(twse_qdate[6:8]))
+
     print("  注意累計歷史（計算觸發門檻，TWSE+TPEx）...")
     nt_thresholds = {}
     for r in notetrans_twse + notetrans_tpex:
@@ -1571,18 +1860,36 @@ def main():
     tpex_count    = sum(1 for s in all_active if s["exchange"] == "TPEx")
     second_count  = sum(1 for s in all_active if s["disp_count"] >= 2)
 
+    # 讀上次執行狀態（驟降保險 + KPI 昨日對比共用）
+    state = {}
+    if LAST_COUNTS_PATH.exists():
+        try:
+            state = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            state = {}
+
     # 檔數驟降保險：處置批次出關是漸進的（單日約 10 檔級別），單日驟降過半
     # 幾乎必是資料源回傳不完整。與上次成功執行的檔數比對，異常即中止。
-    if LAST_COUNTS_PATH.exists() and not force:
-        try:
-            prev = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
-            prev_total = int(prev.get("total_active", 0))
-        except Exception:
-            prev_total = 0
-        if prev_total >= 10 and total_active < prev_total * 0.5:
-            sys.exit(f"ERROR: 處置中檔數驟降 {prev_total} → {total_active}"
-                     f"（上次: {prev.get('date','?')}），疑似資料源不完整，"
-                     f"中止更新（確認正常可用 --force）")
+    prev_total = int(state.get("total_active", 0) or 0)
+    if not force and prev_total >= 10 and total_active < prev_total * 0.5:
+        sys.exit(f"ERROR: 處置中檔數驟降 {prev_total} → {total_active}"
+                 f"（上次: {state.get('date','?')}），疑似資料源不完整，"
+                 f"中止更新（確認正常可用 --force）")
+
+    # KPI 昨日對比基準：同日重跑沿用原本的 prev_day，跨日則以上次執行為基準
+    if state.get("date") == today.isoformat():
+        baseline = state.get("prev_day")
+    elif state:
+        baseline = {k: state.get(k) for k in
+                    ("date", "total_active", "twse", "tpex", "second", "notetrans")}
+    else:
+        baseline = None
+    deltas = {}
+    if baseline:
+        for cur, key in ((total_active, "total_active"), (second_count, "second")):
+            prev_v = baseline.get(key)
+            if prev_v is not None:
+                deltas[key] = cur - int(prev_v)
 
     # 今日出關
     today_released = sum(len(g["stocks"]) for pe, g in released_groups.items() if pe == today)
@@ -1608,6 +1915,19 @@ def main():
     if added:
         print(f"  ✓ stock_info.json 自動補 {added} 檔（name/sector，tags 留手動）")
 
+    # 前科追蹤（#13）：渲染與快照前先聚合歷史庫
+    active_records = [s for b in active_groups.values() for s in b["stocks"]]
+    CAREER_COUNTS.update(load_career_counts(active_records))
+
+    # 出關股績效（#12）
+    perf_stats   = update_perf_stats(released_groups, today)
+    perf_summary = perf_stats_summary(perf_stats)
+    perf_html    = render_perf_stats_card(perf_summary)
+
+    # 下一批雷達（#14）
+    radar_html = render_radar(notetrans_twse + notetrans_tpex, stock_info, today,
+                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds)
+
     # 生成 HTML 片段
     context_html = render_context_banner(
         taiex, total_active, today_released,
@@ -1615,13 +1935,14 @@ def main():
         notetrans_twse, notetrans_tpex, today,
     )
     stats_html = render_stats(total_active, latest_count, second_count,
-                              twse_count, tpex_count, latest_ann)
+                              twse_count, tpex_count, latest_ann, deltas=deltas)
     tab1_html  = render_tab1_batches(active_groups, stock_info, today,
                                      stock_quotes=stock_quotes)
     tab2_html  = render_tab2_content(latest_batch, stock_info, today,
-                                     stock_quotes=stock_quotes)
+                                     stock_quotes=stock_quotes, radar_html=radar_html)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                             stock_quotes=stock_quotes, nt_thresholds=nt_thresholds)
+                             stock_quotes=stock_quotes, nt_thresholds=nt_thresholds,
+                             perf_html=perf_html)
     date_html  = render_date_block(today)
 
     # 讀 HTML
@@ -1647,9 +1968,8 @@ def main():
     print(f"  ✓ 寫入 {HTML_PATH}")
 
     # 結構化輸出：dispo.json（供績效儀表板等下游讀取）+ 每日歷史快照
-    # 傳「全部處置紀錄」而非 all_active（後者按 code 去重，會丟失重疊處置中
-    # 較新的那筆，如二次處置升級）
-    active_records  = [s for b in active_groups.values() for s in b["stocks"]]
+    # active 傳「全部處置紀錄」而非 all_active（後者按 code 去重，會丟失重疊
+    # 處置中較新的那筆，如二次處置升級）；active_records 已於前面計算
     upcoming_stocks = [s for g in upcoming_groups.values() for s in g["stocks"]]
     snap = build_snapshot(
         today, taiex, active_records, upcoming_stocks,
@@ -1658,15 +1978,18 @@ def main():
                 "second": second_count,
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
     )
+    snap["release_stats"] = perf_summary
     write_snapshot(snap)
 
-    # 記錄本次檔數，供下次執行做驟降比對（隨 commit 入庫）
+    # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
     LAST_COUNTS_PATH.write_text(json.dumps({
         "date": today.isoformat(),
         "total_active": total_active,
         "twse": twse_count,
         "tpex": tpex_count,
+        "second": second_count,
         "notetrans": len(notetrans_twse) + len(notetrans_tpex),
+        "prev_day": baseline,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("更新完成！")
 

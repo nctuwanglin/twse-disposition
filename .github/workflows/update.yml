@@ -27,6 +27,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Run parser tests
+        run: python -m unittest discover -s tests -q
+
       - name: Run update script
         run: python scripts/update_dashboard.py
 
@@ -34,7 +37,7 @@ jobs:
         id: diff
         run: |
           # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
-          git add index.html data/last_counts.json data/stock_info.json dispo.json data/history/
+          git add index.html data/ dispo.json
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else

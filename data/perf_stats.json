@@ -1,0 +1,79 @@
+{
+ "3624:2026-06-24:2026-07-09": {
+  "after5_pct": null,
+  "code": "3624",
+  "during_pct": -9.433962264150942,
+  "entry_close": 159.0,
+  "exchange": "TPEx",
+  "exit_close": 144.0,
+  "name": "光頡",
+  "period_end": "2026-07-09",
+  "period_start": "2026-06-24"
+ },
+ "5321:2026-06-29:2026-07-10": {
+  "after5_pct": null,
+  "code": "5321",
+  "during_pct": -3.622047244094484,
+  "entry_close": 63.5,
+  "exchange": "TPEx",
+  "exit_close": 61.2,
+  "name": "美而快",
+  "period_end": "2026-07-10",
+  "period_start": "2026-06-29"
+ },
+ "5425:2026-06-26:2026-07-09": {
+  "after5_pct": null,
+  "code": "5425",
+  "during_pct": 2.7559055118110187,
+  "entry_close": 127.0,
+  "exchange": "TPEx",
+  "exit_close": 130.5,
+  "name": "台半",
+  "period_end": "2026-07-09",
+  "period_start": "2026-06-26"
+ },
+ "5464:2026-06-29:2026-07-10": {
+  "after5_pct": null,
+  "code": "5464",
+  "during_pct": -5.500000000000005,
+  "entry_close": 100.0,
+  "exchange": "TPEx",
+  "exit_close": 94.5,
+  "name": "霖宏",
+  "period_end": "2026-07-10",
+  "period_start": "2026-06-29"
+ },
+ "5489:2026-06-26:2026-07-09": {
+  "after5_pct": null,
+  "code": "5489",
+  "during_pct": -8.997050147492613,
+  "entry_close": 67.8,
+  "exchange": "TPEx",
+  "exit_close": 61.7,
+  "name": "彩富",
+  "period_end": "2026-07-09",
+  "period_start": "2026-06-26"
+ },
+ "6620:2026-06-26:2026-07-09": {
+  "after5_pct": null,
+  "code": "6620",
+  "during_pct": 0.7085020242914908,
+  "entry_close": 98.8,
+  "exchange": "TPEx",
+  "exit_close": 99.5,
+  "name": "漢達",
+  "period_end": "2026-07-09",
+  "period_start": "2026-06-26"
+ },
+ "6683:2026-06-29:2026-07-10": {
+  "after5_pct": null,
+  "code": "6683",
+  "during_pct": 1.4705882352941124,
+  "entry_close": 1700.0,
+  "exchange": "TPEx",
+  "exit_close": 1725.0,
+  "name": "雍智科技",
+  "period_end": "2026-07-10",
+  "period_start": "2026-06-29"
+ }
+}

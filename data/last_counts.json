@@ -3,5 +3,7 @@
   "total_active": 25,
   "twse": 18,
   "tpex": 7,
-  "notetrans": 5
+  "second": 5,
+  "notetrans": 5,
+  "prev_day": null
 }
