@@ -824,7 +824,10 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
             e["thresholds"] = _jsonable(t)
         return e
 
-    key = lambda s: (s["exchange"], s["code"])
+    # active 為「處置紀錄」列表：同一代碼可能有多筆重疊處置（如先 5分撮合、
+    # 期間內再犯升級 20分撮合）。counts.active 計唯一代碼；下游取現行有效
+    # 管制時應選 period_end 最大（並列時 disp_count 最大）的那筆。
+    key = lambda s: (s["exchange"], s["code"], s["period_start"], s["period_end"])
     return {
         "schema": 1,
         "date": today.isoformat(),
@@ -1467,9 +1470,12 @@ def main():
     print(f"  ✓ 寫入 {HTML_PATH}")
 
     # 結構化輸出：dispo.json（供績效儀表板等下游讀取）+ 每日歷史快照
+    # 傳「全部處置紀錄」而非 all_active（後者按 code 去重，會丟失重疊處置中
+    # 較新的那筆，如二次處置升級）
+    active_records  = [s for b in active_groups.values() for s in b["stocks"]]
     upcoming_stocks = [s for g in upcoming_groups.values() for s in g["stocks"]]
     snap = build_snapshot(
-        today, taiex, all_active, upcoming_stocks,
+        today, taiex, active_records, upcoming_stocks,
         notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
         counts={"active": total_active, "twse": twse_count, "tpex": tpex_count,
                 "second": second_count,

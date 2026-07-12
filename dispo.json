@@ -34,6 +34,19 @@
    "code": "3230",
    "name": "錦明",
    "exchange": "TPEx",
+   "ann_date": "2026-06-30",
+   "period_start": "2026-07-01",
+   "period_end": "2026-07-14",
+   "auction": "5分撮合",
+   "disp_count": 1,
+   "close": null,
+   "change_pct": null,
+   "vol_k": null
+  },
+  {
+   "code": "3230",
+   "name": "錦明",
+   "exchange": "TPEx",
    "ann_date": "2026-07-03",
    "period_start": "2026-07-06",
    "period_end": "2026-07-17",
@@ -107,6 +120,19 @@
    "close": null,
    "change_pct": null,
    "vol_k": null
+  },
+  {
+   "code": "1435",
+   "name": "中福",
+   "exchange": "TWSE",
+   "ann_date": "2026-06-29",
+   "period_start": "2026-06-30",
+   "period_end": "2026-07-13",
+   "auction": "5分撮合",
+   "disp_count": 1,
+   "close": 29.2,
+   "change_pct": 7.948243992606284,
+   "vol_k": 36
   },
   {
    "code": "1435",
@@ -239,6 +265,19 @@
    "vol_k": 1436
   },
   {
+   "code": "3055",
+   "name": "蔚華科",
+   "exchange": "TWSE",
+   "ann_date": "2026-07-08",
+   "period_start": "2026-07-09",
+   "period_end": "2026-07-22",
+   "auction": "20分撮合",
+   "disp_count": 2,
+   "close": 158.0,
+   "change_pct": -6.231454005934718,
+   "vol_k": 1436
+  },
+  {
    "code": "3189",
    "name": "景碩",
    "exchange": "TWSE",
@@ -276,6 +315,19 @@
    "close": 270.0,
    "change_pct": -3.225806451612903,
    "vol_k": 829
+  },
+  {
+   "code": "6226",
+   "name": "光鼎",
+   "exchange": "TWSE",
+   "ann_date": "2026-06-29",
+   "period_start": "2026-06-30",
+   "period_end": "2026-07-13",
+   "auction": "5分撮合",
+   "disp_count": 1,
+   "close": 26.6,
+   "change_pct": 5.346534653465347,
+   "vol_k": 4198
   },
   {
    "code": "6226",
