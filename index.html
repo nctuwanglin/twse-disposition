@@ -228,6 +228,33 @@
     .end-date-mobile { display: none; }
   }
 
+  /* 出關排程（Tab1 時間軸）：桌機單行四欄，手機拆成兩行避免欄位互相擠壓換行錯位 */
+  .sched-row {
+    display: grid;
+    grid-template-columns: 56px 46px 44px 1fr;
+    grid-template-areas: "date tag count names";
+    align-items: baseline;
+    column-gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .sched-row:last-child { border-bottom: none; }
+  .sched-date  { grid-area: date;  font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .sched-tag   { grid-area: tag; }
+  .sched-count { grid-area: count; font-family: 'JetBrains Mono', monospace; color: var(--amber); white-space: nowrap; }
+  .sched-names { grid-area: names; color: var(--ink-dim); }
+  @media (max-width: 480px) {
+    .sched-row {
+      grid-template-columns: auto auto 1fr;
+      grid-template-areas:
+        "date tag count"
+        "names names names";
+      row-gap: 4px;
+    }
+    .sched-names { margin-top: 1px; }
+  }
+
   .section-head {
     position: sticky;
     top: 0;
@@ -655,7 +682,7 @@
         <div class="text-sm font-semibold">📅 出關排程</div>
         <div class="text-[11px] text-slate-400 mt-1">依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
       </div>
-      <div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/13（一）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+1</span></span><span class="mono text-amber-300 shrink-0">4檔</span><span class="text-slate-400">宇隆(2233)、百容(2483)、聯鈞(3450)、佑華(8024)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/15（三）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+3</span></span><span class="mono text-amber-300 shrink-0">1檔</span><span class="text-slate-400">聯電(2303)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/16（四）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+4</span></span><span class="mono text-amber-300 shrink-0">5檔</span><span class="text-slate-400">中福(1435)、景碩(3189)、光鼎(6226)、尖點(8021)、雷虎(8033)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/17（五）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+5</span></span><span class="mono text-amber-300 shrink-0">6檔</span><span class="text-slate-400">力鵬(1447)、榮星(1617)、大綜(3147)、錦明(3230)、中探針(6217)、長廣(7795)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/20（一）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+8</span></span><span class="mono text-amber-300 shrink-0">2檔</span><span class="text-slate-400">力山(1515)、中纖(1718)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/21（二）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+9</span></span><span class="mono text-amber-300 shrink-0">2檔</span><span class="text-slate-400">冠西電(2466)、共信-KY(6617)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/22（三）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+10</span></span><span class="mono text-amber-300 shrink-0">3檔</span><span class="text-slate-400">蔚華科(3055)、磐亞(4707)、安碁(6174)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/23（四）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+11</span></span><span class="mono text-amber-300 shrink-0">1檔</span><span class="text-slate-400">泰宗(4169)</span></div><div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]"><span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">7/24（五）</span><span class="shrink-0" style="width:44px"><span class="mono text-slate-500">D+12</span></span><span class="mono text-amber-300 shrink-0">1檔</span><span class="text-slate-400">富鼎(8261)</span></div></div>
+      <div><div class="sched-row"><span class="sched-date">7/13（一）</span><span class="sched-tag"><span class="mono text-slate-500">D+1</span></span><span class="sched-count">4檔</span><span class="sched-names">宇隆(2233)、百容(2483)、聯鈞(3450)、佑華(8024)</span></div><div class="sched-row"><span class="sched-date">7/15（三）</span><span class="sched-tag"><span class="mono text-slate-500">D+3</span></span><span class="sched-count">1檔</span><span class="sched-names">聯電(2303)</span></div><div class="sched-row"><span class="sched-date">7/16（四）</span><span class="sched-tag"><span class="mono text-slate-500">D+4</span></span><span class="sched-count">5檔</span><span class="sched-names">中福(1435)、景碩(3189)、光鼎(6226)、尖點(8021)、雷虎(8033)</span></div><div class="sched-row"><span class="sched-date">7/17（五）</span><span class="sched-tag"><span class="mono text-slate-500">D+5</span></span><span class="sched-count">6檔</span><span class="sched-names">力鵬(1447)、榮星(1617)、大綜(3147)、錦明(3230)、中探針(6217)、長廣(7795)</span></div><div class="sched-row"><span class="sched-date">7/20（一）</span><span class="sched-tag"><span class="mono text-slate-500">D+8</span></span><span class="sched-count">2檔</span><span class="sched-names">力山(1515)、中纖(1718)</span></div><div class="sched-row"><span class="sched-date">7/21（二）</span><span class="sched-tag"><span class="mono text-slate-500">D+9</span></span><span class="sched-count">2檔</span><span class="sched-names">冠西電(2466)、共信-KY(6617)</span></div><div class="sched-row"><span class="sched-date">7/22（三）</span><span class="sched-tag"><span class="mono text-slate-500">D+10</span></span><span class="sched-count">3檔</span><span class="sched-names">蔚華科(3055)、磐亞(4707)、安碁(6174)</span></div><div class="sched-row"><span class="sched-date">7/23（四）</span><span class="sched-tag"><span class="mono text-slate-500">D+11</span></span><span class="sched-count">1檔</span><span class="sched-names">泰宗(4169)</span></div><div class="sched-row"><span class="sched-date">7/24（五）</span><span class="sched-tag"><span class="mono text-slate-500">D+12</span></span><span class="sched-count">1檔</span><span class="sched-names">富鼎(8261)</span></div></div>
     </div>
     <details class="card mb-3" open>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">

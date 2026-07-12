@@ -1508,11 +1508,11 @@ def render_release_schedule(active_groups, today):
         if len(stocks) > 8:
             names += f" …等{len(stocks)}檔"
         rows.append(
-            f'<div class="flex items-baseline gap-3 px-3 py-1.5 border-b border-slate-800/50 text-[12px]">'
-            f'<span class="mono text-slate-300 font-semibold shrink-0" style="width:52px">{fmt_weekday(pe)}</span>'
-            f'<span class="shrink-0" style="width:44px">{tag}</span>'
-            f'<span class="mono text-amber-300 shrink-0">{len(stocks)}檔</span>'
-            f'<span class="text-slate-400">{names}</span>'
+            f'<div class="sched-row">'
+            f'<span class="sched-date">{fmt_weekday(pe)}</span>'
+            f'<span class="sched-tag">{tag}</span>'
+            f'<span class="sched-count">{len(stocks)}檔</span>'
+            f'<span class="sched-names">{names}</span>'
             f'</div>')
     return f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
