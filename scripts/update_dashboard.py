@@ -786,6 +786,69 @@ def group_into_batches(all_rows, today):
 
 
 # ──────────────────────────────────────────────
+# 結構化輸出：dispo.json（隨 Pages 發佈）+ data/history/ 每日快照
+# 內容為確定性（不含執行時間戳），同日重跑產生相同位元組 → 補跑不產生空 diff。
+# ──────────────────────────────────────────────
+def _jsonable(obj):
+    if isinstance(obj, dict):
+        return {k: _jsonable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_jsonable(v) for v in obj]
+    if isinstance(obj, date):
+        return obj.isoformat()
+    return obj
+
+
+def _stock_entry(s, stock_quotes):
+    q = (stock_quotes or {}).get(s["code"]) or {}
+    return {
+        "code": s["code"], "name": s["name"], "exchange": s["exchange"],
+        "ann_date": s["ann_date"].isoformat(),
+        "period_start": s["period_start"].isoformat(),
+        "period_end": s["period_end"].isoformat(),
+        "auction": s["auction"], "disp_count": s["disp_count"],
+        # TPEx 個股不在 TWSE 全股報價內，close 等欄位為 null（報價補齊屬第三階段）
+        "close": q.get("close"), "change_pct": q.get("change_pct"),
+        "vol_k": q.get("vol_k"),
+    }
+
+
+def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
+                   notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
+                   counts, source="live"):
+    def nt_entry(r):
+        e = {"code": r["code"], "name": r["name"], "exchange": r["exchange"],
+             "criteria": r["criteria"], "raw_criteria": r["raw_criteria"]}
+        t = (nt_thresholds or {}).get(r["code"])
+        if t:
+            e["thresholds"] = _jsonable(t)
+        return e
+
+    key = lambda s: (s["exchange"], s["code"])
+    return {
+        "schema": 1,
+        "date": today.isoformat(),
+        "source": source,
+        "taiex": taiex,
+        "counts": counts,
+        "active":    [_stock_entry(s, stock_quotes) for s in sorted(active_stocks, key=key)],
+        "upcoming":  [_stock_entry(s, stock_quotes) for s in sorted(upcoming_stocks, key=key)],
+        "notetrans": [nt_entry(r) for r in notetrans_twse + notetrans_tpex],
+    }
+
+
+def write_snapshot(snap):
+    text = json.dumps(snap, ensure_ascii=False, indent=1) + "\n"
+    (REPO_ROOT / "dispo.json").write_text(text, encoding="utf-8")
+    # 歷史庫只收交易日快照；週末手動執行時資料與週五相同，不重複入庫
+    if date.fromisoformat(snap["date"]).weekday() >= 5:
+        return
+    hist_dir = REPO_ROOT / "data" / "history"
+    hist_dir.mkdir(parents=True, exist_ok=True)
+    (hist_dir / f"{snap['date']}.json").write_text(text, encoding="utf-8")
+
+
+# ──────────────────────────────────────────────
 # HTML 生成 — 共用
 # ──────────────────────────────────────────────
 _SECTOR_TAG_RULES = [
@@ -1402,6 +1465,18 @@ def main():
 
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
+
+    # 結構化輸出：dispo.json（供績效儀表板等下游讀取）+ 每日歷史快照
+    upcoming_stocks = [s for g in upcoming_groups.values() for s in g["stocks"]]
+    snap = build_snapshot(
+        today, taiex, all_active, upcoming_stocks,
+        notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
+        counts={"active": total_active, "twse": twse_count, "tpex": tpex_count,
+                "second": second_count,
+                "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
+    )
+    write_snapshot(snap)
+    print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
 
     # 記錄本次檔數，供下次執行做驟降比對（隨 commit 入庫）
     LAST_COUNTS_PATH.write_text(json.dumps({

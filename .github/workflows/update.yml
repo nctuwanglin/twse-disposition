@@ -33,7 +33,9 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          if git diff --quiet index.html data/last_counts.json; then
+          # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
+          git add index.html data/last_counts.json dispo.json data/history/
+          if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -45,7 +47,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           DATE=$(TZ=Asia/Taipei date "+%Y/%m/%d %H:%M")
-          git add index.html data/last_counts.json
           git commit -m "auto: 盤後更新處置股資料 ${DATE}"
           git push
 
