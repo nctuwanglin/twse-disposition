@@ -41,6 +41,31 @@ TPEX_DISPOSAL    = "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
 TPEX_WARNING     = "https://www.tpex.org.tw/www/zh-tw/bulletin/warning"
 TPEX_REFERER_D   = "https://www.tpex.org.tw/zh-tw/announce/market/disposal.html"
 TPEX_REFERER_W   = "https://www.tpex.org.tw/zh-tw/announce/market/warning.html"
+TPEX_QUOTES      = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes"
+TPEX_STOCK_HIST  = "https://www.tpex.org.tw/www/zh-tw/afterTrading/tradingStock"  # 個股月資料
+
+# 公司基本資料（自動補 stock_info 的 name/sector 用）
+TWSE_COMPANY_API = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
+TPEX_COMPANY_API = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O"
+
+# MOPS 產業別代碼（上市/上櫃共用編碼）
+INDUSTRY_NAMES = {
+    "01": "水泥工業", "02": "食品工業", "03": "塑膠工業", "04": "紡織纖維",
+    "05": "電機機械", "06": "電器電纜", "08": "玻璃陶瓷", "09": "造紙工業",
+    "10": "鋼鐵工業", "11": "橡膠工業", "12": "汽車工業", "14": "建材營造",
+    "15": "航運業",   "16": "觀光餐旅", "17": "金融保險", "18": "貿易百貨",
+    "19": "綜合",     "20": "其他",     "21": "化學工業", "22": "生技醫療",
+    "23": "油電燃氣", "24": "半導體",   "25": "電腦及週邊設備", "26": "光電",
+    "27": "通信網路", "28": "電子零組件", "29": "電子通路", "30": "資訊服務",
+    "31": "其他電子", "32": "文化創意", "33": "農業科技", "34": "電子商務",
+    "35": "綠能環保", "36": "數位雲端", "37": "運動休閒", "38": "居家生活",
+}
+
+# 注意標準門檻（%）：(第一款 6日累積, 第二款 30日起迄)
+# 依證交所/櫃買「注意交易資訊異常標準詳細數據」：TWSE 32/100、TPEx 30/100。
+# 注意：法規另有「與大盤及同類股差幅」等相對條件，免費資料無法完整計算，
+# 故此處門檻為「可能觸發的最低價位」（必要非充分條件）。
+ATTENTION_PCT = {"TWSE": (32.0, 100.0), "TPEx": (30.0, 100.0)}
 
 REPO_ROOT        = Path(__file__).parent.parent
 HTML_PATH        = REPO_ROOT / "index.html"
@@ -308,6 +333,61 @@ def _fetch_twse_stock_day_csv():
     return resp_date, quotes
 
 
+def fetch_tpex_quotes():
+    """
+    TPEx 全上櫃收盤 {code: {close, change, change_pct, vol_k, date}}。
+    date 為 AD yyyymmdd（openapi 回傳 ROC 7 碼）。
+    """
+    raw = safe_fetch_json(TPEX_QUOTES, default=[]) or []
+    out = {}
+    for r in raw:
+        code = (r.get("SecuritiesCompanyCode") or "").strip()
+        if not code:
+            continue
+        try:
+            close_s = (r.get("Close") or "").replace(",", "").strip()
+            close   = float(close_s) if close_s not in ("", "--", "---") else None
+            chg_s   = (r.get("Change") or "").replace(",", "").strip()
+            change  = float(chg_s) if chg_s not in ("", "--", "---") else 0.0
+            vol_k   = int((r.get("TradingShares") or "0").replace(",", "")) // 1000
+            d       = (r.get("Date") or "").strip()
+            ad      = (str(int(d[:3]) + 1911) + d[3:]) if (len(d) == 7 and d.isdigit()) else ""
+        except (ValueError, TypeError):
+            continue
+        prev = close - change if close is not None else None
+        pct  = (change / prev * 100) if (prev and prev != 0) else None
+        out[code] = {"close": close, "change": change, "change_pct": pct,
+                     "vol_k": vol_k, "date": ad}
+    return out
+
+
+def fetch_tpex_stock_history(code, today):
+    """
+    TPEx 個股最近 2 個月日成交（www afterTrading/tradingStock）。
+    回傳 [{date, close, vol_k}] 由舊到新，與 fetch_twse_stock_history 同型。
+    欄位: [日期, 成交仟股, 成交仟元, 開, 高, 低, 收, 漲跌, 筆數]（量已是千股=張）
+    """
+    records = {}
+    for months_back in range(2):
+        y, m = today.year, today.month - months_back
+        if m <= 0:
+            m += 12
+            y -= 1
+        url = f"{TPEX_STOCK_HIST}?code={code}&date={y}/{m:02d}/01&response=json"
+        data = safe_fetch_json(url, {"Referer": TPEX_REFERER_D}, default={})
+        tables = data.get("tables") or [{}]
+        for row in (tables[0].get("data") or []):
+            try:
+                d     = roc_to_date(row[0].replace("/", ""))
+                close = float(row[6].replace(",", ""))
+                vol_k = int(float(row[1].replace(",", "")))
+                if close > 0:
+                    records[d] = {"date": d, "close": close, "vol_k": vol_k}
+            except (ValueError, IndexError):
+                pass
+    return sorted(records.values(), key=lambda x: x["date"])
+
+
 _CN_INT = {"一":1,"二":2,"三":3,"四":4,"五":5,
            "六":6,"七":7,"八":8,"九":9,"十":10,"十一":11,"十二":12}
 _DOW_ZH = ["一","二","三","四","五","六","日"]
@@ -559,12 +639,14 @@ def fetch_twse_stock_history(code, today):
     return sorted(records.values(), key=lambda x: x["date"])
 
 
-def calculate_attention_thresholds(history):
+def calculate_attention_thresholds(history, pct6=32.0, pct30=100.0):
     """
-    依 TWSE 注意交易資訊標準計算觸發門檻（使用免費資料可計算的條款）。
-    - 第一款: 最近 6 個營業日收盤累積漲幅 ≥ 20%
-    - 第二款: 最近 30 個營業日收盤累積漲幅 ≥ 30%
-    - 量參考: 60 日平均量（第三/六款部分依據，集中度條件不在此計算）
+    依注意交易資訊「異常標準詳細數據」計算觸發門檻（免費資料可算的絕對條件）。
+    - 第一款: 最近 6 個營業日累積收盤漲幅 > pct6（TWSE 32% / TPEx 30%）
+    - 第二款: 最近 30 個營業日起迄收盤漲幅 > pct30（兩市場皆 100%）
+    - 量參考: 60 日平均量（量/週轉率各款的部分依據，集中度條件不在此計算）
+    法規另有「與大盤及同類股差幅」相對條件無法以免費資料完整計算，
+    故本門檻為「可能觸發的最低價位」（必要非充分）。
     回傳 dict 或 None（資料不足時）。
     """
     if len(history) < 7:
@@ -586,11 +668,12 @@ def calculate_attention_thresholds(history):
     ref6 = nth_before(6)
     if ref6:
         cum6 = (current_close - ref6["close"]) / ref6["close"] * 100
-        thr6 = ref6["close"] * 1.20
+        thr6 = ref6["close"] * (1 + pct6 / 100)
         result["clause1"] = {
             "ref_date":  ref6["date"],
             "ref_close": ref6["close"],
             "cum_pct":   cum6,
+            "pct":       pct6,
             "threshold": thr6,
             "diff_pct":  (thr6 - current_close) / current_close * 100,
             "triggered": current_close >= thr6,
@@ -599,11 +682,12 @@ def calculate_attention_thresholds(history):
     ref30 = nth_before(30)
     if ref30:
         cum30 = (current_close - ref30["close"]) / ref30["close"] * 100
-        thr30 = ref30["close"] * 1.30
+        thr30 = ref30["close"] * (1 + pct30 / 100)
         result["clause2"] = {
             "ref_date":  ref30["date"],
             "ref_close": ref30["close"],
             "cum_pct":   cum30,
+            "pct":       pct30,
             "threshold": thr30,
             "diff_pct":  (thr30 - current_close) / current_close * 100,
             "triggered": current_close >= thr30,
@@ -672,13 +756,14 @@ def render_attention_conditions(thresholds, trade_date):
     c1 = thresholds.get("clause1")
     if c1:
         ref_s = fmt_short(c1["ref_date"])
+        p1 = c1.get("pct", 32.0)
         lines.append(
             f'<div class="flex items-start gap-2 mb-0.5">'
             f'<span class="mono text-slate-600 shrink-0 w-10">第一款</span>'
             f'<span class="text-slate-400">'
-            f'6日累積 <span class="mono {"text-red-400" if c1["cum_pct"]>=20 else ("text-amber-300" if c1["cum_pct"]>=14 else "text-slate-400")}">'
+            f'6日累積 <span class="mono {"text-red-400" if c1["cum_pct"]>=p1 else ("text-amber-300" if c1["cum_pct"]>=p1*0.7 else "text-slate-400")}">'
             f'{c1["cum_pct"]:+.1f}%</span>'
-            f'<span class="text-slate-600">（{ref_s} 起，門檻≥20%）</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻＞{p1:.0f}%）</span>'
             f' → '
             + (
                 '<span class="text-red-300 font-semibold">今日已達標</span>'
@@ -696,13 +781,14 @@ def render_attention_conditions(thresholds, trade_date):
     c2 = thresholds.get("clause2")
     if c2:
         ref_s = fmt_short(c2["ref_date"])
+        p2 = c2.get("pct", 100.0)
         lines.append(
             f'<div class="flex items-start gap-2 mb-0.5">'
             f'<span class="mono text-slate-600 shrink-0 w-10">第二款</span>'
             f'<span class="text-slate-400">'
-            f'30日累積 <span class="mono {"text-red-400" if c2["cum_pct"]>=30 else ("text-amber-300" if c2["cum_pct"]>=21 else "text-slate-400")}">'
+            f'30日起迄 <span class="mono {"text-red-400" if c2["cum_pct"]>=p2 else ("text-amber-300" if c2["cum_pct"]>=p2*0.7 else "text-slate-400")}">'
             f'{c2["cum_pct"]:+.1f}%</span>'
-            f'<span class="text-slate-600">（{ref_s} 起，門檻≥30%）</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻＞{p2:.0f}%）</span>'
             f' → '
             + (
                 '<span class="text-red-300 font-semibold">今日已達標</span>'
@@ -807,7 +893,6 @@ def _stock_entry(s, stock_quotes):
         "period_start": s["period_start"].isoformat(),
         "period_end": s["period_end"].isoformat(),
         "auction": s["auction"], "disp_count": s["disp_count"],
-        # TPEx 個股不在 TWSE 全股報價內，close 等欄位為 null（報價補齊屬第三階段）
         "close": q.get("close"), "change_pct": q.get("change_pct"),
         "vol_k": q.get("vol_k"),
     }
@@ -845,10 +930,12 @@ def write_snapshot(snap):
     (REPO_ROOT / "dispo.json").write_text(text, encoding="utf-8")
     # 歷史庫只收交易日快照；週末手動執行時資料與週五相同，不重複入庫
     if date.fromisoformat(snap["date"]).weekday() >= 5:
+        print("  ✓ 寫入 dispo.json（週末，不寫入 data/history/）")
         return
     hist_dir = REPO_ROOT / "data" / "history"
     hist_dir.mkdir(parents=True, exist_ok=True)
     (hist_dir / f"{snap['date']}.json").write_text(text, encoding="utf-8")
+    print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
 
 
 # ──────────────────────────────────────────────
@@ -910,6 +997,45 @@ def load_stock_info():
         return json.load(f)
 
 
+def autofill_stock_info(stock_info, codes_needed):
+    """
+    對 stock_info 缺漏的代碼，自動從公司基本資料 API 補 name/sector（產業別）。
+    tags 維持手動（sector_to_tags 會再從 sector 文字自動推導部分標籤）。
+    有新增時就地更新 dict 並寫回 stock_info.json，回傳新增檔數。
+    """
+    missing = sorted(c for c in codes_needed
+                     if c not in stock_info and is_regular_stock(c))
+    if not missing:
+        return 0
+
+    maps = {}   # code -> (簡稱, 產業代碼, 交易所)
+    for url, code_k, abbr_k, ind_k, ex in (
+        (TWSE_COMPANY_API, "公司代號", "公司簡稱", "產業別", "TWSE"),
+        (TPEX_COMPANY_API, "SecuritiesCompanyCode", "CompanyAbbreviation",
+         "SecuritiesIndustryCode", "TPEx"),
+    ):
+        for r in (safe_fetch_json(url, default=[]) or []):
+            c = (r.get(code_k) or "").strip()
+            if c:
+                maps.setdefault(c, ((r.get(abbr_k) or "").strip(),
+                                    (r.get(ind_k) or "").strip(), ex))
+
+    added = 0
+    for c in missing:
+        if c not in maps:
+            continue
+        name, ind, ex = maps[c]
+        sector = INDUSTRY_NAMES.get(ind, "")
+        stock_info[c] = {"name": name, "exchange": ex, "tags": "", "sector": sector}
+        added += 1
+
+    if added:
+        STOCK_INFO_PATH.write_text(
+            json.dumps(stock_info, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8")
+    return added
+
+
 def get_stock_meta(code, stock_info):
     meta   = stock_info.get(code, {})
     sector = meta.get("sector", "")
@@ -919,7 +1045,29 @@ def get_stock_meta(code, stock_info):
     return {"tags": tags, "sector": sector}
 
 
-def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_label_override=None):
+def _quote_span(quote):
+    """收盤/漲跌%/量 的小型 mono 標籤（站內慣例：綠漲紅跌）。"""
+    if not quote or quote.get("close") is None:
+        return ""
+    close = quote["close"]
+    chg   = quote.get("change") or 0
+    pct   = quote.get("change_pct")
+    vol_k = quote.get("vol_k") or 0
+    if chg > 0:
+        clr, arrow = "text-green-400", "▲"
+    elif chg < 0:
+        clr, arrow = "text-red-400", "▼"
+    else:
+        clr, arrow = "text-slate-400", "–"
+    close_s = f"{close:,.2f}".rstrip("0").rstrip(".")
+    pct_s   = f"{arrow}{abs(pct):.1f}%" if pct is not None else arrow
+    vol_s   = f' <span class="text-slate-600">{vol_k:,}張</span>' if vol_k else ""
+    return (f' <span class="mono {clr}" style="font-size:11px">'
+            f'{close_s} {pct_s}</span>{vol_s}')
+
+
+def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_label_override=None,
+                     quote=None):
     meta = get_stock_meta(stock["code"], stock_info)
     tags_attr = f' data-tags="{meta["tags"]}"' if meta["tags"] else ""
     sector    = meta["sector"] or stock.get("exchange","")
@@ -961,7 +1109,7 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
         f'</div>'
         f'<div>'
         f'<div class="text-sm font-semibold">{name_html}</div>'
-        f'<div class="sector">{sector}</div>'
+        f'<div class="sector">{sector}{_quote_span(quote)}</div>'
         f'</div>'
         f'<div class="end-date-desktop text-right">'
         f'<span class="pill {pill_class}">{pill_label}</span>'
@@ -972,12 +1120,15 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
 
 
 def exchange_section(label, stocks, stock_info, today,
-                     pill_class_override=None, pill_label_override=None, border=False):
+                     pill_class_override=None, pill_label_override=None, border=False,
+                     stock_quotes=None):
     if not stocks:
         return ""
+    sq = stock_quotes or {}
     border_cls = " border-t border-slate-800" if border else ""
     rows = "".join(
-        render_stock_row(s, stock_info, today, pill_class_override, pill_label_override)
+        render_stock_row(s, stock_info, today, pill_class_override, pill_label_override,
+                         quote=sq.get(s["code"]))
         for s in stocks
     )
     return (
@@ -1056,7 +1207,8 @@ def render_context_banner(taiex, total_active, today_released_count,
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 1
 # ──────────────────────────────────────────────
-def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True):
+def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
+                       stock_quotes=None):
     ps     = batch["period_start"]
     pe     = batch["period_end"]
     stocks = batch["stocks"]
@@ -1079,9 +1231,10 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True):
     twse_stocks = [s for s in stocks if s["exchange"] == "TWSE"]
     tpex_stocks = [s for s in stocks if s["exchange"] == "TPEx"]
 
-    rows_html  = exchange_section("TWSE 上市", twse_stocks, stock_info, today)
+    rows_html  = exchange_section("TWSE 上市", twse_stocks, stock_info, today,
+                                  stock_quotes=stock_quotes)
     rows_html += exchange_section("TPEx 上櫃", tpex_stocks, stock_info, today,
-                                  border=bool(twse_stocks))
+                                  border=bool(twse_stocks), stock_quotes=stock_quotes)
 
     return f"""    <details class="card mb-3"{open_attr}>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
@@ -1097,19 +1250,20 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True):
     </details>"""
 
 
-def render_tab1_batches(active_groups, stock_info, today):
+def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
     sorted_batches = sorted(active_groups.values(), key=lambda b: b["period_start"], reverse=True)
     blocks = []
     for i, batch in enumerate(sorted_batches):
         blocks.append(render_batch_block(batch, stock_info, today,
-                                         is_latest=(i == 0), is_open=(i < 3)))
+                                         is_latest=(i == 0), is_open=(i < 3),
+                                         stock_quotes=stock_quotes))
     return "\n".join(blocks)
 
 
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 2
 # ──────────────────────────────────────────────
-def render_tab2_content(latest_batch, stock_info, today):
+def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None):
     ps     = latest_batch["period_start"]
     pe     = latest_batch["period_end"]
     stocks = latest_batch["stocks"]
@@ -1119,9 +1273,10 @@ def render_tab2_content(latest_batch, stock_info, today):
     twse_stocks = [s for s in stocks if s["exchange"] == "TWSE"]
     tpex_stocks = [s for s in stocks if s["exchange"] == "TPEx"]
 
-    rows_html  = exchange_section(f"TWSE 上市（{len(twse_stocks)}檔）", twse_stocks, stock_info, today)
+    rows_html  = exchange_section(f"TWSE 上市（{len(twse_stocks)}檔）", twse_stocks, stock_info, today,
+                                  stock_quotes=stock_quotes)
     rows_html += exchange_section(f"TPEx 上櫃（{len(tpex_stocks)}檔）", tpex_stocks, stock_info, today,
-                                  border=bool(twse_stocks))
+                                  border=bool(twse_stocks), stock_quotes=stock_quotes)
 
     return f"""    <div class="card">
       <div class="p-3 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
@@ -1371,12 +1526,27 @@ def main():
     notetrans_tpex = fetch_tpex_warning()
     print("  TWSE 個股報價...")
     stock_quotes = fetch_twse_stock_quotes()
-    print("  TWSE 注意累計歷史（計算觸發門檻）...")
+    print("  TPEx 個股報價...")
+    tpex_quotes = fetch_tpex_quotes()
+    # 日期一致性（B6 教訓）：兩市場報價日不一致時棄用 TPEx，避免混入舊價
+    twse_qdate = next((q["date"] for q in stock_quotes.values() if q.get("date")), "")
+    tpex_qdate = next((q["date"] for q in tpex_quotes.values() if q.get("date")), "")
+    if twse_qdate and tpex_qdate and twse_qdate != tpex_qdate:
+        print(f"  WARNING: 報價日不一致 TWSE {twse_qdate} vs TPEx {tpex_qdate}，"
+              f"棄用 TPEx 報價", file=sys.stderr)
+    else:
+        stock_quotes = {**stock_quotes, **tpex_quotes}
+
+    print("  注意累計歷史（計算觸發門檻，TWSE+TPEx）...")
     nt_thresholds = {}
-    for r in notetrans_twse:
-        hist = fetch_twse_stock_history(r["code"], today)
+    for r in notetrans_twse + notetrans_tpex:
+        if r["exchange"] == "TWSE":
+            hist = fetch_twse_stock_history(r["code"], today)
+        else:
+            hist = fetch_tpex_stock_history(r["code"], today)
         if hist:
-            t = calculate_attention_thresholds(hist)
+            pct6, pct30 = ATTENTION_PCT[r["exchange"]]
+            t = calculate_attention_thresholds(hist, pct6, pct30)
             if t:
                 nt_thresholds[r["code"]] = t
 
@@ -1432,6 +1602,11 @@ def main():
 
     # 讀 stock_info
     stock_info = load_stock_info()
+    needed = ({s["code"] for s in all_rows}
+              | {r["code"] for r in notetrans_twse + notetrans_tpex})
+    added = autofill_stock_info(stock_info, needed)
+    if added:
+        print(f"  ✓ stock_info.json 自動補 {added} 檔（name/sector，tags 留手動）")
 
     # 生成 HTML 片段
     context_html = render_context_banner(
@@ -1441,8 +1616,10 @@ def main():
     )
     stats_html = render_stats(total_active, latest_count, second_count,
                               twse_count, tpex_count, latest_ann)
-    tab1_html  = render_tab1_batches(active_groups, stock_info, today)
-    tab2_html  = render_tab2_content(latest_batch, stock_info, today)
+    tab1_html  = render_tab1_batches(active_groups, stock_info, today,
+                                     stock_quotes=stock_quotes)
+    tab2_html  = render_tab2_content(latest_batch, stock_info, today,
+                                     stock_quotes=stock_quotes)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds)
     date_html  = render_date_block(today)
@@ -1482,7 +1659,6 @@ def main():
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
     )
     write_snapshot(snap)
-    print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
 
     # 記錄本次檔數，供下次執行做驟降比對（隨 commit 入庫）
     LAST_COUNTS_PATH.write_text(json.dumps({

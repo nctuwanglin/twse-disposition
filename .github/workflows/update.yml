@@ -34,7 +34,7 @@ jobs:
         id: diff
         run: |
           # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
-          git add index.html data/last_counts.json dispo.json data/history/
+          git add index.html data/last_counts.json data/stock_info.json dispo.json data/history/
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else

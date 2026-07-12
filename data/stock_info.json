@@ -1,82 +1,622 @@
 {
   "_comment": "手動維護：各股票的產業標籤和區塊描述。tags 對應 HTML filter chips，sector 顯示於儀表板。新增股票後可在此補資料。",
   "_tags_reference": "可用 tags: t50 memory icdesign icmanufacturing packaging pcb passive power optical satellite shipping finance telecom",
-
-  "063950": { "name": "揚博凱基5B購01", "exchange": "TWSE", "tags": "", "sector": "權證" },
-  "1303": { "name": "南亞", "exchange": "TWSE", "tags": "pcb", "sector": "化學工業（南亞塑膠）" },
-  "1714": { "name": "和桐", "exchange": "TWSE", "tags": "", "sector": "化學工業" },
-  "2061": { "name": "風青", "exchange": "TPEx", "tags": "", "sector": "精密沖壓件" },
-  "2302": { "name": "麗正", "exchange": "TWSE", "tags": "pcb", "sector": "PCB" },
-  "2305": { "name": "全友", "exchange": "TWSE", "tags": "", "sector": "影像設備" },
-  "2342": { "name": "茂矽", "exchange": "TWSE", "tags": "icmanufacturing", "sector": "功率半導體" },
-  "2344": { "name": "華邦電", "exchange": "TWSE", "tags": "icmanufacturing", "sector": "記憶體（DRAM/NOR Flash）" },
-  "2375": { "name": "凱美", "exchange": "TWSE", "tags": "passive", "sector": "被動元件" },
-  "2492": { "name": "華新科", "exchange": "TWSE", "tags": "passive", "sector": "MLCC" },
-  "3481": { "name": "群創", "exchange": "TWSE", "tags": "", "sector": "面板（LCD）" },
-  "3624": { "name": "光頡", "exchange": "TPEx", "tags": "", "sector": "整流器/分離式元件" },
-  "4764": { "name": "雙鍵", "exchange": "TWSE", "tags": "", "sector": "特用化學（雙酚A）" },
-  "4923": { "name": "力士", "exchange": "TPEx", "tags": "power", "sector": "電源供應器" },
-  "6415": { "name": "矽力*-KY", "exchange": "TWSE", "tags": "icdesign", "sector": "IC設計 電源管理" },
-  "6693": { "name": "廣閎科", "exchange": "TPEx", "tags": "icdesign", "sector": "IC設計 類比電源" },
-  "6834": { "name": "天二科技", "exchange": "TWSE", "tags": "", "sector": "創新板科技" },
-  "7610": { "name": "聯友金屬-創", "exchange": "TWSE", "tags": "", "sector": "創新板金屬" },
-  "8096": { "name": "擎亞", "exchange": "TPEx", "tags": "", "sector": "系統整合" },
-  "8996": { "name": "高力", "exchange": "TWSE", "tags": "", "sector": "散熱模組" },
-  "1718": { "name": "中纖", "exchange": "TWSE", "tags": "", "sector": "化學纖維" },
-  "2243": { "name": "宏旭-KY", "exchange": "TWSE", "tags": "", "sector": "車身模具" },
-  "3090": { "name": "日電貿", "exchange": "TWSE", "tags": "", "sector": "IC 通路代理" },
-  "4551": { "name": "智伸科", "exchange": "TWSE", "tags": "", "sector": "精密機械零件" },
-  "2383": { "name": "台光電", "exchange": "TWSE", "tags": "pcb", "sector": "CCL（銅箔基板）" },
-  "2455": { "name": "全新", "exchange": "TWSE", "tags": "icmanufacturing", "sector": "GaAs磊晶" },
-  "2478": { "name": "大毅", "exchange": "TWSE", "tags": "passive", "sector": "電阻器" },
-  "2491": { "name": "吉祥全", "exchange": "TWSE", "tags": "", "sector": "電子配件" },
-  "2493": { "name": "揚博", "exchange": "TWSE", "tags": "pcb", "sector": "CCL（銅箔基板）" },
-  "3026": { "name": "禾伸堂", "exchange": "TWSE", "tags": "passive", "sector": "MLCC" },
-  "3149": { "name": "正達", "exchange": "TWSE", "tags": "optical", "sector": "光學玻璃" },
-  "3167": { "name": "大量", "exchange": "TWSE", "tags": "pcb", "sector": "PCB 檢測設備" },
-  "3532": { "name": "台勝科", "exchange": "TWSE", "tags": "icmanufacturing", "sector": "矽晶圓" },
-  "4807": { "name": "日成-KY", "exchange": "TWSE", "tags": "", "sector": "工業電腦" },
-  "6442": { "name": "光聖", "exchange": "TWSE", "tags": "optical", "sector": "光通訊元件" },
-  "6830": { "name": "汎銓", "exchange": "TWSE", "tags": "icmanufacturing packaging", "sector": "半導體材料分析" },
-  "6890": { "name": "來億-KY", "exchange": "TWSE", "tags": "", "sector": "精密五金" },
-  "6924": { "name": "榮惠-KY創", "exchange": "TWSE", "tags": "", "sector": "創新板" },
-  "8021": { "name": "尖點", "exchange": "TWSE", "tags": "pcb", "sector": "PCB 鑽針" },
-  "8042": { "name": "金山電", "exchange": "TWSE", "tags": "passive", "sector": "被動元件" },
-  "8454": { "name": "富邦媒", "exchange": "TWSE", "tags": "", "sector": "電商" },
-
-  "3114": { "name": "好德", "exchange": "TPEx", "tags": "", "sector": "電子零組件" },
-  "3147": { "name": "大綜", "exchange": "TPEx", "tags": "", "sector": "電腦周邊" },
-  "3163": { "name": "波若威", "exchange": "TPEx", "tags": "", "sector": "網路設備" },
-  "3285": { "name": "微端", "exchange": "TPEx", "tags": "", "sector": "電子零組件" },
-  "3288": { "name": "點晶", "exchange": "TPEx", "tags": "icdesign", "sector": "IC設計 Display Driver" },
-  "3441": { "name": "聯一光", "exchange": "TPEx", "tags": "optical", "sector": "光通訊" },
-  "3523": { "name": "迎輝", "exchange": "TPEx", "tags": "optical", "sector": "光學材料" },
-  "3535": { "name": "晶彩科", "exchange": "TPEx", "tags": "optical", "sector": "光電" },
-  "3581": { "name": "博磊", "exchange": "TPEx", "tags": "icdesign", "sector": "IC設計" },
-  "4402": { "name": "郡都開發", "exchange": "TPEx", "tags": "", "sector": "建設" },
-  "4542": { "name": "科嶠", "exchange": "TPEx", "tags": "", "sector": "精密零件" },
-  "4556": { "name": "旭然", "exchange": "TPEx", "tags": "satellite", "sector": "衛星零組件" },
-  "4707": { "name": "磐亞", "exchange": "TPEx", "tags": "", "sector": "化學工業" },
-  "4991": { "name": "環宇-KY", "exchange": "TPEx", "tags": "satellite", "sector": "衛星寬頻" },
-  "5227": { "name": "立凱-KY", "exchange": "TPEx", "tags": "power", "sector": "EV電池材料" },
-  "5321": { "name": "美而快", "exchange": "TPEx", "tags": "", "sector": "汽車配件" },
-  "5345": { "name": "馥鴻", "exchange": "TPEx", "tags": "", "sector": "建設" },
-  "5358": { "name": "金居", "exchange": "TPEx", "tags": "pcb", "sector": "PCB 銅箔" },
-  "5426": { "name": "振發", "exchange": "TPEx", "tags": "", "sector": "電子零組件" },
-  "5468": { "name": "凱鈺", "exchange": "TPEx", "tags": "icdesign", "sector": "IC設計 Display Driver" },
-  "5701": { "name": "劍湖山", "exchange": "TPEx", "tags": "", "sector": "觀光遊樂" },
-  "6127": { "name": "九豪", "exchange": "TPEx", "tags": "passive", "sector": "精密陶瓷" },
-  "6173": { "name": "信昌電", "exchange": "TPEx", "tags": "passive", "sector": "MLCC" },
-  "6187": { "name": "萬潤", "exchange": "TPEx", "tags": "icmanufacturing packaging", "sector": "半導體設備" },
-  "6241": { "name": "鑫永洋", "exchange": "TPEx", "tags": "", "sector": "網通" },
-  "6488": { "name": "環球晶", "exchange": "TPEx", "tags": "icmanufacturing", "sector": "矽晶圓" },
-  "6613": { "name": "朋億*", "exchange": "TPEx", "tags": "", "sector": "創新板" },
-  "3675": { "name": "德微", "exchange": "TPEx", "tags": "", "sector": "分離式半導體" },
-  "7712": { "name": "博盛半導體", "exchange": "TPEx", "tags": "icdesign", "sector": "IC設計 功率半導體" },
-  "7734": { "name": "印能科技", "exchange": "TPEx", "tags": "", "sector": "數位印刷" },
-  "7828": { "name": "創新服務", "exchange": "TPEx", "tags": "", "sector": "資訊服務" },
-  "8027": { "name": "鈦昇", "exchange": "TPEx", "tags": "packaging", "sector": "導線架封測材料" },
-  "8096": { "name": "擎亞", "exchange": "TPEx", "tags": "", "sector": "系統整合" },
-  "8291": { "name": "尚茂", "exchange": "TPEx", "tags": "", "sector": "電子材料" },
-  "8358": { "name": "金居", "exchange": "TPEx", "tags": "pcb", "sector": "PCB 銅箔" }
+  "063950": {
+    "name": "揚博凱基5B購01",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "權證"
+  },
+  "1303": {
+    "name": "南亞",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "化學工業（南亞塑膠）"
+  },
+  "1714": {
+    "name": "和桐",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "化學工業"
+  },
+  "2061": {
+    "name": "風青",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "精密沖壓件"
+  },
+  "2302": {
+    "name": "麗正",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "PCB"
+  },
+  "2305": {
+    "name": "全友",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "影像設備"
+  },
+  "2342": {
+    "name": "茂矽",
+    "exchange": "TWSE",
+    "tags": "icmanufacturing",
+    "sector": "功率半導體"
+  },
+  "2344": {
+    "name": "華邦電",
+    "exchange": "TWSE",
+    "tags": "icmanufacturing",
+    "sector": "記憶體（DRAM/NOR Flash）"
+  },
+  "2375": {
+    "name": "凱美",
+    "exchange": "TWSE",
+    "tags": "passive",
+    "sector": "被動元件"
+  },
+  "2492": {
+    "name": "華新科",
+    "exchange": "TWSE",
+    "tags": "passive",
+    "sector": "MLCC"
+  },
+  "3481": {
+    "name": "群創",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "面板（LCD）"
+  },
+  "3624": {
+    "name": "光頡",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "整流器/分離式元件"
+  },
+  "4764": {
+    "name": "雙鍵",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "特用化學（雙酚A）"
+  },
+  "4923": {
+    "name": "力士",
+    "exchange": "TPEx",
+    "tags": "power",
+    "sector": "電源供應器"
+  },
+  "6415": {
+    "name": "矽力*-KY",
+    "exchange": "TWSE",
+    "tags": "icdesign",
+    "sector": "IC設計 電源管理"
+  },
+  "6693": {
+    "name": "廣閎科",
+    "exchange": "TPEx",
+    "tags": "icdesign",
+    "sector": "IC設計 類比電源"
+  },
+  "6834": {
+    "name": "天二科技",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "創新板科技"
+  },
+  "7610": {
+    "name": "聯友金屬-創",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "創新板金屬"
+  },
+  "8096": {
+    "name": "擎亞",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "系統整合"
+  },
+  "8996": {
+    "name": "高力",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "散熱模組"
+  },
+  "1718": {
+    "name": "中纖",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "化學纖維"
+  },
+  "2243": {
+    "name": "宏旭-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "車身模具"
+  },
+  "3090": {
+    "name": "日電貿",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "IC 通路代理"
+  },
+  "4551": {
+    "name": "智伸科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "精密機械零件"
+  },
+  "2383": {
+    "name": "台光電",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "CCL（銅箔基板）"
+  },
+  "2455": {
+    "name": "全新",
+    "exchange": "TWSE",
+    "tags": "icmanufacturing",
+    "sector": "GaAs磊晶"
+  },
+  "2478": {
+    "name": "大毅",
+    "exchange": "TWSE",
+    "tags": "passive",
+    "sector": "電阻器"
+  },
+  "2491": {
+    "name": "吉祥全",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子配件"
+  },
+  "2493": {
+    "name": "揚博",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "CCL（銅箔基板）"
+  },
+  "3026": {
+    "name": "禾伸堂",
+    "exchange": "TWSE",
+    "tags": "passive",
+    "sector": "MLCC"
+  },
+  "3149": {
+    "name": "正達",
+    "exchange": "TWSE",
+    "tags": "optical",
+    "sector": "光學玻璃"
+  },
+  "3167": {
+    "name": "大量",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "PCB 檢測設備"
+  },
+  "3532": {
+    "name": "台勝科",
+    "exchange": "TWSE",
+    "tags": "icmanufacturing",
+    "sector": "矽晶圓"
+  },
+  "4807": {
+    "name": "日成-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "工業電腦"
+  },
+  "6442": {
+    "name": "光聖",
+    "exchange": "TWSE",
+    "tags": "optical",
+    "sector": "光通訊元件"
+  },
+  "6830": {
+    "name": "汎銓",
+    "exchange": "TWSE",
+    "tags": "icmanufacturing packaging",
+    "sector": "半導體材料分析"
+  },
+  "6890": {
+    "name": "來億-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "精密五金"
+  },
+  "6924": {
+    "name": "榮惠-KY創",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "創新板"
+  },
+  "8021": {
+    "name": "尖點",
+    "exchange": "TWSE",
+    "tags": "pcb",
+    "sector": "PCB 鑽針"
+  },
+  "8042": {
+    "name": "金山電",
+    "exchange": "TWSE",
+    "tags": "passive",
+    "sector": "被動元件"
+  },
+  "8454": {
+    "name": "富邦媒",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電商"
+  },
+  "3114": {
+    "name": "好德",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "3147": {
+    "name": "大綜",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電腦周邊"
+  },
+  "3163": {
+    "name": "波若威",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "網路設備"
+  },
+  "3285": {
+    "name": "微端",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "3288": {
+    "name": "點晶",
+    "exchange": "TPEx",
+    "tags": "icdesign",
+    "sector": "IC設計 Display Driver"
+  },
+  "3441": {
+    "name": "聯一光",
+    "exchange": "TPEx",
+    "tags": "optical",
+    "sector": "光通訊"
+  },
+  "3523": {
+    "name": "迎輝",
+    "exchange": "TPEx",
+    "tags": "optical",
+    "sector": "光學材料"
+  },
+  "3535": {
+    "name": "晶彩科",
+    "exchange": "TPEx",
+    "tags": "optical",
+    "sector": "光電"
+  },
+  "3581": {
+    "name": "博磊",
+    "exchange": "TPEx",
+    "tags": "icdesign",
+    "sector": "IC設計"
+  },
+  "4402": {
+    "name": "郡都開發",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "建設"
+  },
+  "4542": {
+    "name": "科嶠",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "精密零件"
+  },
+  "4556": {
+    "name": "旭然",
+    "exchange": "TPEx",
+    "tags": "satellite",
+    "sector": "衛星零組件"
+  },
+  "4707": {
+    "name": "磐亞",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "化學工業"
+  },
+  "4991": {
+    "name": "環宇-KY",
+    "exchange": "TPEx",
+    "tags": "satellite",
+    "sector": "衛星寬頻"
+  },
+  "5227": {
+    "name": "立凱-KY",
+    "exchange": "TPEx",
+    "tags": "power",
+    "sector": "EV電池材料"
+  },
+  "5321": {
+    "name": "美而快",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "汽車配件"
+  },
+  "5345": {
+    "name": "馥鴻",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "建設"
+  },
+  "5358": {
+    "name": "金居",
+    "exchange": "TPEx",
+    "tags": "pcb",
+    "sector": "PCB 銅箔"
+  },
+  "5426": {
+    "name": "振發",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "5468": {
+    "name": "凱鈺",
+    "exchange": "TPEx",
+    "tags": "icdesign",
+    "sector": "IC設計 Display Driver"
+  },
+  "5701": {
+    "name": "劍湖山",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "觀光遊樂"
+  },
+  "6127": {
+    "name": "九豪",
+    "exchange": "TPEx",
+    "tags": "passive",
+    "sector": "精密陶瓷"
+  },
+  "6173": {
+    "name": "信昌電",
+    "exchange": "TPEx",
+    "tags": "passive",
+    "sector": "MLCC"
+  },
+  "6187": {
+    "name": "萬潤",
+    "exchange": "TPEx",
+    "tags": "icmanufacturing packaging",
+    "sector": "半導體設備"
+  },
+  "6241": {
+    "name": "鑫永洋",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "網通"
+  },
+  "6488": {
+    "name": "環球晶",
+    "exchange": "TPEx",
+    "tags": "icmanufacturing",
+    "sector": "矽晶圓"
+  },
+  "6613": {
+    "name": "朋億*",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "創新板"
+  },
+  "3675": {
+    "name": "德微",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "分離式半導體"
+  },
+  "7712": {
+    "name": "博盛半導體",
+    "exchange": "TPEx",
+    "tags": "icdesign",
+    "sector": "IC設計 功率半導體"
+  },
+  "7734": {
+    "name": "印能科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "數位印刷"
+  },
+  "7828": {
+    "name": "創新服務",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "資訊服務"
+  },
+  "8027": {
+    "name": "鈦昇",
+    "exchange": "TPEx",
+    "tags": "packaging",
+    "sector": "導線架封測材料"
+  },
+  "8291": {
+    "name": "尚茂",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子材料"
+  },
+  "8358": {
+    "name": "金居",
+    "exchange": "TPEx",
+    "tags": "pcb",
+    "sector": "PCB 銅箔"
+  },
+  "1435": {
+    "name": "中福",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他"
+  },
+  "1447": {
+    "name": "力鵬",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "紡織纖維"
+  },
+  "1515": {
+    "name": "力山",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電機機械"
+  },
+  "1617": {
+    "name": "榮星",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電器電纜"
+  },
+  "2233": {
+    "name": "宇隆",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "汽車工業"
+  },
+  "2303": {
+    "name": "聯電",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "2466": {
+    "name": "冠西電",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
+  },
+  "2483": {
+    "name": "百容",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "2601": {
+    "name": "益航",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "航運業"
+  },
+  "3055": {
+    "name": "蔚華科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子通路"
+  },
+  "3189": {
+    "name": "景碩",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3230": {
+    "name": "錦明",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
+  },
+  "3450": {
+    "name": "聯鈞",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "4169": {
+    "name": "泰宗",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "5425": {
+    "name": "台半",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5464": {
+    "name": "霖宏",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "5489": {
+    "name": "彩富",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "6174": {
+    "name": "安碁",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6217": {
+    "name": "中探針",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6226": {
+    "name": "光鼎",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
+  },
+  "6617": {
+    "name": "共信-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "6620": {
+    "name": "漢達",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "6683": {
+    "name": "雍智科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6907": {
+    "name": "雅特力-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "7795": {
+    "name": "長廣",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "8024": {
+    "name": "佑華",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "8033": {
+    "name": "雷虎",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他"
+  },
+  "8261": {
+    "name": "富鼎",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  }
 }
