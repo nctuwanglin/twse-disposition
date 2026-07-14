@@ -486,7 +486,7 @@
    "thresholds": {
     "current_close": 157.5,
     "latest_date": "2026-07-14",
-    "history_days": 9,
+    "history_days": 30,
     "clause1": {
      "ref_date": "2026-07-03",
      "ref_close": 157.5,
@@ -495,7 +495,9 @@
      "threshold": 204.75,
      "diff_pct": 30.0,
      "triggered": false
-    }
+    },
+    "vol_avg": 9423.068965517241,
+    "vol_days": 29
    }
   },
   {
