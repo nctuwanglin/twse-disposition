@@ -1769,10 +1769,53 @@ def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0):
 # ──────────────────────────────────────────────
 def main():
     force = "--force" in sys.argv
-    # GitHub Actions runner 是 UTC；排程延遲可能跨日，一律以台灣時區取「今天」
-    now_tw = datetime.now(ZoneInfo("Asia/Taipei"))
-    today  = now_tw.date()
-    print(f"[{now_tw:%Y-%m-%d %H:%M:%S}] 開始更新，今天: {today}" + ("（--force）" if force else ""))
+
+    # 「今天」一律以報價 API 回傳的實際交易日為準，不用系統時鐘（無論 UTC 或
+    # Asia/Taipei）。教訓（2026-07-14）：GitHub 排程延遲跨過午夜時，若用系統
+    # 時鐘取「今天」，錢在市場尚未開盤前就已跨日，導致「今天」比最新報價日
+    # 還新一天，誤判成「非交易日」而整批放棄更新——7/13 兩次排程因此都沒有
+    # 寫入任何資料，卻仍回報 success。改用資料本身的日期，不受執行時間影響。
+    print("  TWSE 個股報價...")
+    stock_quotes = fetch_twse_stock_quotes()
+    print("  TPEx 個股報價...")
+    tpex_quotes = fetch_tpex_quotes()
+    # 日期一致性（B6 教訓）：兩市場報價日不一致時棄用 TPEx，避免混入舊價
+    twse_qdate = next((q["date"] for q in stock_quotes.values() if q.get("date")), "")
+    tpex_qdate = next((q["date"] for q in tpex_quotes.values() if q.get("date")), "")
+    if twse_qdate and tpex_qdate and twse_qdate != tpex_qdate:
+        print(f"  WARNING: 報價日不一致 TWSE {twse_qdate} vs TPEx {tpex_qdate}，"
+              f"棄用 TPEx 報價", file=sys.stderr)
+    else:
+        stock_quotes = {**stock_quotes, **tpex_quotes}
+
+    if twse_qdate:
+        today = date(int(twse_qdate[:4]), int(twse_qdate[4:6]), int(twse_qdate[6:8]))
+    else:
+        # 報價完全抓不到（總體性 API 故障）時退回系統時鐘，僅供繼續執行的
+        # 最後手段；後面的處置源防呆通常會先中止。
+        today = datetime.now(ZoneInfo("Asia/Taipei")).date()
+        print(f"  WARNING: 無法取得報價資料日，退回系統時鐘 {today}", file=sys.stderr)
+
+    print(f"開始更新，資料日（今天）: {today}" + ("（--force）" if force else ""))
+
+    global LAST_TRADE_DATE
+    LAST_TRADE_DATE = today
+
+    # 讀上次執行狀態（驟降保險 + KPI 昨日對比 + 新交易日守則共用）
+    state = {}
+    if LAST_COUNTS_PATH.exists():
+        try:
+            state = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            state = {}
+
+    # 新交易日守則：資料日沒有比上次成功處理的日期更新，代表還沒有新收盤資料
+    # 可更新（同日重跑、假日/颱風停市時報價 API 只會重複回傳上個交易日）。
+    # 用「資料日」而非系統時鐘比較，不受排程延遲跨日影響（見上方教訓）。
+    if not force and state.get("date") and today.isoformat() <= state["date"]:
+        print(f"  資料日 {today} 未晚於上次已處理日期 {state['date']}，"
+              f"尚無新交易日資料，跳過更新（確要執行可用 --force）")
+        return
 
     # 抓處置股資料
     print("  TWSE 處置股...")
@@ -1792,39 +1835,13 @@ def main():
     all_rows = twse_rows + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")
 
-    # 抓大盤 & 注意累計 & 個股報價
+    # 抓大盤 & 注意累計
     print("  大盤指數...")
     taiex = fetch_taiex()
     print("  TWSE 注意累計...")
     notetrans_twse = fetch_twse_notetrans()
     print("  TPEx 注意累計...")
     notetrans_tpex = fetch_tpex_warning()
-    print("  TWSE 個股報價...")
-    stock_quotes = fetch_twse_stock_quotes()
-    print("  TPEx 個股報價...")
-    tpex_quotes = fetch_tpex_quotes()
-    # 日期一致性（B6 教訓）：兩市場報價日不一致時棄用 TPEx，避免混入舊價
-    twse_qdate = next((q["date"] for q in stock_quotes.values() if q.get("date")), "")
-    tpex_qdate = next((q["date"] for q in tpex_quotes.values() if q.get("date")), "")
-    if twse_qdate and tpex_qdate and twse_qdate != tpex_qdate:
-        print(f"  WARNING: 報價日不一致 TWSE {twse_qdate} vs TPEx {tpex_qdate}，"
-              f"棄用 TPEx 報價", file=sys.stderr)
-    else:
-        stock_quotes = {**stock_quotes, **tpex_quotes}
-
-    # 非交易日守則：全股報價資料日 ≠ 今日代表今日休市（假日/颱風停市），
-    # 名單無新內容，若照常執行會蓋上錯誤日期戳、產生誤導的「明日觸發」文字。
-    if (not force and twse_qdate
-            and twse_qdate != today.strftime("%Y%m%d")):
-        print(f"  今日 {today} 非交易日（最新報價日 {twse_qdate}），"
-              f"跳過更新（確要執行可用 --force）")
-        return
-
-    # 連續達標判斷的基準日（處理颱風假等非週末休市）
-    global LAST_TRADE_DATE
-    if twse_qdate:
-        LAST_TRADE_DATE = date(int(twse_qdate[:4]), int(twse_qdate[4:6]),
-                               int(twse_qdate[6:8]))
 
     print("  注意累計歷史（計算觸發門檻，TWSE+TPEx）...")
     nt_thresholds = {}
@@ -1859,14 +1876,6 @@ def main():
     twse_count    = sum(1 for s in all_active if s["exchange"] == "TWSE")
     tpex_count    = sum(1 for s in all_active if s["exchange"] == "TPEx")
     second_count  = sum(1 for s in all_active if s["disp_count"] >= 2)
-
-    # 讀上次執行狀態（驟降保險 + KPI 昨日對比共用）
-    state = {}
-    if LAST_COUNTS_PATH.exists():
-        try:
-            state = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
-        except Exception:
-            state = {}
 
     # 檔數驟降保險：處置批次出關是漸進的（單日約 10 檔級別），單日驟降過半
     # 幾乎必是資料源回傳不完整。與上次成功執行的檔數比對，異常即中止。
