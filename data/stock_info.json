@@ -618,5 +618,29 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "半導體"
+  },
+  "2332": {
+    "name": "友訊",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "2434": {
+    "name": "統懋",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5475": {
+    "name": "德宏",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6831": {
+    "name": "邁科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電腦及週邊設備"
   }
 }

@@ -75,5 +75,16 @@
   "name": "雍智科技",
   "period_end": "2026-07-10",
   "period_start": "2026-06-29"
+ },
+ "8024:2026-06-30:2026-07-13": {
+  "after5_pct": null,
+  "code": "8024",
+  "during_pct": 3.692307692307706,
+  "entry_close": 16.25,
+  "exchange": "TPEx",
+  "exit_close": 16.85,
+  "name": "佑華",
+  "period_end": "2026-07-13",
+  "period_start": "2026-06-30"
  }
 }
