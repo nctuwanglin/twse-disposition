@@ -1417,73 +1417,6 @@ def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 2
 # ──────────────────────────────────────────────
-def render_radar(notetrans_all, stock_info, today, stock_quotes=None, nt_thresholds=None):
-    """
-    下一批雷達（#14）：注意累計股按觸發距離排序。
-    危險度 = (還需連續達標日數 asc, 第一款門檻距離% asc)。
-    """
-    if not notetrans_all:
-        return ""
-    sq, thr = stock_quotes or {}, nt_thresholds or {}
-    items = []
-    for r in notetrans_all:
-        a = analyze_criteria(r.get("raw_criteria", ""))
-        max_c = a["max_consecutive"] if a else 0
-        streak_alive = bool(a) and streak_is_alive(a["latest_end"], today)
-        need = 0 if max_c >= 3 else (3 - max_c if streak_alive else 3)
-        t  = thr.get(r["code"])
-        c1 = t.get("clause1") if t else None
-        diff = c1["diff_pct"] if c1 else None
-        items.append((need, diff if diff is not None else 999, r, max_c, c1))
-    items.sort(key=lambda x: (x[0], x[1]))
-
-    rows = []
-    for rank, (need, _, r, max_c, c1) in enumerate(items, 1):
-        meta   = get_stock_meta(r["code"], stock_info)
-        sector = meta["sector"] or r["exchange"]
-        if need == 0:
-            status = '<span class="pill pill-red">已達處置條件・待公告</span>'
-        elif need == 1:
-            status = '<span class="pill pill-amber">差 1 日</span>'
-        else:
-            status = f'<span class="pill pill-gray">差 {need} 日</span>'
-        prog = "".join(
-            f'<span class="inline-block" style="width:18px;height:5px;border-radius:2px;'
-            f'margin-right:2px;background:{"#eab308" if i < max_c else "#334155"}"></span>'
-            for i in range(3))
-        cond = ""
-        if c1 and not c1["triggered"]:
-            cond = (f'<span class="text-slate-500 text-[11px]">明日收盤 ≥ '
-                    f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
-                    f'（差 {c1["diff_pct"]:.1f}%）</span>')
-        elif c1:
-            cond = '<span class="text-red-300 text-[11px]">最新收盤已達第一款門檻</span>'
-        cond_html = f'<div class="mt-0.5">{cond}</div>' if cond else ""
-        rows.append(
-            f'<div class="table-row">'
-            f'<div class="flex items-center gap-2">'
-            f'<span class="mono text-slate-600">{rank}</span>'
-            f'<span class="ticker text-yellow-300 font-bold">{r["code"]}</span>'
-            f'</div>'
-            f'<div><div class="text-sm font-semibold">{r["name"]}'
-            f'{_quote_span(sq.get(r["code"]))}</div>'
-            f'<div class="sector">{sector}</div></div>'
-            f'<div class="end-date-desktop text-right">'
-            f'{status}'
-            f'<div class="mt-1">{prog}<span class="text-[10px] text-slate-500 ml-1">連續 {max_c}/3</span></div>'
-            f'{cond_html}'
-            f'</div>'
-            f'</div>')
-
-    return f"""    <div class="card mt-3">
-      <div class="p-3 border-b border-slate-800">
-        <div class="text-sm font-semibold">⚡ 下一批雷達 — 依觸發距離排序</div>
-        <div class="text-[11px] text-slate-400 mt-1">注意累計股：連續 3 次（或 30 日累計 6 次）達注意標準即進處置。門檻為第一款絕對條件（必要非充分）。</div>
-      </div>
-      <div>{"".join(rows)}</div>
-    </div>"""
-
-
 def render_release_schedule(active_groups, today):
     """出關時間軸（#18）：現行有效管制（每檔取 period_end 最大）按出關日分組。"""
     best = {}
@@ -1523,8 +1456,7 @@ def render_release_schedule(active_groups, today):
     </div>"""
 
 
-def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None,
-                        radar_html=""):
+def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None):
     ps     = latest_batch["period_start"]
     pe     = latest_batch["period_end"]
     stocks = latest_batch["stocks"]
@@ -1548,26 +1480,42 @@ def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None,
         <div class="text-[10px] text-slate-500 mono">{count} 檔</div>
       </div>
       <div>{rows_html}</div>
-    </div>
-{radar_html}"""
+    </div>"""
 
 
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 3
 # ──────────────────────────────────────────────
+def _notetrans_urgency(r, today, thr):
+    """注意累計股的危險度：(need, diff)。
+    need = 還需連續達標日數（0=已達處置條件）；diff = 第一款門檻距離%（越小越近）。
+    排序用此鍵，越前面代表越接近進處置（原「下一批雷達」的核心邏輯）。"""
+    a = analyze_criteria(r.get("raw_criteria", ""))
+    max_c = a["max_consecutive"] if a else 0
+    streak_alive = bool(a) and streak_is_alive(a["latest_end"], today)
+    need = 0 if max_c >= 3 else (3 - max_c if streak_alive else 3)
+    c1 = (thr.get(r["code"]) or {}).get("clause1")
+    diff = c1["diff_pct"] if c1 else None
+    return need, (diff if diff is not None else 999.0), max_c, c1
+
+
 def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, nt_thresholds=None):
+    """注意累計清單，依觸發距離（危險度）排序：越接近進處置越上面。
+    每列 = 危險度狀態 + 連續進度條 + 明日觸發價（原雷達內容），底下可展開完整門檻明細。"""
     if not notetrans_list:
         return ""
     sq  = stock_quotes   or {}
     thr = nt_thresholds  or {}
+    ranked = sorted(notetrans_list, key=lambda r: _notetrans_urgency(r, today, thr)[:2])
+
     rows = []
-    for r in notetrans_list:
+    for r in ranked:
         meta     = get_stock_meta(r["code"], stock_info)
         tags     = f' data-tags="{meta["tags"]}"' if meta["tags"] else ""
         sector   = meta["sector"] or r.get("exchange","")
         analysis = analyze_criteria(r.get("raw_criteria",""))
-        max_c    = analysis["max_consecutive"] if analysis else 0
         quote    = sq.get(r["code"])
+        need, _, max_c, c1 = _notetrans_urgency(r, today, thr)
 
         if max_c >= 3:
             sev_color = "bg-red-500"
@@ -1576,18 +1524,34 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             sev_color = "bg-yellow-500"
             ticker_cl = "text-yellow-300 font-bold"
 
-        if max_c >= 3:
-            pill_extra = f'<span class="pill pill-red ml-1">超門檻</span>'
-        elif max_c == 2:
-            pill_extra = f'<span class="pill pill-amber ml-1">差1日</span>'
+        # 危險度狀態（吸收原雷達的「差 N 日」判斷）
+        if need == 0:
+            status = '<span class="pill pill-red">已達處置條件・待公告</span>'
+        elif need == 1:
+            status = '<span class="pill pill-amber">差 1 日</span>'
         else:
-            pill_extra = ''
+            status = f'<span class="pill pill-gray">差 {need} 日</span>'
 
-        # 觸發條件（僅 TWSE 有歷史 API）
-        t_data    = thr.get(r["code"])
-        # 用最新資料日期作為標題日期；若資料是今日則顯示今日
-        cond_date = t_data["latest_date"] if t_data else today
-        cond_html = render_attention_conditions(t_data, cond_date) if t_data else ""
+        prog = "".join(
+            f'<span class="inline-block" style="width:18px;height:5px;border-radius:2px;'
+            f'margin-right:2px;background:{"#eab308" if i < max_c else "#334155"}"></span>'
+            for i in range(3))
+
+        # 明日觸發價（第一款絕對條件）
+        if c1 and not c1["triggered"]:
+            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">明日收盤 ≥ '
+                    f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
+                    f'（差 {c1["diff_pct"]:.1f}%）</span></div>')
+        elif c1:
+            tomo = ('<div class="mt-0.5"><span class="text-red-300 text-[11px]">'
+                    '最新收盤已達第一款門檻</span></div>')
+        else:
+            tomo = ""
+
+        # 展開明細：達標摘要 + 完整門檻條件（TWSE/TPEx 皆有 thr）
+        t_data      = thr.get(r["code"])
+        cond_date   = t_data["latest_date"] if t_data else today
+        cond_html   = render_attention_conditions(t_data, cond_date) if t_data else ""
         detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
 
         rows.append(
@@ -1597,11 +1561,13 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             f'<span class="ticker {ticker_cl}">{r["code"]}</span>'
             f'</div>'
             f'<div>'
-            f'<div class="text-sm font-semibold">{r["name"]}</div>'
+            f'<div class="text-sm font-semibold">{r["name"]}{_quote_span(quote)}</div>'
             f'<div class="sector">{sector}</div>'
             f'</div>'
             f'<div class="end-date-desktop text-right">'
-            f'<span class="pill pill-yellow">注意累計</span>{pill_extra}'
+            f'{status}'
+            f'<div class="mt-1">{prog}<span class="text-[10px] text-slate-500 ml-1">連續 {max_c}/3</span></div>'
+            f'{tomo}'
             f'</div>'
             + detail_html
             + '</div>'
@@ -1615,29 +1581,15 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
     sq  = stock_quotes  or {}
     thr = nt_thresholds or {}
 
-    # ── Section 1: 注意累計（接近處置門檻）──
+    # ── Section 1: 注意累計 — 依觸發距離排序（原「下一批雷達」已併入此處）──
+    # TWSE+TPEx 合併成單一排序清單，越上面越接近進處置；每列可展開門檻明細。
     all_notetrans = notetrans_twse + notetrans_tpex
     if all_notetrans:
-        twse_nt = [r for r in all_notetrans if r["exchange"] == "TWSE"]
-        tpex_nt = [r for r in all_notetrans if r["exchange"] == "TPEx"]
-        nt_rows  = ""
-        if twse_nt:
-            nt_rows += (
-                '<div class="text-[10px] tracking-widest text-slate-500 uppercase '
-                'px-3 pt-3 pb-1 mono">TWSE 注意累計</div>'
-                f'<div>{render_notetrans_rows(twse_nt, stock_info, today, sq, thr)}</div>'
-            )
-        if tpex_nt:
-            border = " border-t border-slate-800" if twse_nt else ""
-            nt_rows += (
-                f'<div class="text-[10px] tracking-widest text-slate-500 uppercase '
-                f'px-3 pt-3 pb-1 mono{border}">TPEx 注意累計</div>'
-                f'<div>{render_notetrans_rows(tpex_nt, stock_info, today, sq)}</div>'
-            )
+        nt_rows = render_notetrans_rows(all_notetrans, stock_info, today, sq, thr)
         sections.append(f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
-        <div class="text-sm font-semibold">注意累計中（接近處置門檻）</div>
-        <div class="text-[11px] text-slate-400 mt-1">達連續 3 次或累計 6 次以上之股票</div>
+        <div class="text-sm font-semibold">⚡ 注意累計中 — 依觸發距離排序</div>
+        <div class="text-[11px] text-slate-400 mt-1">連續 3 次（或 30 日累計 6 次）達注意標準即進處置，越上面越接近觸發。門檻為第一款絕對條件（必要非充分）。</div>
       </div>
       <div>{nt_rows}</div>
     </div>""")
@@ -1933,10 +1885,6 @@ def main():
     perf_summary = perf_stats_summary(perf_stats)
     perf_html    = render_perf_stats_card(perf_summary)
 
-    # 下一批雷達（#14）
-    radar_html = render_radar(notetrans_twse + notetrans_tpex, stock_info, today,
-                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds)
-
     # 生成 HTML 片段
     context_html = render_context_banner(
         taiex, total_active, today_released,
@@ -1948,7 +1896,7 @@ def main():
     tab1_html  = render_tab1_batches(active_groups, stock_info, today,
                                      stock_quotes=stock_quotes)
     tab2_html  = render_tab2_content(latest_batch, stock_info, today,
-                                     stock_quotes=stock_quotes, radar_html=radar_html)
+                                     stock_quotes=stock_quotes)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds,
                              perf_html=perf_html)
