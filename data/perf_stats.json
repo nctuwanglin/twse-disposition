@@ -1,4 +1,15 @@
 {
+ "3230:2026-07-01:2026-07-14": {
+  "after5_pct": null,
+  "code": "3230",
+  "during_pct": 15.608180839612483,
+  "entry_close": 46.45,
+  "exchange": "TPEx",
+  "exit_close": 53.7,
+  "name": "錦明",
+  "period_end": "2026-07-14",
+  "period_start": "2026-07-01"
+ },
  "3624:2026-06-24:2026-07-09": {
   "after5_pct": null,
   "code": "3624",
