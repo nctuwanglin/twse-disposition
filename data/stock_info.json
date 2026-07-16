@@ -642,5 +642,41 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電腦及週邊設備"
+  },
+  "3374": {
+    "name": "精材",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5483": {
+    "name": "中美晶",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6861": {
+    "name": "睿生光電",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "7402": {
+    "name": "邑錡",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
+  },
+  "7714": {
+    "name": "創泓科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "數位雲端"
+  },
+  "8383": {
+    "name": "千附",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
