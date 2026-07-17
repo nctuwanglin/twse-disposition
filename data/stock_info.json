@@ -678,5 +678,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "4139": {
+    "name": "馬光-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
   }
 }
