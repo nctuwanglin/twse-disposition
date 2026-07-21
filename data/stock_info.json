@@ -708,5 +708,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "2481": {
+    "name": "強茂",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "4989": {
+    "name": "榮科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
