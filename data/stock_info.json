@@ -720,5 +720,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "6182": {
+    "name": "合晶",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "8028": {
+    "name": "昇陽半導體",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
   }
 }

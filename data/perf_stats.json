@@ -65,6 +65,17 @@
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
  },
+ "6617:2026-07-08:2026-07-21": {
+  "after5_pct": null,
+  "code": "6617",
+  "during_pct": -7.623318385650224,
+  "entry_close": 111.5,
+  "exchange": "TPEx",
+  "exit_close": 103.0,
+  "name": "共信-KY",
+  "period_end": "2026-07-21",
+  "period_start": "2026-07-08"
+ },
  "6620:2026-06-26:2026-07-09": {
   "after5_pct": null,
   "code": "6620",
