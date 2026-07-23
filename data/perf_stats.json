@@ -21,6 +21,17 @@
   "period_end": "2026-07-09",
   "period_start": "2026-06-24"
  },
+ "4707:2026-07-09:2026-07-22": {
+  "after5_pct": null,
+  "code": "4707",
+  "during_pct": -6.587615283267456,
+  "entry_close": 37.95,
+  "exchange": "TPEx",
+  "exit_close": 35.45,
+  "name": "磐亞",
+  "period_end": "2026-07-22",
+  "period_start": "2026-07-09"
+ },
  "5321:2026-06-29:2026-07-10": {
   "after5_pct": null,
   "code": "5321",
@@ -64,6 +75,17 @@
   "name": "彩富",
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
+ },
+ "6174:2026-07-09:2026-07-22": {
+  "after5_pct": null,
+  "code": "6174",
+  "during_pct": -19.934640522875824,
+  "entry_close": 61.2,
+  "exchange": "TPEx",
+  "exit_close": 49.0,
+  "name": "安碁",
+  "period_end": "2026-07-22",
+  "period_start": "2026-07-09"
  },
  "6617:2026-07-08:2026-07-21": {
   "after5_pct": null,
