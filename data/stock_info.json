@@ -732,5 +732,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "半導體"
+  },
+  "6414": {
+    "name": "樺漢",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電腦及週邊設備"
+  },
+  "9103": {
+    "name": "美德醫療-DR",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": ""
   }
 }
