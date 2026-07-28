@@ -750,5 +750,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "綠能環保"
+  },
+  "4979": {
+    "name": "華星光",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
   }
 }

@@ -130,5 +130,16 @@
   "name": "佑華",
   "period_end": "2026-07-13",
   "period_start": "2026-06-30"
+ },
+ "8027:2026-07-14:2026-07-27": {
+  "after5_pct": null,
+  "code": "8027",
+  "during_pct": -19.709543568464728,
+  "entry_close": 241.0,
+  "exchange": "TPEx",
+  "exit_close": 193.5,
+  "name": "鈦昇",
+  "period_end": "2026-07-27",
+  "period_start": "2026-07-14"
  }
 }
