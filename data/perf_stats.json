@@ -21,6 +21,28 @@
   "period_end": "2026-07-09",
   "period_start": "2026-06-24"
  },
+ "4542:2026-07-15:2026-07-28": {
+  "after5_pct": null,
+  "code": "4542",
+  "during_pct": -18.10218978102189,
+  "entry_close": 342.5,
+  "exchange": "TPEx",
+  "exit_close": 280.5,
+  "name": "科嶠",
+  "period_end": "2026-07-28",
+  "period_start": "2026-07-15"
+ },
+ "4556:2026-07-15:2026-07-28": {
+  "after5_pct": null,
+  "code": "4556",
+  "during_pct": -12.448132780082988,
+  "entry_close": 120.5,
+  "exchange": "TPEx",
+  "exit_close": 105.5,
+  "name": "旭然",
+  "period_end": "2026-07-28",
+  "period_start": "2026-07-15"
+ },
  "4707:2026-07-09:2026-07-22": {
   "after5_pct": null,
   "code": "4707",
