@@ -163,5 +163,27 @@
   "name": "鈦昇",
   "period_end": "2026-07-27",
   "period_start": "2026-07-14"
+ },
+ "8096:2026-07-16:2026-07-29": {
+  "after5_pct": null,
+  "code": "8096",
+  "during_pct": -22.26027397260274,
+  "entry_close": 146.0,
+  "exchange": "TPEx",
+  "exit_close": 113.5,
+  "name": "擎亞",
+  "period_end": "2026-07-29",
+  "period_start": "2026-07-16"
+ },
+ "8291:2026-07-16:2026-07-29": {
+  "after5_pct": null,
+  "code": "8291",
+  "during_pct": 59.03614457831328,
+  "entry_close": 24.9,
+  "exchange": "TPEx",
+  "exit_close": 39.6,
+  "name": "尚茂",
+  "period_end": "2026-07-29",
+  "period_start": "2026-07-16"
  }
 }

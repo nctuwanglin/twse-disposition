@@ -756,5 +756,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "通信網路"
+  },
+  "4939": {
+    "name": "亞電",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6739": {
+    "name": "竹陞科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
   }
 }
