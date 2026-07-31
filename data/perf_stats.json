@@ -98,6 +98,17 @@
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
  },
+ "6173:2026-07-17:2026-07-30": {
+  "after5_pct": null,
+  "code": "6173",
+  "during_pct": -38.51508120649652,
+  "entry_close": 215.5,
+  "exchange": "TPEx",
+  "exit_close": 132.5,
+  "name": "信昌電",
+  "period_end": "2026-07-30",
+  "period_start": "2026-07-17"
+ },
  "6174:2026-07-09:2026-07-22": {
   "after5_pct": null,
   "code": "6174",
@@ -141,6 +152,28 @@
   "name": "雍智科技",
   "period_end": "2026-07-10",
   "period_start": "2026-06-29"
+ },
+ "6907:2026-07-17:2026-07-30": {
+  "after5_pct": null,
+  "code": "6907",
+  "during_pct": -37.23849372384937,
+  "entry_close": 239.0,
+  "exchange": "TPEx",
+  "exit_close": 150.0,
+  "name": "雅特力-KY",
+  "period_end": "2026-07-30",
+  "period_start": "2026-07-17"
+ },
+ "7714:2026-07-17:2026-07-30": {
+  "after5_pct": null,
+  "code": "7714",
+  "during_pct": -37.96526054590571,
+  "entry_close": 201.5,
+  "exchange": "TPEx",
+  "exit_close": 125.0,
+  "name": "創泓科技",
+  "period_end": "2026-07-30",
+  "period_start": "2026-07-17"
  },
  "8024:2026-06-30:2026-07-13": {
   "after5_pct": null,

@@ -768,5 +768,23 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "其他電子"
+  },
+  "6213": {
+    "name": "聯茂",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6531": {
+    "name": "愛普*",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "8046": {
+    "name": "南電",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
