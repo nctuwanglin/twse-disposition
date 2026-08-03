@@ -786,5 +786,23 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "3362": {
+    "name": "先進光",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
+  },
+  "6141": {
+    "name": "柏承",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6451": {
+    "name": "訊芯-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
   }
 }

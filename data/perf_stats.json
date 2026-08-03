@@ -218,5 +218,16 @@
   "name": "尚茂",
   "period_end": "2026-07-29",
   "period_start": "2026-07-16"
+ },
+ "8383:2026-07-20:2026-07-31": {
+  "after5_pct": null,
+  "code": "8383",
+  "during_pct": -23.03370786516854,
+  "entry_close": 89.0,
+  "exchange": "TPEx",
+  "exit_close": 68.5,
+  "name": "千附",
+  "period_end": "2026-07-31",
+  "period_start": "2026-07-20"
  }
 }
