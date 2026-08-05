@@ -10,6 +10,17 @@
   "period_end": "2026-07-14",
   "period_start": "2026-07-01"
  },
+ "3288:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "3288",
+  "during_pct": -3.7807183364839347,
+  "entry_close": 26.45,
+  "exchange": "TPEx",
+  "exit_close": 25.45,
+  "name": "點晶",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
+ },
  "3624:2026-06-24:2026-07-09": {
   "after5_pct": null,
   "code": "3624",
@@ -20,6 +31,28 @@
   "name": "光頡",
   "period_end": "2026-07-09",
   "period_start": "2026-06-24"
+ },
+ "3624:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "3624",
+  "during_pct": -25.192519251925194,
+  "entry_close": 90.9,
+  "exchange": "TPEx",
+  "exit_close": 68.0,
+  "name": "光頡",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
+ },
+ "3675:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "3675",
+  "during_pct": -5.607476635514019,
+  "entry_close": 267.5,
+  "exchange": "TPEx",
+  "exit_close": 252.5,
+  "name": "德微",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
  },
  "4139:2026-07-21:2026-08-03": {
   "after5_pct": null,
@@ -120,6 +153,17 @@
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
  },
+ "6173:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "6173",
+  "during_pct": -6.000000000000005,
+  "entry_close": 175.0,
+  "exchange": "TPEx",
+  "exit_close": 164.5,
+  "name": "信昌電",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
+ },
  "6174:2026-07-09:2026-07-22": {
   "after5_pct": null,
   "code": "6174",
@@ -163,6 +207,28 @@
   "name": "雍智科技",
   "period_end": "2026-07-10",
   "period_start": "2026-06-29"
+ },
+ "6683:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "6683",
+  "during_pct": -6.8376068376068355,
+  "entry_close": 1170.0,
+  "exchange": "TPEx",
+  "exit_close": 1090.0,
+  "name": "雍智科技",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
+ },
+ "6727:2026-07-22:2026-08-04": {
+  "after5_pct": null,
+  "code": "6727",
+  "during_pct": 11.2781954887218,
+  "entry_close": 332.5,
+  "exchange": "TPEx",
+  "exit_close": 370.0,
+  "name": "亞泰金屬",
+  "period_end": "2026-08-04",
+  "period_start": "2026-07-22"
  },
  "6907:2026-07-17:2026-07-30": {
   "after5_pct": null,
