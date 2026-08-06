@@ -175,6 +175,17 @@
   "period_end": "2026-07-22",
   "period_start": "2026-07-09"
  },
+ "6217:2026-07-23:2026-08-05": {
+  "after5_pct": null,
+  "code": "6217",
+  "during_pct": -14.782608695652177,
+  "entry_close": 172.5,
+  "exchange": "TPEx",
+  "exit_close": 147.0,
+  "name": "中探針",
+  "period_end": "2026-08-05",
+  "period_start": "2026-07-23"
+ },
  "6617:2026-07-08:2026-07-21": {
   "after5_pct": null,
   "code": "6617",
