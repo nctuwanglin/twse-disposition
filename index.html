@@ -929,8 +929,10 @@
       ⚠ 本資訊僅供研究參考，不構成投資建議。實際資料請以證交所／櫃買中心官方公告為準。
     </div>
     <div class="mt-2">
-      <img src="https://hits.sh/nctuwanglin.github.io/twse-disposition.svg?label=%E7%B8%BD%E7%80%8F%E8%A6%BD&color=f59e0b&style=flat-square" alt="總瀏覽人數" style="height:20px; vertical-align:middle;">
+      相關儀表板：<a href="https://nctuwanglin.github.io/stock-research-notes/" class="text-slate-400 underline hover:text-slate-300">個股研究筆記</a>
+      ・<a href="https://nctuwanglin.github.io/active-etf/" class="text-slate-400 underline hover:text-slate-300">台股主動式ETF</a>
     </div>
+    <div class="mt-2 mono flex items-center gap-3" id="visits">瀏覽統計載入中…</div>
   </footer>
 </main>
 
@@ -1023,6 +1025,21 @@
       }
     }
   }
+
+  // ---------- VISITOR COUNTER（同信用卡指南站的 counterapi.dev 做法）----------
+  (function(){
+    const NS = "wanglin-twse-disposition";
+    const base = `https://api.counterapi.dev/v1/${NS}`;
+    const today = new Date().toISOString().slice(0,10).replace(/-/g,"");
+    const el = document.getElementById('visits');
+    if (!el) return;
+    Promise.all([
+      fetch(`${base}/total/up`).then(r=>r.json()),
+      fetch(`${base}/day-${today}/up`).then(r=>r.json()),
+    ]).then(([total,day])=>{
+      el.innerHTML = `<span>今日瀏覽 <b class="text-slate-300">${day.count.toLocaleString()}</b></span><span>累計瀏覽 <b class="text-slate-300">${total.count.toLocaleString()}</b></span>`;
+    }).catch(()=>{ el.textContent = ""; });
+  })();
 </script>
 </body>
 </html>
