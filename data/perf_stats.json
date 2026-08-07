@@ -65,6 +65,17 @@
   "period_end": "2026-08-03",
   "period_start": "2026-07-21"
  },
+ "4139:2026-07-24:2026-08-06": {
+  "after5_pct": null,
+  "code": "4139",
+  "during_pct": -8.018867924528294,
+  "entry_close": 42.4,
+  "exchange": "TPEx",
+  "exit_close": 39.0,
+  "name": "馬光-KY",
+  "period_end": "2026-08-06",
+  "period_start": "2026-07-24"
+ },
  "4542:2026-07-15:2026-07-28": {
   "after5_pct": null,
   "code": "4542",

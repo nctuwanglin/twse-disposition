@@ -804,5 +804,47 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "半導體"
+  },
+  "1815": {
+    "name": "富喬",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "2059": {
+    "name": "川湖",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "3037": {
+    "name": "欣興",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "3081": {
+    "name": "聯亞",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "3653": {
+    "name": "健策",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "4971": {
+    "name": "IET-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5351": {
+    "name": "鈺創",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
