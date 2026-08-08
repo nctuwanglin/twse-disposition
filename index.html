@@ -1026,18 +1026,25 @@
     }
   }
 
-  // ---------- VISITOR COUNTER（同信用卡指南站的 counterapi.dev 做法）----------
+  // 瀏覽統計：Abacus（免註冊、免API key）。原用的 CounterAPI v1 已於 2026/07 停用（410），故遷移。
+  // /hit/ 會遞增並回傳 {"value":N}；日計數以台灣時間(UTC+8)換日，避免 UTC 造成早上8點才跨日。
   (function(){
-    const NS = "wanglin-twse-disposition";
-    const base = `https://api.counterapi.dev/v1/${NS}`;
-    const today = new Date().toISOString().slice(0,10).replace(/-/g,"");
+    const NS = "nctuwanglin-twse-disposition";
+    const base = `https://abacus.jasoncameron.dev/hit/${NS}`;
+    const today = new Date(Date.now()+8*3600*1000).toISOString().slice(0,10).replace(/-/g,"");
     const el = document.getElementById('visits');
     if (!el) return;
-    Promise.all([
-      fetch(`${base}/total/up`).then(r=>r.json()),
-      fetch(`${base}/day-${today}/up`).then(r=>r.json()),
+    const num = v => (v && typeof v.value === 'number') ? v.value.toLocaleString('en-US') : null;
+    Promise.allSettled([
+      fetch(`${base}/total`).then(r=>r.json()),
+      fetch(`${base}/day-${today}`).then(r=>r.json()),
     ]).then(([total,day])=>{
-      el.innerHTML = `<span>今日瀏覽 <b class="text-slate-300">${day.count.toLocaleString()}</b></span><span>累計瀏覽 <b class="text-slate-300">${total.count.toLocaleString()}</b></span>`;
+      const t = total.status==='fulfilled' ? num(total.value) : null;
+      const d = day.status==='fulfilled' ? num(day.value) : null;
+      const parts = [];
+      if (d) parts.push(`<span>今日瀏覽 <b class="text-slate-300">${d}</b></span>`);
+      if (t) parts.push(`<span>累計瀏覽 <b class="text-slate-300">${t}</b></span>`);
+      el.innerHTML = parts.join('');
     }).catch(()=>{ el.textContent = ""; });
   })();
 </script>
