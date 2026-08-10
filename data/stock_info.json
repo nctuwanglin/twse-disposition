@@ -846,5 +846,29 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "2464": {
+    "name": "盟立",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "3006": {
+    "name": "晶豪科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3443": {
+    "name": "創意",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "4722": {
+    "name": "國精化",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "化學工業"
   }
 }

@@ -318,6 +318,17 @@
   "period_end": "2026-07-29",
   "period_start": "2026-07-16"
  },
+ "8291:2026-07-27:2026-08-07": {
+  "after5_pct": null,
+  "code": "8291",
+  "during_pct": 2.6282853566958586,
+  "entry_close": 39.95,
+  "exchange": "TPEx",
+  "exit_close": 41.0,
+  "name": "尚茂",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-27"
+ },
  "8383:2026-07-20:2026-07-31": {
   "after5_pct": null,
   "code": "8383",
