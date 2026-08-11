@@ -10,6 +10,11 @@ on:
 
   # 允許手動觸發（測試用）
   workflow_dispatch:
+    inputs:
+      force:
+        description: "強制重新產生（略過「無新交易日」守則；改版後要讓當天頁面重新渲染時使用）"
+        type: boolean
+        default: false
 
 jobs:
   update-dashboard:
@@ -31,7 +36,15 @@ jobs:
         run: python -m unittest discover -s tests -q
 
       - name: Run update script
-        run: python scripts/update_dashboard.py
+        # 經 env 傳入布林值再由 shell 判斷，避免把 inputs 直接內插進 run:
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [ "$FORCE" = "true" ]; then
+            python scripts/update_dashboard.py --force
+          else
+            python scripts/update_dashboard.py
+          fi
 
       - name: Check for changes
         id: diff
