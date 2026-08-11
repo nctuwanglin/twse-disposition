@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from update_dashboard import (          # noqa: E402
     roc_to_date, parse_period, analyze_criteria, parse_criteria,
     get_auction_type, get_disposition_count, calculate_attention_thresholds,
-    apply_new_rule_period,
+    apply_new_rule_period, prev_trading_day,
 )
 
 
@@ -174,6 +174,41 @@ class TestThresholds(unittest.TestCase):
 
     def test_insufficient_history(self):
         self.assertIsNone(calculate_attention_thresholds(self._hist([100.0] * 3)))
+
+
+class TestPrevTradingDay(unittest.TestCase):
+    """
+    「今日出關」的基準日。舊版拿 today 去比對 released_groups（其篩選條件是
+    period_end < today），兩者互斥導致數字恆為 0；正解是比對前一交易日——
+    處置迄日當天仍受管制，次一交易日才恢復正常交易。
+    """
+
+    def test_uses_last_processed_trading_day(self):
+        # 週二，上次執行是週一 → 前一交易日 = 週一
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 11), {"date": "2026-08-10"}),
+            date(2026, 8, 10))
+
+    def test_skips_holiday_gap_via_baseline(self):
+        # 中間隔了颱風停市／連假：以實際有資料的日子為準，不是單純減一天
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 11), {"date": "2026-08-06"}),
+            date(2026, 8, 6))
+
+    def test_falls_back_to_previous_weekday(self):
+        # 沒有 baseline（首次執行）→ 退回前一平日；週一應回到上週五
+        self.assertEqual(prev_trading_day(date(2026, 8, 10), None), date(2026, 8, 7))
+
+    def test_ignores_stale_baseline_not_before_today(self):
+        # 同日重跑時 baseline 可能等於今天，不可當成前一交易日
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 11), {"date": "2026-08-11"}),
+            date(2026, 8, 10))
+
+    def test_ignores_malformed_baseline(self):
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 11), {"date": "not-a-date"}),
+            date(2026, 8, 10))
 
 
 if __name__ == "__main__":

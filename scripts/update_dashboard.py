@@ -483,6 +483,25 @@ def streak_is_alive(latest_end, today):
         return latest_end >= LAST_TRADE_DATE
     return next_weekday(latest_end) > today
 
+def prev_trading_day(today, baseline=None):
+    """
+    今天的前一個交易日。優先採用上次成功執行的資料日（data/last_counts.json），
+    那是實際有收盤資料的日子，天然排除國定假日與颱風停市；取不到才退回前一平日。
+    用於判斷「今日出關」：處置迄日當天仍受管制，次一交易日才恢復正常交易。
+    """
+    if baseline and baseline.get("date"):
+        try:
+            d = date.fromisoformat(baseline["date"])
+            if d < today:
+                return d
+        except (ValueError, TypeError):
+            pass
+    d = today - timedelta(days=1)
+    while d.weekday() >= 5:
+        d -= timedelta(days=1)
+    return d
+
+
 def fmt_weekday(d):
     return f"{d.month}/{d.day}（{_DOW_ZH[d.weekday()]}）"
 
@@ -1442,7 +1461,8 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
     if is_latest:
         pill = '<span class="pill pill-amber">最新公告 🆕</span>'
     elif is_expiring:
-        pill = '<span class="pill pill-red">今日出關 ⏰</span>'
+        # 迄日當天仍受管制，次一交易日才恢復正常交易
+        pill = '<span class="pill pill-red">最後一天 ⏰</span>'
     else:
         pill = '<span class="pill pill-gray">處置中</span>'
 
@@ -1503,7 +1523,7 @@ def render_release_schedule(active_groups, today):
     for pe in sorted(by_end):
         stocks = sorted(by_end[pe], key=lambda s: s["code"])
         days   = (pe - today).days
-        tag    = ('<span class="pill pill-red">今日</span>' if days == 0
+        tag    = ('<span class="pill pill-red">最後一天</span>' if days == 0
                   else f'<span class="mono text-slate-500">D+{days}</span>')
         names  = "、".join(f'{s["name"]}({s["code"]})' for s in stocks[:8])
         if len(stocks) > 8:
@@ -1518,7 +1538,7 @@ def render_release_schedule(active_groups, today):
     return f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">📅 出關排程</div>
-        <div class="text-[11px] text-slate-400 mt-1">依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
+        <div class="text-[11px] text-slate-400 mt-1">日期為處置<span class="text-slate-300">最後一日</span>，次一交易日恢復正常交易 · 依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
       </div>
       <div>{"".join(rows)}</div>
     </div>"""
@@ -1644,7 +1664,7 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
 
 
 def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                stock_quotes=None, nt_thresholds=None, perf_html=""):
+                stock_quotes=None, nt_thresholds=None, perf_html="", prev_trading=None):
     sections = []
     sq  = stock_quotes  or {}
     thr = nt_thresholds or {}
@@ -1674,8 +1694,9 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             stocks = grp["stocks"]
             if not stocks:
                 continue
-            is_today = (pe == today)
-            label_pill = "今日出關 ⏰" if is_today else f"{fmt_short(pe)} 出關"
+            # pe 是處置最後一日；pe == 前一交易日 ⇒ 今天起恢復正常交易
+            is_today = (pe == prev_trading)
+            label_pill = "今日恢復交易 ⏰" if is_today else f"{fmt_short(pe)} 期滿"
             pill_cls   = "pill-red" if is_today else "pill-gray"
             count      = len(stocks)
 
@@ -1920,8 +1941,12 @@ def main():
             if prev_v is not None:
                 deltas[key] = cur - int(prev_v)
 
-    # 今日出關
-    today_released = sum(len(g["stocks"]) for pe, g in released_groups.items() if pe == today)
+    # 今日出關 = 前一交易日為處置最後一日者，今天起恢復正常交易。
+    # （舊版比對 pe == today，但 released_groups 的篩選條件是 pe < today，
+    #   兩者互斥導致此數字恆為 0；處置迄日當天仍受管制，不算已出關。）
+    prev_trading   = prev_trading_day(today, baseline)
+    today_released = sum(len(g["stocks"]) for pe, g in released_groups.items()
+                         if pe == prev_trading)
 
     # 最新批次（active + upcoming 中 period_start 最大）
     all_combined = {**active_groups, **upcoming_groups}
@@ -1967,7 +1992,7 @@ def main():
                                      stock_quotes=stock_quotes)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds,
-                             perf_html=perf_html)
+                             perf_html=perf_html, prev_trading=prev_trading)
     date_html  = render_date_block(today)
 
     # 讀 HTML
