@@ -67,6 +67,21 @@ INDUSTRY_NAMES = {
 # 故此處門檻為「可能觸發的最低價位」（必要非充分條件）。
 ATTENTION_PCT = {"TWSE": (32.0, 100.0), "TPEx": (30.0, 100.0)}
 
+# ── 處置新制（2026-08-10 上路，證交所/櫃買同步）────────────────────────────
+# 1. 處置期間：一般 10 → 5 個營業日；涉當沖警示 12 → 7 個營業日
+# 2. 撮合：原 5 分／20 分（創新板 10 分）一律改為「約每 2 分鐘」，第一次與第二次相同
+# 3. 過渡：新制生效日仍在處置中者立即適用——已達新制日數者當日解除，
+#    未達者續處置至滿 5（或 7）個營業日止，不必做滿原本的 10（或 12）日；
+#    撮合時間則自生效日起一律直接改為 2 分鐘。
+# ⚠ 兩市場的 API 都只回傳「公告當下」的原始條文，不會回頭修改 8/10 前公告的
+#   紀錄（已用 8/7 快照比對確認 0 筆被改），故新制生效前公告、且跨過生效日
+#   仍在處置中的案子，必須由本程式自行換算實際迄日與撮合方式。
+NEW_RULE_DATE      = date(2026, 8, 10)   # 新制生效日
+NEW_RULE_PREV_DAY  = date(2026, 8, 7)    # 生效日前最後一個交易日（已達日數者處置到此為止）
+NEW_RULE_DAYS      = 5                   # 一般處置新制營業日數
+NEW_RULE_DAYS_DT   = 7                   # 涉當沖警示處置新制營業日數
+OLD_RULE_DAYS_DT   = 11                  # 原始長度 ≥ 此值視為當沖警示型（原制 12 日）
+
 REPO_ROOT        = Path(__file__).parent.parent
 HTML_PATH        = REPO_ROOT / "index.html"
 STOCK_INFO_PATH  = REPO_ROOT / "data" / "stock_info.json"
@@ -165,7 +180,58 @@ def is_regular_stock(code):
     return len(code) == 4
 
 
-def get_auction_type(detail_text, measures_text=""):
+def _biz_days_between(start, end):
+    """start~end（含兩端）的營業日數。僅跳週末——換算窗口 7/27–8/18 無國定假日。"""
+    n, d = 0, start
+    while d <= end:
+        if d.weekday() < 5:
+            n += 1
+        d += timedelta(days=1)
+    return n
+
+
+def _add_biz_days(start, n):
+    """自 start 起算的第 n 個營業日（start 本身為第 1 日）。"""
+    d = start
+    while d.weekday() >= 5:
+        d += timedelta(days=1)
+    count = 1
+    while count < n:
+        d += timedelta(days=1)
+        if d.weekday() < 5:
+            count += 1
+    return d
+
+
+def apply_new_rule_period(ann_date, period_start, period_end):
+    """
+    處置新制（2026-08-10）過渡換算：把「生效前公告、且跨過生效日仍在處置中」
+    的案子，換算成新制實際迄日。兩市場 API 都不會回頭改舊紀錄，故須自行計算。
+
+    - 生效日起公告者：API 已是新制日數，原樣返回
+    - 生效前已結束者：不受影響，原樣返回
+    - 其餘：迄日 = 自起始日起第 5（涉當沖警示者 7）個營業日，
+      但至少到生效日前一交易日（生效日前已達日數者當日解除），
+      且不得晚於原迄日（新制只縮短、不延長）
+    """
+    if ann_date >= NEW_RULE_DATE or period_end < NEW_RULE_DATE:
+        return period_end
+    orig_len = _biz_days_between(period_start, period_end)
+    new_len  = NEW_RULE_DAYS_DT if orig_len >= OLD_RULE_DAYS_DT else NEW_RULE_DAYS
+    new_end  = max(_add_biz_days(period_start, new_len), NEW_RULE_PREV_DAY)
+    return min(new_end, period_end)
+
+
+def get_auction_type(detail_text, measures_text="", period_end=None):
+    """撮合方式。period_end 請傳「新制換算後」的迄日（見 apply_new_rule_period）。"""
+    txt = f"{detail_text} {measures_text}"
+    # 新制公告文字：TWSE 寫「約每二分鐘」、TPEx 寫「約每2分鐘」
+    # （"二分鐘"/"2分鐘" 不會誤匹配舊制的 "二十分鐘"/"20分鐘"，字元不連續）
+    if "二分鐘" in txt or "2分鐘" in txt:
+        return "2分撮合"
+    # 生效日起仍在處置中者，撮合一律改 2 分鐘——舊公告條文仍寫 5／20 分，須覆寫
+    if period_end is not None and period_end >= NEW_RULE_DATE:
+        return "2分撮合"
     if "五分鐘" in detail_text or "5分鐘" in detail_text:
         return "5分撮合"
     if "二十分鐘" in detail_text or "20分鐘" in detail_text:
@@ -201,6 +267,7 @@ def normalize_twse_rows(raw_rows):
             continue
         detail   = row.get("Detail", "")
         measures = row.get("DispositionMeasures", "")
+        period_end = apply_new_rule_period(ann_date, period_start, period_end)
         result.append({
             "code": code,
             "name": clean_name(row.get("Name", "")),
@@ -208,7 +275,7 @@ def normalize_twse_rows(raw_rows):
             "ann_date": ann_date,
             "period_start": period_start,
             "period_end": period_end,
-            "auction": get_auction_type(detail, measures),
+            "auction": get_auction_type(detail, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
     return result
@@ -233,6 +300,7 @@ def fetch_and_normalize_tpex(referer):
             period_start, period_end = parse_period(period_str)
         except Exception:
             continue
+        period_end = apply_new_rule_period(ann_date, period_start, period_end)
         result.append({
             "code": code,
             "name": clean_name(d.get("證券名稱", "")),
@@ -240,7 +308,7 @@ def fetch_and_normalize_tpex(referer):
             "ann_date": ann_date,
             "period_start": period_start,
             "period_end": period_end,
-            "auction": get_auction_type(measures),
+            "auction": get_auction_type(measures, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
     return result
@@ -527,7 +595,7 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
             f'<span class="text-red-300">已達連續{max_c}日門檻，'
             f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> 盤後可能收到處置公告'
-            f'（第一次：5分撮合）</span>'
+            f'（第一次處置：2分撮合 5 個營業日）</span>'
             f'</div>'
         )
     elif max_c == 2:
@@ -537,7 +605,7 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<span class="text-amber-200">'
             f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> '
             f'若再達注意標準{streak_note} → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
-            f' → <span class="text-red-300">第一次處置（5分撮合）</span></span>'
+            f' → <span class="text-red-300">第一次處置（2分撮合 5 個營業日）</span></span>'
             f'</div>'
         )
     elif max_c == 1:
@@ -1623,7 +1691,7 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             release_blocks.append(f"""      <details class="mb-0" open>
         <summary class="px-3 py-2 flex items-center gap-2 border-b border-slate-800 cursor-pointer">
           <span class="pill {pill_cls}">{label_pill}</span>
-          <span class="text-[11px] text-slate-400">{count} 檔 · 30 日內再犯即升級 20 分撮合</span>
+          <span class="text-[11px] text-slate-400">{count} 檔 · 30 日內再犯即升級二次處置</span>
         </summary>
         <div>{rows_html}</div>
       </details>""")
@@ -1631,7 +1699,7 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
         sections.append(f"""    <div class="card">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">近期出關 — 30 日內再犯升級風險</div>
-        <div class="text-[11px] text-slate-400 mt-1">出關後 30 個交易日內再觸發，直接升級為二次處置（20 分撮合）</div>
+        <div class="text-[11px] text-slate-400 mt-1">出關後 30 個交易日內再觸發，直接升級為二次處置（撮合頻率與期間同第一次，但<span class="text-amber-300">所有委託</span>均須預收款券）</div>
       </div>
 {"".join(release_blocks)}
     </div>""")

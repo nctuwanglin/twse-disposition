@@ -904,16 +904,21 @@
       </summary>
       <div class="mt-3 pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
         <div>
-          <div class="text-slate-400 mb-2 font-semibold">撮合方式</div>
+          <div class="text-slate-400 mb-2 font-semibold">撮合與處置期 <span class="text-[10px] text-amber-400 font-normal">新制 2026/08/10 起</span></div>
           <div class="flex flex-col gap-1.5">
-            <div class="flex items-center gap-2"><span class="pill pill-amber">5分撮合</span><span class="text-slate-400">第一次處置，每 5 分鐘撮合</span></div>
-            <div class="flex items-center gap-2"><span class="pill pill-yellow">10分撮合</span><span class="text-slate-400">創新板處置</span></div>
-            <div class="flex items-center gap-2"><span class="pill pill-red">20分撮合</span><span class="text-slate-400">第二次處置，每 20 分鐘撮合</span></div>
+            <div class="flex items-center gap-2"><span class="pill pill-amber">2分撮合</span><span class="text-slate-400">第一次處置</span></div>
+            <div class="flex items-center gap-2"><span class="pill pill-red">2分撮合</span><span class="pill pill-red">2nd</span><span class="text-slate-400">第二次處置（30 日內再犯）</span></div>
+            <div class="text-[11px] text-slate-500 mt-1">新制統一約每 <span class="mono text-amber-300">2 分鐘</span>撮合，不再分 5 分／20 分（創新板 10 分亦併入）；處置期 <span class="mono text-amber-300">5 個營業日</span>（涉當沖警示者 <span class="mono text-amber-300">7 個</span>）。第一次與第二次的撮合頻率與天數<span class="text-slate-400">相同</span>。</div>
           </div>
         </div>
         <div>
-          <div class="text-slate-400 mb-2 font-semibold">交易限制</div>
-          <div class="text-slate-300 leading-relaxed">處置期間券商會對委託達門檻者「收足全部款券」，信用交易需收足融資自備款／融券保證金。處置期 <span class="mono text-amber-300">10 個營業日</span>。</div>
+          <div class="text-slate-400 mb-2 font-semibold">交易限制（第一次 vs 第二次的真正差別）</div>
+          <div class="flex flex-col gap-1.5">
+            <div><span class="pill pill-amber">第一次</span> <span class="text-slate-300">單筆達 10 交易單位或多筆累積達 30 交易單位以上者，預收全部價金／證券</span></div>
+            <div><span class="pill pill-red">第二次</span> <span class="text-slate-300"><span class="text-amber-300 font-semibold">所有投資人的全部委託</span>皆須預收款券，無門檻</span></div>
+            <div class="text-[11px] text-slate-500 mt-1">兩者信用交易皆須收足融資自備款／融券保證金。</div>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-2 pt-2 border-t border-slate-800">新制前公告、跨過 8/10 仍在處置中者：已滿新制日數者於 8/10 解除，未滿者續處置至滿 5（或 7）日止。<span class="text-slate-400">兩市場 API 不會回頭修改舊公告，本站已自行換算實際迄日與撮合方式。</span></div>
         </div>
       </div>
     </details>

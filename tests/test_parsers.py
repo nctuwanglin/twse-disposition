@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from update_dashboard import (          # noqa: E402
     roc_to_date, parse_period, analyze_criteria, parse_criteria,
     get_auction_type, get_disposition_count, calculate_attention_thresholds,
+    apply_new_rule_period,
 )
 
 
@@ -72,6 +73,73 @@ class TestAuction(unittest.TestCase):
 
     def test_disp_count_second(self):
         self.assertGreaterEqual(get_disposition_count("第二次處置"), 2)
+
+    # ── 處置新制（2026-08-10）：統一 2 分撮合 ──
+    def test_2min_twse_wording(self):
+        # TWSE 用國字「約每二分鐘」，第一次／第二次皆同
+        self.assertEqual(
+            get_auction_type("約每二分鐘撮合一次", "第一次處置", date(2026, 8, 17)), "2分撮合")
+        self.assertEqual(
+            get_auction_type("約每二分鐘撮合一次", "第二次處置", date(2026, 8, 17)), "2分撮合")
+
+    def test_2min_tpex_wording(self):
+        # TPEx 用阿拉伯數字「約每2分鐘」
+        self.assertEqual(
+            get_auction_type("約每2分鐘撮合一次", "", date(2026, 8, 17)), "2分撮合")
+
+    def test_2min_not_confused_with_old(self):
+        # "二分鐘"/"2分鐘" 不可誤匹配舊制的 "二十分鐘"/"20分鐘"
+        self.assertEqual(get_auction_type("約每二十分鐘撮合一次"), "20分撮合")
+        self.assertEqual(get_auction_type("約每20分鐘撮合一次"), "20分撮合")
+
+    def test_old_announcement_crossing_new_rule_forced_2min(self):
+        # 舊公告條文仍寫 5 分，但處置期跨過生效日 → 一律改 2 分
+        self.assertEqual(
+            get_auction_type("約每五分鐘撮合一次", "第一次處置", date(2026, 8, 11)), "2分撮合")
+
+    def test_old_announcement_ended_before_new_rule_keeps_old(self):
+        # 生效日前就結束者維持原撮合（歷史正確性）
+        self.assertEqual(
+            get_auction_type("約每二十分鐘撮合一次", "第二次處置", date(2026, 8, 7)), "20分撮合")
+
+
+class TestNewRulePeriod(unittest.TestCase):
+    """處置新制過渡換算（真實案例，2026-08-11 對照兩市場 API 驗證過）。"""
+
+    def test_already_served_released_on_effective_date(self):
+        # 1515 力山：7/31 起，8/6 即滿 5 日 → 8/10 解除，處置到 8/7 為止
+        self.assertEqual(
+            apply_new_rule_period(date(2026,7,30), date(2026,7,31), date(2026,8,13)),
+            date(2026, 8, 7))
+
+    def test_exactly_five_days_by_prev_day(self):
+        # 3026 禾伸堂：8/3 起，8/7 剛好滿 5 日
+        self.assertEqual(
+            apply_new_rule_period(date(2026,8,3), date(2026,8,3), date(2026,8,14)),
+            date(2026, 8, 7))
+
+    def test_day_trading_variant_twelve_to_seven(self):
+        # 8046：原 12 個營業日（涉當沖警示）→ 新制 7 日，8/3 起算至 8/11
+        self.assertEqual(
+            apply_new_rule_period(date(2026,8,3), date(2026,8,3), date(2026,8,18)),
+            date(2026, 8, 11))
+
+    def test_post_new_rule_announcement_untouched(self):
+        # 生效日起公告者 API 已是新制，不得再動
+        self.assertEqual(
+            apply_new_rule_period(date(2026,8,10), date(2026,8,11), date(2026,8,17)),
+            date(2026, 8, 17))
+
+    def test_ended_before_new_rule_untouched(self):
+        self.assertEqual(
+            apply_new_rule_period(date(2026,7,20), date(2026,7,21), date(2026,8,3)),
+            date(2026, 8, 3))
+
+    def test_never_extends(self):
+        # 新制只縮短不延長：原迄日早於換算結果時取原迄日
+        self.assertEqual(
+            apply_new_rule_period(date(2026,8,7), date(2026,8,10), date(2026,8,11)),
+            date(2026, 8, 11))
 
 
 class TestThresholds(unittest.TestCase):
