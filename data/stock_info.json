@@ -870,5 +870,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "化學工業"
+  },
+  "6426": {
+    "name": "統新",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "通信網路"
   }
 }

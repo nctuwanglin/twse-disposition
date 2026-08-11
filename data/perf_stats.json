@@ -1,4 +1,48 @@
 {
+ "1515:2026-07-31:2026-08-07": {
+  "after5_pct": null,
+  "code": "1515",
+  "during_pct": 10.948905109489049,
+  "entry_close": 27.4,
+  "exchange": "TWSE",
+  "exit_close": 30.4,
+  "name": "力山",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-31"
+ },
+ "3026:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "3026",
+  "during_pct": 18.88888888888889,
+  "entry_close": 450.0,
+  "exchange": "TWSE",
+  "exit_close": 535.0,
+  "name": "禾伸堂",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
+ },
+ "3055:2026-07-31:2026-08-07": {
+  "after5_pct": null,
+  "code": "3055",
+  "during_pct": 11.051502145922743,
+  "entry_close": 93.2,
+  "exchange": "TWSE",
+  "exit_close": 103.5,
+  "name": "蔚華科",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-31"
+ },
+ "3167:2026-07-31:2026-08-07": {
+  "after5_pct": null,
+  "code": "3167",
+  "during_pct": 56.334841628959275,
+  "entry_close": 442.0,
+  "exchange": "TWSE",
+  "exit_close": 691.0,
+  "name": "大量",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-31"
+ },
  "3230:2026-07-01:2026-07-14": {
   "after5_pct": null,
   "code": "3230",
@@ -21,6 +65,17 @@
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
  },
+ "3532:2026-07-31:2026-08-07": {
+  "after5_pct": null,
+  "code": "3532",
+  "during_pct": 12.612612612612617,
+  "entry_close": 277.5,
+  "exchange": "TWSE",
+  "exit_close": 312.5,
+  "name": "台勝科",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-31"
+ },
  "3624:2026-06-24:2026-07-09": {
   "after5_pct": null,
   "code": "3624",
@@ -42,6 +97,17 @@
   "name": "光頡",
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
+ },
+ "3624:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "3624",
+  "during_pct": 19.679999999999986,
+  "entry_close": 62.5,
+  "exchange": "TPEx",
+  "exit_close": 74.8,
+  "name": "光頡",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
  },
  "3675:2026-07-22:2026-08-04": {
   "after5_pct": null,
@@ -76,6 +142,17 @@
   "period_end": "2026-08-06",
   "period_start": "2026-07-24"
  },
+ "4169:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "4169",
+  "during_pct": -4.848484848484846,
+  "entry_close": 165.0,
+  "exchange": "TWSE",
+  "exit_close": 157.0,
+  "name": "泰宗",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
+ },
  "4542:2026-07-15:2026-07-28": {
   "after5_pct": null,
   "code": "4542",
@@ -98,6 +175,17 @@
   "period_end": "2026-07-28",
   "period_start": "2026-07-15"
  },
+ "4556:2026-08-04:2026-08-10": {
+  "after5_pct": null,
+  "code": "4556",
+  "during_pct": 0.8423586040914532,
+  "entry_close": 83.1,
+  "exchange": "TPEx",
+  "exit_close": 83.8,
+  "name": "旭然",
+  "period_end": "2026-08-10",
+  "period_start": "2026-08-04"
+ },
  "4707:2026-07-09:2026-07-22": {
   "after5_pct": null,
   "code": "4707",
@@ -108,6 +196,28 @@
   "name": "磐亞",
   "period_end": "2026-07-22",
   "period_start": "2026-07-09"
+ },
+ "4979:2026-07-30:2026-08-07": {
+  "after5_pct": null,
+  "code": "4979",
+  "during_pct": 26.918075422626785,
+  "entry_close": 384.5,
+  "exchange": "TPEx",
+  "exit_close": 488.0,
+  "name": "華星光",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-30"
+ },
+ "4991:2026-07-30:2026-08-07": {
+  "after5_pct": null,
+  "code": "4991",
+  "during_pct": 30.434782608695656,
+  "entry_close": 356.5,
+  "exchange": "TPEx",
+  "exit_close": 465.0,
+  "name": "環宇-KY",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-30"
  },
  "5321:2026-06-29:2026-07-10": {
   "after5_pct": null,
@@ -186,6 +296,17 @@
   "period_end": "2026-07-22",
   "period_start": "2026-07-09"
  },
+ "6182:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "6182",
+  "during_pct": 13.483146067415742,
+  "entry_close": 89.0,
+  "exchange": "TPEx",
+  "exit_close": 101.0,
+  "name": "合晶",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
+ },
  "6217:2026-07-23:2026-08-05": {
   "after5_pct": null,
   "code": "6217",
@@ -196,6 +317,28 @@
   "name": "中探針",
   "period_end": "2026-08-05",
   "period_start": "2026-07-23"
+ },
+ "6217:2026-07-31:2026-08-07": {
+  "after5_pct": null,
+  "code": "6217",
+  "during_pct": 62.5615763546798,
+  "entry_close": 101.5,
+  "exchange": "TPEx",
+  "exit_close": 165.0,
+  "name": "中探針",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-31"
+ },
+ "6531:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "6531",
+  "during_pct": 42.57871064467766,
+  "entry_close": 667.0,
+  "exchange": "TWSE",
+  "exit_close": 951.0,
+  "name": "愛普*",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
  },
  "6617:2026-07-08:2026-07-21": {
   "after5_pct": null,
@@ -252,6 +395,17 @@
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
  },
+ "6739:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "6739",
+  "during_pct": 22.411693057247263,
+  "entry_close": 821.0,
+  "exchange": "TPEx",
+  "exit_close": 1005.0,
+  "name": "竹陞科技",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
+ },
  "6907:2026-07-17:2026-07-30": {
   "after5_pct": null,
   "code": "6907",
@@ -263,6 +417,17 @@
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
  },
+ "7610:2026-07-30:2026-08-07": {
+  "after5_pct": null,
+  "code": "7610",
+  "during_pct": 52.2633744855967,
+  "entry_close": 1215.0,
+  "exchange": "TWSE",
+  "exit_close": 1850.0,
+  "name": "聯友金屬-創",
+  "period_end": "2026-08-07",
+  "period_start": "2026-07-30"
+ },
  "7714:2026-07-17:2026-07-30": {
   "after5_pct": null,
   "code": "7714",
@@ -273,6 +438,17 @@
   "name": "創泓科技",
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
+ },
+ "7828:2026-08-03:2026-08-07": {
+  "after5_pct": null,
+  "code": "7828",
+  "during_pct": 27.611940298507463,
+  "entry_close": 1340.0,
+  "exchange": "TPEx",
+  "exit_close": 1710.0,
+  "name": "創新服務",
+  "period_end": "2026-08-07",
+  "period_start": "2026-08-03"
  },
  "8024:2026-06-30:2026-07-13": {
   "after5_pct": null,
