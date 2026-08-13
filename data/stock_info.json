@@ -888,5 +888,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電腦及週邊設備"
+  },
+  "6716": {
+    "name": "應廣",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
