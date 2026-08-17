@@ -894,5 +894,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "3498": {
+    "name": "陽程",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "6225": {
+    "name": "天瀚",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
