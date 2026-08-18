@@ -906,5 +906,29 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "3455": {
+    "name": "由田",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
+  },
+  "3490": {
+    "name": "單井",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
+  },
+  "5432": {
+    "name": "新門",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "綠能環保"
+  },
+  "6538": {
+    "name": "倉和",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }

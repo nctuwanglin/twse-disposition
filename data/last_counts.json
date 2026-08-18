@@ -1,16 +1,16 @@
 {
-  "date": "2026-08-17",
-  "total_active": 24,
-  "twse": 13,
-  "tpex": 11,
-  "second": 6,
-  "notetrans": 1,
+  "date": "2026-08-18",
+  "total_active": 13,
+  "twse": 7,
+  "tpex": 6,
+  "second": 3,
+  "notetrans": 6,
   "prev_day": {
-    "date": "2026-08-13",
-    "total_active": 25,
-    "twse": 16,
-    "tpex": 9,
+    "date": "2026-08-17",
+    "total_active": 24,
+    "twse": 13,
+    "tpex": 11,
     "second": 6,
-    "notetrans": 5
+    "notetrans": 1
   }
 }

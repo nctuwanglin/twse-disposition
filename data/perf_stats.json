@@ -495,7 +495,7 @@
   "period_start": "2026-07-14"
  },
  "8046:2026-08-03:2026-08-11": {
-  "after5_pct": null,
+  "after5_pct": 8.260869565217387,
   "code": "8046",
   "during_pct": 25.0,
   "entry_close": 920.0,
