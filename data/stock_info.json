@@ -930,5 +930,23 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "3508": {
+    "name": "位速",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "5314": {
+    "name": "世紀*",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他"
+  },
+  "7792": {
+    "name": "安葆",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
   }
 }
