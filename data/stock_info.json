@@ -948,5 +948,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "其他電子"
+  },
+  "3625": {
+    "name": "西勝",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電腦及週邊設備"
+  },
+  "4304": {
+    "name": "勝昱",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "塑膠工業"
   }
 }
