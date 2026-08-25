@@ -960,5 +960,23 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "塑膠工業"
+  },
+  "2615": {
+    "name": "萬海",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "航運業"
+  },
+  "3234": {
+    "name": "光環",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "4416": {
+    "name": "三圓",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "建材營造"
   }
 }
