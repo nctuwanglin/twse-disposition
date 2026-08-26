@@ -978,5 +978,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "建材營造"
+  },
+  "2486": {
+    "name": "一詮",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
