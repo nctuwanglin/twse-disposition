@@ -984,5 +984,23 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "4188": {
+    "name": "安克",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "6103": {
+    "name": "合邦",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6949": {
+    "name": "沛爾生醫-創",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "生技醫療"
   }
 }
