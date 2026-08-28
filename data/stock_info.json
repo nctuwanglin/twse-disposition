@@ -1002,5 +1002,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "生技醫療"
+  },
+  "2221": {
+    "name": "大甲",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他"
+  },
+  "2426": {
+    "name": "鼎元",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
