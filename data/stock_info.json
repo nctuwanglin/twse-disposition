@@ -1014,5 +1014,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "2351": {
+    "name": "順德",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3629": {
+    "name": "地心引力",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "文化創意"
   }
 }
