@@ -1026,5 +1026,35 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "文化創意"
+  },
+  "3406": {
+    "name": "玉晶光",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
+  },
+  "6715": {
+    "name": "嘉基",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6805": {
+    "name": "富世達",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6933": {
+    "name": "AMAX-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電腦及週邊設備"
+  },
+  "7788": {
+    "name": "松川精密",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
