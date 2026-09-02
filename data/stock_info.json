@@ -1056,5 +1056,29 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "3008": {
+    "name": "大立光",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
+  },
+  "3324": {
+    "name": "雙鴻",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "3664": {
+    "name": "安瑞-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "4908": {
+    "name": "前鼎",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
   }
 }
