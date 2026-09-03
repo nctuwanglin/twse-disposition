@@ -1080,5 +1080,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "通信網路"
+  },
+  "6510": {
+    "name": "精測",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
