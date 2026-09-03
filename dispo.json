@@ -10,8 +10,8 @@
   "日期": "1150902"
  },
  "counts": {
-  "active": 16,
-  "twse": 5,
+  "active": 15,
+  "twse": 4,
   "tpex": 11,
   "second": 0,
   "notetrans": 6
@@ -133,20 +133,6 @@
    "code": "5314",
    "name": "世紀*",
    "exchange": "TPEx",
-   "ann_date": "2026-08-26",
-   "period_start": "2026-08-27",
-   "period_end": "2026-09-02",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 3,
-   "close": 34.2,
-   "change_pct": -3.1161473087818696,
-   "vol_k": 3888
-  },
-  {
-   "code": "5314",
-   "name": "世紀*",
-   "exchange": "TPEx",
    "ann_date": "2026-08-31",
    "period_start": "2026-09-01",
    "period_end": "2026-09-07",
@@ -184,20 +170,6 @@
    "close": 503.0,
    "change_pct": -4.3726235741444865,
    "vol_k": 5342
-  },
-  {
-   "code": "2486",
-   "name": "一詮",
-   "exchange": "TWSE",
-   "ann_date": "2026-08-26",
-   "period_start": "2026-08-27",
-   "period_end": "2026-09-02",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 288.0,
-   "change_pct": 4.3478260869565215,
-   "vol_k": 7156
   },
   {
    "code": "3406",
@@ -284,52 +256,80 @@
    "close": 218.0,
    "change_pct": -5.010893246187364,
    "vol_k": 17280
-  }
- ],
- "notetrans": [
+  },
   {
    "code": "3008",
    "name": "大立光",
    "exchange": "TWSE",
-   "criteria": "連續二次 (8/31–9/1)",
-   "raw_criteria": "115年8月31日至115年9月1日連續二次",
-   "thresholds": {
-    "current_close": 7810.0,
-    "latest_date": "2026-09-02",
-    "history_days": 23,
-    "clause1": {
-     "ref_date": "2026-08-25",
-     "ref_close": 5720.0,
-     "cum_pct": 36.53846153846153,
-     "pct": 32.0,
-     "threshold": 7550.400000000001,
-     "diff_pct": -3.323943661971824,
-     "triggered": true
-    },
-    "vol_avg": 2768.818181818182,
-    "vol_days": 22
-   }
+   "ann_date": "2026-09-02",
+   "period_start": "2026-09-03",
+   "period_end": "2026-09-09",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 7810.0,
+   "change_pct": 3.034300791556728,
+   "vol_k": 2294
   },
   {
    "code": "3450",
    "name": "聯鈞",
    "exchange": "TWSE",
-   "criteria": "連續四次 (8/27–9/1)",
-   "raw_criteria": "115年8月27日至115年9月1日連續四次",
+   "ann_date": "2026-09-02",
+   "period_start": "2026-09-03",
+   "period_end": "2026-09-11",
+   "auction": "2分撮合",
+   "disp_count": 2,
+   "career_count": 2,
+   "close": 602.0,
+   "change_pct": -3.6799999999999997,
+   "vol_k": 11020
+  }
+ ],
+ "notetrans": [
+  {
+   "code": "2426",
+   "name": "鼎元",
+   "exchange": "TWSE",
+   "criteria": "115年8月21日至115年9月2日等九個營業日已有五次",
+   "raw_criteria": "115年8月21日至115年9月2日等九個營業日已有五次",
    "thresholds": {
-    "current_close": 602.0,
+    "current_close": 104.5,
     "latest_date": "2026-09-02",
     "history_days": 23,
     "clause1": {
      "ref_date": "2026-08-25",
-     "ref_close": 533.0,
-     "cum_pct": 12.94559099437148,
+     "ref_close": 90.8,
+     "cum_pct": 15.08810572687225,
      "pct": 32.0,
-     "threshold": 703.5600000000001,
-     "diff_pct": 16.87043189368772,
+     "threshold": 119.85600000000001,
+     "diff_pct": 14.694736842105272,
      "triggered": false
     },
-    "vol_avg": 12755.954545454546,
+    "vol_avg": 36065.09090909091,
+    "vol_days": 22
+   }
+  },
+  {
+   "code": "2455",
+   "name": "全新",
+   "exchange": "TWSE",
+   "criteria": "連續二次 (9/1–9/2)",
+   "raw_criteria": "115年9月1日至115年9月2日連續二次",
+   "thresholds": {
+    "current_close": 542.0,
+    "latest_date": "2026-09-02",
+    "history_days": 23,
+    "clause1": {
+     "ref_date": "2026-08-25",
+     "ref_close": 419.5,
+     "cum_pct": 29.201430274135877,
+     "pct": 32.0,
+     "threshold": 553.74,
+     "diff_pct": 2.1660516605166067,
+     "triggered": false
+    },
+    "vol_avg": 12022.227272727272,
     "vol_days": 22
    }
   },
