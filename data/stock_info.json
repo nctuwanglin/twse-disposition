@@ -1086,5 +1086,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "6654": {
+    "name": "天正國際",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "8431": {
+    "name": "匯鑽科",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
   }
 }
