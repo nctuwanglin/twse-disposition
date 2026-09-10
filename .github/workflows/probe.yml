@@ -1,0 +1,35 @@
+name: 公告來源時效探測（唯讀）
+
+# 目的：釐清證交所處置公告幾點才真的取得到。
+#
+# 背景：回推 55 天歷史快照發現 59 筆公告當天沒收錄、隔一交易日才出現，且高度
+# 偏向證交所（TWSE 漏 52、TPEx 漏 7）。既有的兩班排程（實測落在台灣 ~21:47 與
+# ~00:40）都在盤後深夜，若證交所其實是隔天清晨才更新，補在第二班也無效。
+# 這支 workflow 只讀取並印進 log，不寫檔、不 commit、不碰儀表板。
+#
+# 收集 2–3 個交易日後即可定案 R01 修法（每班都抓 / 換 RWD 前瞻端點 / 加盤前班）。
+
+on:
+  schedule:
+    - cron: "30 23 * * 0-4"  # 台灣 07:30（隔日）＝盤前，判斷是否需要加盤前一班
+    - cron: "0 3 * * 1-5"    # 台灣 11:00＝盤中，作為對照基準
+  workflow_dispatch:
+
+# 探測彼此無關聯，重疊執行無害，但仍避免同時多跑浪費額度
+concurrency:
+  group: probe-announcement-sources
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read          # 唯讀：不需要寫入權限
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Probe announcement sources
+        run: python scripts/probe_announcement_sources.py

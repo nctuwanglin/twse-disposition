@@ -32,6 +32,13 @@ jobs:
         with:
           python-version: "3.11"
 
+      # 唯讀探測：把兩個公告來源在「這個時刻」的內容印進 run log，用以定案
+      # R01 修法（證交所公告幾點才取得到、openapi 與 RWD 是否有差）。
+      # 不寫檔、不 commit、continue-on-error —— 絕不影響更新流程本身。
+      - name: Probe announcement sources (read-only diagnostic)
+        continue-on-error: true
+        run: python scripts/probe_announcement_sources.py
+
       - name: Run parser tests
         run: python -m unittest discover -s tests -q
 

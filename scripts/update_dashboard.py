@@ -157,6 +157,17 @@ def parse_period(period_str):
     return roc_to_date(parts[0]), roc_to_date(parts[1])
 
 
+def ad_to_date(s):
+    """西元 'YYYYMMDD' → date；格式不符或空值回 None（報價 dict 的 date 欄位用）。"""
+    s = (s or "").strip()
+    if len(s) != 8 or not s.isdigit():
+        return None
+    try:
+        return date(int(s[:4]), int(s[4:6]), int(s[6:8]))
+    except ValueError:
+        return None
+
+
 def fmt_short(d):
     return f"{d.month}/{d.day}"
 
@@ -430,18 +441,20 @@ def fetch_tpex_quotes():
     return out
 
 
-def fetch_tpex_stock_history(code, today):
+def fetch_tpex_stock_history(code, today, since=None):
     """
     TPEx 個股最近 2 個月日成交（www afterTrading/tradingStock）。
     回傳 [{date, close, vol_k}] 由舊到新，與 fetch_twse_stock_history 同型。
     欄位: [日期, 成交仟股, 成交仟元, 開, 高, 低, 收, 漲跌, 筆數]（量已是千股=張）
     """
     records = {}
-    for months_back in range(2):
-        y, m = today.year, today.month - months_back
-        if m <= 0:
-            m += 12
-            y -= 1
+    # 與 TWSE 版同一慣例：since 未給維持「當月+前一月」，給了就抓齊整個區間
+    if since is None:
+        spans = [( (today.year, today.month - b) if today.month - b > 0
+                   else (today.year - 1, today.month - b + 12) ) for b in range(2)]
+    else:
+        spans = _months_between(since, today)
+    for y, m in spans:
         url = f"{TPEX_STOCK_HIST}?code={code}&date={y}/{m:02d}/01&response=json"
         data = safe_fetch_json(url, {"Referer": TPEX_REFERER_D}, default={})
         tables = data.get("tables") or [{}]
@@ -577,6 +590,12 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
         pct_s = f" ({sign}{pct:.1f}%)" if pct is not None else ""
         vol_s = f"{vol_k:,} 張" if vol_k else "—"
 
+        # 報價日必須取自 quote 本身的資料日，不可用 latest_end（那是「最後注意
+        # 達標日」，與報價日是兩件事；兩者不同日時會把報價標成錯誤日期）。
+        qdate   = ad_to_date(quote.get("date"))
+        qdate_s = (f'<span class="text-slate-600 ml-1">（{fmt_weekday(qdate)} 收盤）</span>'
+                   if qdate else "")
+
         # 偏離月均價
         dev_s = ""
         if mavg and mavg > 0:
@@ -592,8 +611,8 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<span class="text-slate-500 ml-2">量</span>'
             f'<span class="mono text-slate-200">{vol_s}</span>'
             + dev_s
-            + f'<span class="text-slate-600 ml-1">（{fmt_weekday(latest_end)} 收盤）</span>'
-            f'</div>'
+            + qdate_s
+            + f'</div>'
         )
     else:
         quote_html = ""
@@ -711,18 +730,21 @@ def fetch_tpex_warning():
     return result
 
 
-def fetch_twse_stock_history(code, today):
+def fetch_twse_stock_history(code, today, since=None):
     """
     抓取個股最近 2 個月日成交資料（TWSE 舊版 exchangeReport/STOCK_DAY API）。
     回傳 [{date, close, vol_k}] 由舊到新排列，已去重。
     Fields: [日期, 成交股數, 成交金額, 開盤價, 最高價, 最低價, 收盤價, 漲跌價差, 成交筆數, 註記]
     """
     records = {}
-    for months_back in range(2):
-        y, m = today.year, today.month - months_back
-        if m <= 0:
-            m += 12
-            y -= 1
+    # since 未給時維持原本「當月+前一月」；給了就把區間內每個月都抓齊
+    # （績效統計需要處置前的進場基準，跨月事件用兩個月會抓不到）。
+    if since is None:
+        spans = [( (today.year, today.month - b) if today.month - b > 0
+                   else (today.year - 1, today.month - b + 12) ) for b in range(2)]
+    else:
+        spans = _months_between(since, today)
+    for y, m in spans:
         url = f"{TWSE_STOCK_HIST}?response=json&date={y}{m:02d}01&stockNo={code}"
         data = safe_fetch_json(url, default={})
         if not isinstance(data, dict) or data.get("stat") != "OK":
@@ -946,6 +968,18 @@ def load_career_counts(active_records):
 # ──────────────────────────────────────────────
 # 出關股績效（#12）：處置期間報酬 / 出關後5日報酬，個股歷史只抓一次入快取
 # ──────────────────────────────────────────────
+def _months_between(since, until):
+    """[(year, month)] 由舊到新、含頭含尾，用於決定要抓哪幾個月的個股歷史。"""
+    y, m = since.year, since.month
+    out = []
+    while (y, m) <= (until.year, until.month):
+        out.append((y, m))
+        m += 1
+        if m > 12:
+            m, y = 1, y + 1
+    return out
+
+
 def _idx_on_or_before(history, d):
     """history（由舊到新）中日期 ≤ d 的最後一筆 index；無則 -1。"""
     idx = -1
@@ -957,11 +991,24 @@ def _idx_on_or_before(history, d):
     return idx
 
 
+def _perf_complete(e):
+    """兩個指標都有效才算完整。舊版只看 after5_pct，導致 during_pct 仍缺就永久跳過。"""
+    return bool(e) and e.get("during_pct") is not None and e.get("after5_pct") is not None
+
+
 def update_perf_stats(released_groups, today):
     """
-    對近期出關股計算：處置期間報酬（處置前一交易日收盤 → 處置末日收盤）與
-    出關後 5 交易日報酬。結果存 data/perf_stats.json 累積；after5 尚無法計算
-    （未滿 5 個交易日）者，之後的執行會重抓補算，補齊後永久跳過。
+    對出關股計算：處置期間報酬（處置前一交易日收盤 → 處置末日收盤）與出關後
+    5 個交易日報酬，累積於 data/perf_stats.json。
+
+    設計要點（2026-09 review R13）：
+    - 待補隊列 = 快取中未完成事件 ∪ 目前 released_groups。舊版只從 released_groups
+      （近 30 天窗）建隊列，事件一旦滾出窗口就永遠不再重試；實測有 40 筆
+      after5 因此永久流失。
+    - 完整度需 during 與 after5 皆有效（舊版只看 after5）。
+    - 寫回採「只補缺、不覆寫既有有效值」。舊版整筆覆寫，一旦稍後抓不到進場
+      基準，已算好的 during_pct 會被回寫成 null，快取資料隨時間倒退。
+    - 進出場日需貼近事件日期才採用，避免 _idx_on_or_before 靜靜退到更早的收盤。
     """
     try:
         stats = (json.loads(PERF_STATS_PATH.read_text(encoding="utf-8"))
@@ -969,41 +1016,91 @@ def update_perf_stats(released_groups, today):
     except Exception:
         stats = {}
 
-    todo = []
+    # ── 建待補隊列：快取未完成 ∪ 本次 released_groups ──
+    pending = {}          # key -> {code,name,exchange,period_start,period_end}(date 物件)
     for pe, grp in released_groups.items():
-        for s in grp["stocks"]:
-            key = f'{s["code"]}:{s["period_start"]}:{s["period_end"]}'
-            e = stats.get(key)
-            if e and e.get("after5_pct") is not None:
-                continue
-            todo.append((key, s))
+        for s_ in grp["stocks"]:
+            key = f'{s_["code"]}:{s_["period_start"]}:{s_["period_end"]}'
+            if not _perf_complete(stats.get(key)):
+                pending[key] = {
+                    "code": s_["code"], "name": s_["name"], "exchange": s_["exchange"],
+                    "period_start": s_["period_start"], "period_end": s_["period_end"],
+                }
+    for key, e in stats.items():
+        if _perf_complete(e) or key in pending:
+            continue
+        try:
+            pending[key] = {
+                "code": e["code"], "name": e.get("name", ""),
+                "exchange": e.get("exchange", "TWSE"),
+                "period_start": date.fromisoformat(e["period_start"]),
+                "period_end":   date.fromisoformat(e["period_end"]),
+            }
+        except (KeyError, ValueError):
+            continue          # 快取條目殘缺，略過而不是讓整批中止
 
-    if todo:
-        print(f"  出關股績效（{len(todo)} 檔待算/補算）...")
-    for key, s in todo:
-        fetch = (fetch_twse_stock_history if s["exchange"] == "TWSE"
+    if not pending:
+        return stats
+
+    print(f"  出關股績效（{len(pending)} 檔待算/補算）...")
+    changed = False
+    for key, ev in sorted(pending.items()):
+        ps, pe_ = ev["period_start"], ev["period_end"]
+        fetch = (fetch_twse_stock_history if ev["exchange"] == "TWSE"
                  else fetch_tpex_stock_history)
-        hist = fetch(s["code"], today)
+        # 抓齊「進場基準前 10 天」到今天，跨月事件才拿得到 period_start-1 的收盤
+        hist = fetch(ev["code"], today, since=ps - timedelta(days=10))
         if not hist:
             continue
-        i_entry = _idx_on_or_before(hist, s["period_start"] - timedelta(days=1))
-        i_exit  = _idx_on_or_before(hist, s["period_end"])
-        if i_exit < 0:
-            continue
-        entry_c = hist[i_entry]["close"] if i_entry >= 0 else None
-        exit_c  = hist[i_exit]["close"]
-        during  = (exit_c / entry_c - 1) * 100 if entry_c else None
-        i_a5    = i_exit + 5
-        after5  = (hist[i_a5]["close"] / exit_c - 1) * 100 if i_a5 < len(hist) else None
-        stats[key] = {
-            "code": s["code"], "name": s["name"], "exchange": s["exchange"],
-            "period_start": s["period_start"].isoformat(),
-            "period_end":   s["period_end"].isoformat(),
-            "entry_close": entry_c, "exit_close": exit_c,
-            "during_pct": during, "after5_pct": after5,
-        }
 
-    if todo:
+        i_entry = _idx_on_or_before(hist, ps - timedelta(days=1))
+        i_exit  = _idx_on_or_before(hist, pe_)
+
+        # 進場：需落在處置起始日前 10 天內，否則視為抓不到基準（不硬算）
+        entry_c = None
+        if i_entry >= 0 and (ps - hist[i_entry]["date"]).days <= 10:
+            entry_c = hist[i_entry]["close"]
+
+        # 出場：需落在處置迄日前 7 天內（迄日可能是假日，故容忍數日）
+        exit_c = None
+        if i_exit >= 0 and (pe_ - hist[i_exit]["date"]).days <= 7:
+            exit_c = hist[i_exit]["close"]
+
+        during = ((exit_c / entry_c - 1) * 100
+                  if (entry_c and exit_c) else None)
+
+        # 出關後第 5 個交易日：需資料連續（與出場相隔不超過 15 個日曆日），
+        # 否則 index+5 可能跨過資料缺口而取到更遠的收盤
+        after5 = None
+        if exit_c is not None:
+            i_a5 = i_exit + 5
+            if i_a5 < len(hist):
+                gap = (hist[i_a5]["date"] - hist[i_exit]["date"]).days
+                if gap <= 15:
+                    after5 = (hist[i_a5]["close"] / exit_c - 1) * 100
+
+        prev = stats.get(key) or {}
+        merged = {
+            "code": ev["code"], "name": ev["name"] or prev.get("name", ""),
+            "exchange": ev["exchange"],
+            "period_start": ps.isoformat(),
+            "period_end":   pe_.isoformat(),
+            # 只補缺、不覆寫既有有效值
+            "entry_close": prev.get("entry_close") if prev.get("entry_close") is not None else entry_c,
+            "exit_close":  prev.get("exit_close")  if prev.get("exit_close")  is not None else exit_c,
+            "during_pct":  prev.get("during_pct")  if prev.get("during_pct")  is not None else during,
+            "after5_pct":  prev.get("after5_pct")  if prev.get("after5_pct")  is not None else after5,
+        }
+        missing = [k for k in ("during_pct", "after5_pct") if merged[k] is None]
+        if missing:
+            merged["missing"] = missing
+        else:
+            merged.pop("missing", None)
+        if merged != prev:
+            stats[key] = merged
+            changed = True
+
+    if changed:
         PERF_STATS_PATH.write_text(
             json.dumps(stats, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
             encoding="utf-8")
@@ -1033,8 +1130,9 @@ def render_perf_stats_card(summary, sample_since="2026-06"):
     d, a = summary.get("during"), summary.get("after5")
     if not d or d["n"] < 3:
         return ""
-    def line(label, g):
-        if not g:
+    def line(label, g, min_n=3):
+        # 樣本數不足不出這一行：小樣本不足以推論處置造成漲跌
+        if not g or g["n"] < min_n:
             return ""
         clr = "text-green-400" if g["avg"] > 0 else "text-red-400"
         return (f'<div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-[12px]">'
@@ -1162,7 +1260,17 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
     }
 
 
-def write_snapshot(snap):
+def write_snapshot(snap, force=False):
+    """
+    寫出 dispo.json（當前狀態，覆寫屬正常）與 data/history/{資料日}.json（歷史庫）。
+
+    force 執行不得覆寫既有歷史快照（2026-09 review 外的額外發現）：
+    正常排程永遠不會覆寫歷史檔——資料日沒推進時「無新交易日」守則就先 return 了，
+    所以會走到「檔案已存在」這條路的只有 force。而 force 常用於改版後重新渲染，
+    此時當下抓到的名單可能已與當初那天不同（實例：2026-09-03 上午的 force 執行
+    改寫了 data/history/2026-09-02.json，把當時還沒公告的個股補了進去），
+    等於回頭篡改稽核軌跡，也會讓「當天到底抓到什麼」的事後分析失真。
+    """
     text = json.dumps(snap, ensure_ascii=False, indent=1) + "\n"
     (REPO_ROOT / "dispo.json").write_text(text, encoding="utf-8")
     # 歷史庫只收交易日快照；週末手動執行時資料與週五相同，不重複入庫
@@ -1171,7 +1279,11 @@ def write_snapshot(snap):
         return
     hist_dir = REPO_ROOT / "data" / "history"
     hist_dir.mkdir(parents=True, exist_ok=True)
-    (hist_dir / f"{snap['date']}.json").write_text(text, encoding="utf-8")
+    hist_file = hist_dir / f"{snap['date']}.json"
+    if force and hist_file.exists():
+        print(f"  ✓ 寫入 dispo.json（--force：保留既有 {hist_file.name}，不覆寫歷史快照）")
+        return
+    hist_file.write_text(text, encoding="utf-8")
     print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
 
 
@@ -1784,24 +1896,58 @@ def render_date_block(today):
 # ──────────────────────────────────────────────
 # HTML 替換
 # ──────────────────────────────────────────────
+class MarkerError(RuntimeError):
+    """AUTO marker 缺失／重複／順序錯誤。必須中止，不得發布。"""
+
+
 def replace_between(html, start_marker, end_marker, new_content):
+    """
+    取代兩個 marker 之間的內容。marker 必須各恰好出現一次且 START 在 END 之前，
+    否則 raise MarkerError。
+
+    為何要 fail-fast（2026-09 review R06）：舊版只印 WARNING 並回傳原字串，
+    於是「新日期＋舊清單」照樣發布，而且會連鎖癱瘓另外三道機制 ——
+    title 日期由獨立 regex 更新（marker 全炸也照改成新日期）→ workflow 的
+    部署驗證只比日期因而放行 → last_counts.json 記成功使資料日前進 →
+    隔天「無新交易日」守則擋住重跑，錯誤內容就此固定下來。
+    """
+    n_start = html.count(start_marker)
+    n_end   = html.count(end_marker)
+    if n_start != 1 or n_end != 1:
+        raise MarkerError(
+            f"marker 數量異常：{start_marker!r}×{n_start}、{end_marker!r}×{n_end}"
+            f"（各須恰好 1 次）")
+    if html.index(start_marker) > html.index(end_marker):
+        raise MarkerError(f"marker 順序錯誤：{start_marker!r} 出現在 {end_marker!r} 之後")
+
     pattern = rf"({re.escape(start_marker)}).*?({re.escape(end_marker)})"
     result, count = re.subn(pattern, rf"\1\n{new_content}\n\2", html, count=1, flags=re.DOTALL)
-    if count == 0:
-        print(f"WARNING: marker not found: {start_marker!r}", file=sys.stderr)
+    if count != 1:
+        raise MarkerError(f"marker 區段取代失敗：{start_marker!r}")
+    return result
+
+
+def _sub_once(html, pattern, repl, what):
+    """替換且必須恰好命中 1 次，否則 raise MarkerError（避免版面改版後靜默失效）。"""
+    result, n = re.subn(pattern, repl, html)
+    if n != 1:
+        raise MarkerError(f"{what} 取代次數異常：{n}（須為 1）")
     return result
 
 
 def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0):
-    html = re.sub(r'(data-count="1">)[^<]+(<)', rf'\g<1>{tab1_total} 檔\2', html)
-    html = re.sub(r'(data-count="2">)[^<]+(<)', rf'\g<1>{tab1_latest} 檔\2', html)
-    html = re.sub(r'(data-count="3">)[^<]+(<)', rf'\g<1>{tab3_nt} 注意累計\2', html)
-    html = re.sub(r'(class="mono text-2xl font-bold text-red-400">)[^<]+(<)',
-                  rf'\g<1>{tab1_total}\2', html)
-    html = re.sub(r'(class="mono text-2xl font-bold text-amber-400">)[^<]+(<)',
-                  rf'\g<1>{tab1_latest}\2', html)
-    html = re.sub(r'(class="mono text-2xl font-bold text-yellow-400">)[^<]+(<)',
-                  rf'\g<1>{tab3_nt}\2', html)
+    html = _sub_once(html, r'(data-count="1">)[^<]+(<)',
+                     rf'\g<1>{tab1_total} 檔\2', "tab1 badge")
+    html = _sub_once(html, r'(data-count="2">)[^<]+(<)',
+                     rf'\g<1>{tab1_latest} 檔\2', "tab2 badge")
+    html = _sub_once(html, r'(data-count="3">)[^<]+(<)',
+                     rf'\g<1>{tab3_nt} 注意累計\2', "tab3 badge")
+    html = _sub_once(html, r'(class="mono text-2xl font-bold text-red-400">)[^<]+(<)',
+                     rf'\g<1>{tab1_total}\2', "處置中統計數字")
+    html = _sub_once(html, r'(class="mono text-2xl font-bold text-amber-400">)[^<]+(<)',
+                     rf'\g<1>{tab1_latest}\2', "最新批次統計數字")
+    html = _sub_once(html, r'(class="mono text-2xl font-bold text-yellow-400">)[^<]+(<)',
+                     rf'\g<1>{tab3_nt}\2', "注意累計統計數字")
     return html
 
 
@@ -2006,9 +2152,12 @@ def main():
     html = replace_between(html, "<!-- AUTO:TAB2_CONTENT_START -->",  "<!-- AUTO:TAB2_CONTENT_END -->",  tab2_html)
     html = replace_between(html, "<!-- AUTO:TAB3_CONTENT_START -->",  "<!-- AUTO:TAB3_CONTENT_END -->",  tab3_html)
 
-    # 更新 <title> 日期
-    html = re.sub(r'(Updated )\d{4}/\d{2}/\d{2}(</title>)',
-                  rf'\g<1>{today.strftime("%Y/%m/%d")}\2', html)
+    # 更新 <title> 日期。這是獨立於 marker 的 regex，同樣要驗證：格式一改就會
+    # 靜默沿用舊日期，而 R06 的連鎖失效正是從「日期照改、內容沒改」開始。
+    html, n_title = re.subn(r'(Updated )\d{4}/\d{2}/\d{2}(</title>)',
+                            rf'\g<1>{today.strftime("%Y/%m/%d")}\2', html)
+    if n_title != 1:
+        raise MarkerError(f"<title> 的 Updated 日期取代次數異常：{n_title}（須為 1）")
 
     # 更新 tab nav 數字
     tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
@@ -2029,7 +2178,7 @@ def main():
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
     )
     snap["release_stats"] = perf_summary
-    write_snapshot(snap)
+    write_snapshot(snap, force=force)
 
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
     LAST_COUNTS_PATH.write_text(json.dumps({
