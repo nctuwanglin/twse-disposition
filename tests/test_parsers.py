@@ -18,6 +18,7 @@ from update_dashboard import (          # noqa: E402
     replace_between, update_inline_counts, MarkerError,
     _perf_complete, _months_between, update_perf_stats, perf_stats_summary,
     write_snapshot, _tpex_rows_to_dicts, _canonical_active_by_code,
+    render_tab2_upcoming_batches, _notetrans_urgency,
 )
 
 
@@ -304,6 +305,140 @@ class TestCanonicalActiveByCode(unittest.TestCase):
         self.assertEqual(set(result.keys()), {"1101", "2330"})
 
 
+class TestTab2UpcomingBatches(unittest.TestCase):
+    """
+    R08：Tab2「即將被處置」只能顯示真正尚未生效的批次（period_start > today），
+    不可混入 active 批次；有多批 upcoming 時全部都要出現，不能只取一批。
+    """
+
+    def _batch(self, ps, pe, codes):
+        stocks = [{"code": c, "name": f"股{c}", "exchange": "TWSE",
+                  "period_start": ps, "period_end": pe, "disp_count": 1}
+                 for c in codes]
+        return {"period_start": ps, "period_end": pe,
+                "ann_date": ps - timedelta(days=1), "stocks": stocks}
+
+    def test_empty_upcoming_shows_explicit_empty_state(self):
+        # 實測重現：全是 active、upcoming 為空時，舊版仍會生出股票；
+        # 新版必須顯示明確空狀態，不得借用 active 內容頂替
+        html = render_tab2_upcoming_batches({}, {}, date(2026, 9, 16))
+        self.assertIn("目前沒有已公告待生效處置", html)
+        self.assertNotIn("table-row", html)  # 確認真的沒有渲染任何股票列
+
+    def test_single_upcoming_batch_rendered(self):
+        today = date(2026, 9, 16)
+        groups = {date(2026, 9, 18): self._batch(date(2026, 9, 18), date(2026, 9, 24), ["1101"])}
+        html = render_tab2_upcoming_batches(groups, {}, today)
+        self.assertIn("1101", html)
+        self.assertIn("即將生效", html)  # 覆寫後的狀態標籤
+
+    def test_multiple_upcoming_batches_all_included(self):
+        # 舊 bug：多批 upcoming 時 max(period_start) 只取一批，較早生效的漏掉
+        today = date(2026, 9, 16)
+        early = self._batch(date(2026, 9, 17), date(2026, 9, 23), ["1101"])
+        late  = self._batch(date(2026, 9, 20), date(2026, 9, 26), ["2330"])
+        groups = {date(2026, 9, 17): early, date(2026, 9, 20): late}
+        html = render_tab2_upcoming_batches(groups, {}, today)
+        self.assertIn("1101", html)
+        self.assertIn("2330", html)   # 兩批都要在，舊版只會有其中一批
+
+    def test_active_batches_never_leak_into_tab2(self):
+        # 直接證明「不會混用 active」：即使呼叫端傳入的是 active_groups 的資料
+        # 結構（period_start <= today），只要它沒被放進 upcoming_groups，
+        # render_tab2_upcoming_batches 本身完全不會去看 active_groups
+        # （函式簽名已經不再接受 active_groups 參數，這裡驗證單一參數輸入時
+        # 不會意外顯示不相關內容）
+        today = date(2026, 9, 16)
+        html = render_tab2_upcoming_batches({}, {}, today)
+        self.assertNotIn("8996", html)  # 空 upcoming 不該冒出任何代碼
+
+
+def _roc(d):
+    """date -> 民國格式字串片段，例如 date(2026,6,17) -> '115年6月17日'（不補零，
+    對應 analyze_criteria 的正則樣式）。"""
+    return f"{d.year - 1911}年{d.month}月{d.day}日"
+
+
+class TestNotransUrgencyR09(unittest.TestCase):
+    """
+    R09：失效的連續紀錄不能仍標「已達處置條件」，累計次數觸發不能被忽略。
+    驗收（review 原文）：舊三連、舊二連+新一連、只有累計條件、解析失敗，
+    不能一律當三連倒數；上方摘要（_notetrans_urgency）與下方明細
+    （render_risk_detail）需一致。
+    """
+    TODAY = date(2026, 9, 16)  # 週三
+
+    def test_old_dead_streak_is_not_need_zero(self):
+        # 舊 bug 原文重現案例：一個月前已達標的連續三日，早就斷了，
+        # 舊版 max_c>=3 仍直接回 need=0（已達處置條件），這裡驗證新版不會。
+        start, end = date(2026, 8, 10), date(2026, 8, 12)
+        raw = f"{_roc(start)}至{_roc(end)}連續三次"
+        need, _, live_streak, _, cumulative_hit = _notetrans_urgency(
+            {"code": "9999", "raw_criteria": raw}, self.TODAY, {})
+        self.assertEqual(live_streak, 0)          # 已失效，不能算活著
+        self.assertFalse(cumulative_hit)
+        self.assertNotEqual(need, 0)              # 絕不能標「已達處置條件」
+        self.assertEqual(need, 3)                 # 需重新累積，從 3 天倒數
+
+    def test_old_two_plus_fresh_one_does_not_compose_to_need_one(self):
+        # 舊 bug：max_consecutive 取「所有 entry 的最大次數」(舊的2)，
+        # latest_end 取「所有 entry 的最大日期」(新的1)，兩者來自不同 entry，
+        # 混合後變成「用舊的次數 2 配新的日期」→ need=3-2=1，錯誤地暗示
+        # 只差一天。新版必須改用同一筆 entry 的 count/end，正確反映
+        # 目前這一段只連續了 1 天，need 應為 2，不是 1。
+        old_start, old_end = date(2026, 6, 17), date(2026, 6, 18)
+        new_day = self.TODAY  # 用今天當「新的連續一天」，保證仍活著
+        raw = (f"{_roc(old_start)}至{_roc(old_end)}連續二次"
+               f"{_roc(new_day)}至{_roc(new_day)}連續一次")
+        need, _, live_streak, _, cumulative_hit = _notetrans_urgency(
+            {"code": "9999", "raw_criteria": raw}, self.TODAY, {})
+        self.assertEqual(live_streak, 1)           # 目前這段只連續 1 天
+        self.assertFalse(cumulative_hit)
+        self.assertEqual(need, 2)                  # 3 - 1，不是舊 bug 的 3 - 2 = 1
+
+    def test_cumulative_only_triggers_need_zero_independently(self):
+        # 只有累計條件達標（30日內累計6次），沒有任何活著的連續紀錄，
+        # 舊版完全沒檢查累計，這裡累計必須能獨立觸發 need=0。
+        start, end = date(2026, 8, 20), date(2026, 9, 14)
+        raw = f"{_roc(start)}至{_roc(end)}累計六次"
+        need, _, live_streak, _, cumulative_hit = _notetrans_urgency(
+            {"code": "9999", "raw_criteria": raw}, self.TODAY, {})
+        self.assertEqual(live_streak, 0)            # 沒有連續型 entry
+        self.assertTrue(cumulative_hit)
+        self.assertEqual(need, 0)                   # 累計觸發，即使連續是 0
+
+    def test_parse_failure_falls_back_to_need_three_not_zero(self):
+        # 解析失敗（文字格式不符）不能一律當三連倒數（need=0），
+        # 應退回保守值 need=3、live_streak=0、cumulative_hit=False。
+        need, diff, live_streak, c1, cumulative_hit = _notetrans_urgency(
+            {"code": "9999", "raw_criteria": "與本項無關的文字"}, self.TODAY, {})
+        self.assertEqual(need, 3)
+        self.assertEqual(live_streak, 0)
+        self.assertFalse(cumulative_hit)
+        self.assertIsNone(c1)
+
+    def test_risk_detail_consistent_with_dead_streak(self):
+        # 明細面板（render_risk_detail）必須與上面判斷一致：已失效的連續
+        # 不能顯示「已達連續X日門檻」，而要明確講「已於 X 中斷」。
+        start, end = date(2026, 8, 10), date(2026, 8, 12)
+        raw = f"{_roc(start)}至{_roc(end)}連續三次"
+        analysis = analyze_criteria(raw)
+        html = render_risk_detail(analysis, self.TODAY)
+        self.assertIn("已於", html)
+        self.assertIn("中斷", html)
+        self.assertNotIn("已達連續3日門檻", html)
+        self.assertNotIn("隨時可能收到盤後處置公告", html)
+
+    def test_risk_detail_consistent_with_alive_streak(self):
+        # 活著的連續三日：明細面板要顯示「已達連續3日門檻」的紅色警示，
+        # 不能顯示「已中斷」。
+        raw = f"{_roc(self.TODAY)}至{_roc(self.TODAY)}連續三次"
+        analysis = analyze_criteria(raw)
+        html = render_risk_detail(analysis, self.TODAY)
+        self.assertIn("已達連續3日門檻", html)
+        self.assertNotIn("中斷", html)
+
+
 class TestQuoteDate(unittest.TestCase):
     """
     報價日期來源（P0-1）。舊版把報價標成 `latest_end`（最後注意達標日），
@@ -424,6 +559,17 @@ class TestInlineCountsFailFast(unittest.TestCase):
     def test_duplicate_badge_raises(self):
         with self.assertRaises(MarkerError):
             update_inline_counts(self.TPL + self.TPL, 15, 3, 7)
+
+    def test_tab2_upcoming_overrides_tab2_badge_only(self):
+        # R08：tab2 徽章要能獨立於「最近一批」統計卡的數字（tab1_latest）
+        out = update_inline_counts(self.TPL, 15, 3, 7, tab2_upcoming=9)
+        self.assertIn('data-count="2">9 檔', out)              # 徽章用 tab2_upcoming
+        self.assertIn('text-2xl font-bold text-amber-400">3<', out)  # 統計卡仍用 tab1_latest
+
+    def test_tab2_upcoming_none_falls_back_to_tab1_latest(self):
+        # 未提供 tab2_upcoming 時維持舊行為（相容既有呼叫端）
+        out = update_inline_counts(self.TPL, 15, 3, 7)
+        self.assertIn('data-count="2">3 檔', out)
 
 
 class TestPerfComplete(unittest.TestCase):

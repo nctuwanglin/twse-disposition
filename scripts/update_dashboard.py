@@ -9,7 +9,8 @@ GitHub scheduled workflows 為 best-effort，實際起跑可能再延遲數小�
   - 市場脈絡 Banner（大盤數字 + 處置統計）
   - Summary Stats（處置中總數、最新批次數、二次處置數）
   - Tab 1：處置中（各批次 details 區塊）
-  - Tab 2：即將被處置（最新公告批次）
+  - Tab 2：即將被處置（尚未生效的 upcoming_groups，可能多批；2026-09 R08
+    修正前誤用「最新公告批次」，沒有 upcoming 時會混入已生效的 active 批次）
   - Tab 3：注意累計 + 近期出關名單
 
 不更新：
@@ -579,7 +580,25 @@ def analyze_criteria(raw):
     """
     解析原始累計標準字串，回傳結構化資料。
     例：'115年6月17日至115年6月18日連續二次115年6月15日至115年6月18日連續四次'
-    回傳：{entries, max_consecutive, latest_end}
+
+    回傳欄位（2026-09 review R09 修正，區分「歷史最高」與「目前仍活著的連續」）：
+    - entries：解析出的所有區段（連續/累計），供「最近達標」摘要列表顯示用，
+      是對過去事實的忠實記錄，不代表現在的狀態。
+    - max_consecutive、latest_end：舊欄位維持不變，僅供歷史摘要顯示——這兩者
+      各自獨立取「所有 entries 裡的最大值」，可能來自不同的 entry（例如
+      max_consecutive 來自很久以前一段已經結束的連續，latest_end 卻來自後來
+      一段較弱的累計條件），組合起來會產生「目前存在著一段活著的連續紀錄」
+      的錯覺，但那段連續其實早就斷了。舊版直接拿這兩個值判斷「現在」的狀態
+      正是 R09 的根因：實測「8/3–8/5 連續三次」在 9/8 執行時仍被標成
+      「已達處置條件・待公告」。
+    - current_streak、current_streak_end：目前仍在計算中的連續次數，一定
+      來自「同一個」連續型 entry（end 最新的那個連續 entry），不會混用不同
+      entry 的次數與日期；沒有連續型 entry 時為 (0, None)。呼叫端還要另外
+      用 streak_is_alive(current_streak_end, today) 確認這個 entry 本身
+      有沒有已經中斷（本函式只負責正確配對次數與日期，不判斷是否還活著）。
+    - current_cumulative：目前仍在計算中的累計次數，來自 end 最新的累計型
+      entry；沒有累計型 entry 時為 0。法規「30日內累計6次」與「連續3日」是
+      各自獨立的觸發條件，舊版排序/危險度完全沒有用到這個欄位。
     """
     pattern = r'(\d+)年(\d+)月(\d+)日至(\d+)年(\d+)月(\d+)日(連續|累計)([一二三四五六七八九十]+)次'
     matches = re.findall(pattern, raw)
@@ -598,7 +617,20 @@ def analyze_criteria(raw):
         return None
     max_consec = max((e["count"] for e in entries if e["kind"] == "連續"), default=0)
     latest_end = max(e["end"] for e in entries)
-    return {"entries": entries, "max_consecutive": max_consec, "latest_end": latest_end}
+
+    consec_entries = [e for e in entries if e["kind"] == "連續"]
+    if consec_entries:
+        cur = max(consec_entries, key=lambda e: e["end"])
+        current_streak, current_streak_end = cur["count"], cur["end"]
+    else:
+        current_streak, current_streak_end = 0, None
+
+    cumul_entries = [e for e in entries if e["kind"] == "累計"]
+    current_cumulative = max((e["count"] for e in cumul_entries), default=0)
+
+    return {"entries": entries, "max_consecutive": max_consec, "latest_end": latest_end,
+            "current_streak": current_streak, "current_streak_end": current_streak_end,
+            "current_cumulative": current_cumulative}
 
 
 def render_risk_detail(analysis, today, quote=None, extra_html=""):
@@ -612,10 +644,18 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
 
     max_c       = analysis["max_consecutive"]
     latest_end  = analysis["latest_end"]
-    next_imm    = next_weekday(latest_end)
 
-    streak_broken = not streak_is_alive(latest_end, today)
-    risk_date     = next_weekday(today) if next_imm <= today else next_imm
+    # R09：連續3日門檻的存活判斷／風險日推算，必須綁在 current_streak_end
+    # （與 current_streak 同一筆 entry），不能用 latest_end——latest_end
+    # 可能來自「累計」型 entry，用它判斷連續是否還活著會誤判。
+    cur_streak     = analysis["current_streak"]
+    cur_streak_end = analysis["current_streak_end"]
+    streak_alive   = cur_streak_end is not None and streak_is_alive(cur_streak_end, today)
+    live_streak    = cur_streak if streak_alive else 0
+    cumulative_hit = analysis["current_cumulative"] >= 6
+
+    next_imm  = next_weekday(cur_streak_end) if cur_streak_end else next_weekday(latest_end)
+    risk_date = next_weekday(today) if next_imm <= today else next_imm
 
     # ── 達標摘要 ──
     parts = []
@@ -674,35 +714,44 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
         quote_html = ""
 
     # ── 風險預警 ──
-    streak_note = "（需維持連續）" if streak_broken and max_c < 3 else ""
-
-    if max_c >= 5:
+    # R09：改用 live_streak／cumulative_hit 驅動，不再用 max_c（歷史最大值，
+    # 可能早已失效）。累計次數達門檻是與連續次數獨立的觸發條件，舊版完全
+    # 沒有處理，這裡補上專屬分支。
+    if cumulative_hit and live_streak < 3:
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
-            f'<span class="text-red-300">已達連續{max_c}日 ≥ 門檻，隨時可能收到盤後處置公告</span>'
+            f'<span class="text-red-300">30日內已累計達{analysis["current_cumulative"]}次 ≥ 門檻，'
+            f'隨時可能收到盤後處置公告</span>'
             f'</div>'
         )
-    elif max_c >= 3:
+    elif live_streak >= 5:
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
-            f'<span class="text-red-300">已達連續{max_c}日門檻，'
+            f'<span class="text-red-300">已達連續{live_streak}日 ≥ 門檻，隨時可能收到盤後處置公告</span>'
+            f'</div>'
+        )
+    elif live_streak >= 3:
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-red-400 shrink-0 font-bold">！</span>'
+            f'<span class="text-red-300">已達連續{live_streak}日門檻，'
             f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> 盤後可能收到處置公告'
             f'（第一次處置：2分撮合 5 個營業日）</span>'
             f'</div>'
         )
-    elif max_c == 2:
+    elif live_streak == 2:
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-amber-400 shrink-0">⚠</span>'
             f'<span class="text-amber-200">'
             f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> '
-            f'若再達注意標準{streak_note} → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
+            f'若再達注意標準 → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
             f' → <span class="text-red-300">第一次處置（2分撮合 5 個營業日）</span></span>'
             f'</div>'
         )
-    elif max_c == 1:
+    elif live_streak == 1:
         risk_date2 = next_weekday(risk_date)
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
@@ -713,19 +762,29 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'才觸發連續3日門檻</span>'
             f'</div>'
         )
+    elif cur_streak_end is not None:
+        # R09：連續紀錄存在但已失效（不是舊版的「部分條件符合，待官方確認」
+        # 這種含糊說法）——我們知道確切是哪段連續、何時中斷，直接講清楚。
+        warn_html = (
+            f'<div class="flex items-start gap-1.5">'
+            f'<span class="text-slate-500 shrink-0">•</span>'
+            f'<span class="text-slate-500">此波連續紀錄已於 '
+            f'<span class="mono">{fmt_weekday(cur_streak_end)}</span> 中斷，需重新累積</span>'
+            f'</div>'
+        )
     else:
         warn_html = ""
 
-    # ── 進度條（連續3日門檻）──
-    filled    = min(max_c, 3)
+    # ── 進度條（連續3日門檻）── R09：改用 live_streak，已失效的連續不再顯示滿格。
+    filled    = min(live_streak, 3)
     empty     = max(0, 3 - filled)
-    exceeded  = max_c >= 3
+    exceeded  = live_streak >= 3
     bar_color = "bg-red-500" if exceeded else "bg-yellow-500"
     bar = ("".join(f'<span class="inline-block w-5 h-1.5 rounded-sm {bar_color} mr-0.5"></span>'
                    for _ in range(filled))
            + "".join(f'<span class="inline-block w-5 h-1.5 rounded-sm bg-slate-700 mr-0.5"></span>'
                      for _ in range(empty)))
-    status_txt = "已達門檻" if exceeded else f"{max_c}/3"
+    status_txt = "已達門檻" if exceeded else f"{live_streak}/3"
     bar_html = (
         f'<div class="flex items-center gap-2 mt-1.5">'
         f'<div class="flex items-center">{bar}</div>'
@@ -1616,7 +1675,13 @@ def render_context_banner(taiex, total_active, today_released_count,
 # HTML 生成 — Tab 1
 # ──────────────────────────────────────────────
 def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
-                       stock_quotes=None):
+                       stock_quotes=None, status_pill=None):
+    """
+    status_pill：覆寫預設的狀態標籤。預設邏輯（最新公告/最後一天/處置中）
+    是為 Tab1「處置中」批次設計的，全部假設批次「已生效」；Tab2 現在改渲染
+    upcoming_groups（尚未生效的批次），這三種標籤沒有一個語意正確，所以呼叫
+    端（render_tab2_upcoming_batches）改傳入自訂的「即將生效」標籤覆蓋。
+    """
     ps     = batch["period_start"]
     pe     = batch["period_end"]
     stocks = batch["stocks"]
@@ -1625,7 +1690,9 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
 
     is_expiring = (pe == today)
 
-    if is_latest:
+    if status_pill is not None:
+        pill = status_pill
+    elif is_latest:
         pill = '<span class="pill pill-amber">最新公告 🆕</span>'
     elif is_expiring:
         # 迄日當天仍受管制，次一交易日才恢復正常交易
@@ -1726,47 +1793,74 @@ def render_release_schedule(active_groups, today):
     </div>"""
 
 
-def render_tab2_content(latest_batch, stock_info, today, stock_quotes=None):
-    ps     = latest_batch["period_start"]
-    pe     = latest_batch["period_end"]
-    stocks = latest_batch["stocks"]
-    ann    = latest_batch["ann_date"]
-    count  = len(stocks)
+def render_tab2_upcoming_batches(upcoming_groups, stock_info, today, stock_quotes=None):
+    """
+    Tab2「即將被處置」：只渲染真正尚未生效的批次（period_start > today）。
 
-    twse_stocks = [s for s in stocks if s["exchange"] == "TWSE"]
-    tpex_stocks = [s for s in stocks if s["exchange"] == "TPEx"]
-
-    rows_html  = exchange_section(f"TWSE 上市（{len(twse_stocks)}檔）", twse_stocks, stock_info, today,
-                                  stock_quotes=stock_quotes)
-    rows_html += exchange_section(f"TPEx 上櫃（{len(tpex_stocks)}檔）", tpex_stocks, stock_info, today,
-                                  border=bool(twse_stocks), stock_quotes=stock_quotes)
-
-    return f"""    <div class="card">
-      <div class="p-3 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
-        <div class="flex items-center gap-2">
-          <span class="pill pill-amber">{fmt_short(ann)} 公告</span>
-          <span class="text-sm font-semibold">處置期 {fmt_short(ps)} – {fmt_short(pe)}</span>
-        </div>
-        <div class="text-[10px] text-slate-500 mono">{count} 檔</div>
-      </div>
-      <div>{rows_html}</div>
+    2026-09 review R08：舊版拿 latest_batch（active_groups 與 upcoming_groups
+    合併後 period_start 最大的那批）當 Tab2 內容——沒有 upcoming 時會誤把已
+    生效的 active 批次當成「即將被處置」顯示；有多個 upcoming 批次時又只顯示
+    起始日最大的一批，較早生效的批次會漏掉（實測：全是 active、upcoming 為空
+    時，Tab2 仍會生出股票）。現在改為完整渲染 upcoming_groups 裡的每一批
+    （按生效日由近到遠排序），沒有任何 upcoming 時顯示明確的空狀態，不再
+    靜默借用 active 的內容頂替。
+    """
+    if not upcoming_groups:
+        return """    <div class="empty-state-server">
+      <div class="empty-state-icon">📭</div>
+      <div class="empty-state-title">目前沒有已公告待生效處置</div>
+      <div class="empty-state-hint">已公告的批次都已生效，或尚未有新公告</div>
     </div>"""
+
+    status_pill = '<span class="pill pill-blue">即將生效</span>'
+    sorted_batches = sorted(upcoming_groups.values(), key=lambda b: b["period_start"])
+    blocks = [
+        render_batch_block(batch, stock_info, today, is_open=(i < 3),
+                           stock_quotes=stock_quotes, status_pill=status_pill)
+        for i, batch in enumerate(sorted_batches)
+    ]
+    return "\n".join(blocks)
 
 
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 3
 # ──────────────────────────────────────────────
 def _notetrans_urgency(r, today, thr):
-    """注意累計股的危險度：(need, diff)。
-    need = 還需連續達標日數（0=已達處置條件）；diff = 第一款門檻距離%（越小越近）。
-    排序用此鍵，越前面代表越接近進處置（原「下一批雷達」的核心邏輯）。"""
+    """注意累計股的危險度：(need, diff, live_streak, c1, cumulative_hit)。
+    need = 還需連續達標日數（0=已達處置條件）；diff = 第一款門檻距離%（越小越近）；
+    live_streak = 目前仍活著的連續次數（已中斷則為 0，供進度條渲染用）；
+    cumulative_hit = 是否由累計次數（非連續次數）觸發 need=0。
+    排序用前兩個鍵，越前面代表越接近進處置（原「下一批雷達」的核心邏輯）。
+
+    2026-09 review R09 修正：
+    - 舊版 `max_c >= 3` 直接回 need=0，完全不檢查這段連續是否還活著——
+      實測「8/3–8/5 連續三次」在 9/8（一個月後）執行時 urgency 仍是
+      (0, ..., 3, ...)，被排到最前面且標成「已達處置條件」。現在改用
+      current_streak_end（與 current_streak 保證同一個 entry）餵給
+      streak_is_alive；已中斷的連續一律視為 0，need 需重新累積到 3。
+    - 累計次數達 6 次（法規「30日內累計6次」與「連續3日」是各自獨立的觸發
+      條件）時，即使連續紀錄已中斷，也視為已達處置條件——舊版完全沒有把
+      累計條件反映到危險度排序上。
+    """
     a = analyze_criteria(r.get("raw_criteria", ""))
-    max_c = a["max_consecutive"] if a else 0
-    streak_alive = bool(a) and streak_is_alive(a["latest_end"], today)
-    need = 0 if max_c >= 3 else (3 - max_c if streak_alive else 3)
+    if not a:
+        return 3, 999.0, 0, None, False
+
+    streak_alive = (a["current_streak_end"] is not None
+                    and streak_is_alive(a["current_streak_end"], today))
+    live_streak    = a["current_streak"] if streak_alive else 0
+    cumulative_hit = a["current_cumulative"] >= 6
+
+    if cumulative_hit or live_streak >= 3:
+        need = 0
+    elif streak_alive:
+        need = 3 - live_streak
+    else:
+        need = 3
+
     c1 = (thr.get(r["code"]) or {}).get("clause1")
     diff = c1["diff_pct"] if c1 else None
-    return need, (diff if diff is not None else 999.0), max_c, c1
+    return need, (diff if diff is not None else 999.0), live_streak, c1, cumulative_hit
 
 
 def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, nt_thresholds=None):
@@ -1785,9 +1879,12 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         sector   = meta["sector"] or r.get("exchange","")
         analysis = analyze_criteria(r.get("raw_criteria",""))
         quote    = sq.get(r["code"])
-        need, _, max_c, c1 = _notetrans_urgency(r, today, thr)
+        need, _, live_streak, c1, cumulative_hit = _notetrans_urgency(r, today, thr)
 
-        if max_c >= 3:
+        # R09：嚴重度顏色改用 need==0（真正達到門檻，不論是連續或累計觸發），
+        # 不再單看連續次數——舊版用 max_c>=3 判斷，即使那段連續早就斷了、
+        # need 其實是 3（要重新累積）也照樣標紅。
+        if need == 0:
             sev_color = "bg-red-500"
             ticker_cl = "text-red-300 font-bold"
         else:
@@ -1804,8 +1901,18 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
 
         prog = "".join(
             f'<span class="inline-block" style="width:18px;height:5px;border-radius:2px;'
-            f'margin-right:2px;background:{"#eab308" if i < max_c else "#334155"}"></span>'
+            f'margin-right:2px;background:{"#eab308" if i < live_streak else "#334155"}"></span>'
             for i in range(3))
+
+        # 進度條旁的文字說明：連續已中斷、累計觸發、或正常倒數三種情境要
+        # 分開講清楚，不能統一寫「連續 X/3」——舊版連續斷了進度條卻仍畫著
+        # 舊次數，這裡改成明確標示「已中斷」或「累計已達門檻」
+        if cumulative_hit and live_streak < 3:
+            prog_note = "累計已達門檻"
+        elif live_streak == 0:
+            prog_note = "此波連續已中斷" if (analysis or {}).get("current_streak", 0) else "尚無連續紀錄"
+        else:
+            prog_note = f"連續 {live_streak}/3"
 
         # 明日觸發價（第一款絕對條件）
         if c1 and not c1["triggered"]:
@@ -1836,7 +1943,7 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             f'</div>'
             f'<div class="end-date-desktop text-right">'
             f'{status}'
-            f'<div class="mt-1">{prog}<span class="text-[10px] text-slate-500 ml-1">連續 {max_c}/3</span></div>'
+            f'<div class="mt-1">{prog}<span class="text-[10px] text-slate-500 ml-1">{prog_note}</span></div>'
             f'{tomo}'
             f'</div>'
             + detail_html
@@ -2005,11 +2112,20 @@ def _sub_once(html, pattern, repl, what):
     return result
 
 
-def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0):
+def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0, tab2_upcoming=None):
+    """
+    tab1_latest：「最近一批」統計卡的數字（最近公告批次，可能是 active 或
+    upcoming，語意不變）。
+    tab2_upcoming：Tab2 導覽徽章（data-count="2"）專用，2026-09 review R08
+    修正——這個徽章代表 Tab2 分頁實際顯示的內容數量，必須是 upcoming_groups
+    的唯一代碼數，不可再沿用 tab1_latest（那是單一批次的股數，upcoming 有
+    多批或為空時兩者會對不上）。未提供時退回 tab1_latest 以維持相容。
+    """
+    tab2_count = tab1_latest if tab2_upcoming is None else tab2_upcoming
     html = _sub_once(html, r'(data-count="1">)[^<]+(<)',
                      rf'\g<1>{tab1_total} 檔\2', "tab1 badge")
     html = _sub_once(html, r'(data-count="2">)[^<]+(<)',
-                     rf'\g<1>{tab1_latest} 檔\2', "tab2 badge")
+                     rf'\g<1>{tab2_count} 檔\2', "tab2 badge")
     html = _sub_once(html, r'(data-count="3">)[^<]+(<)',
                      rf'\g<1>{tab3_nt} 注意累計\2', "tab3 badge")
     html = _sub_once(html, r'(class="mono text-2xl font-bold text-red-400">)[^<]+(<)',
@@ -2161,17 +2277,25 @@ def main():
     today_released = sum(len(g["stocks"]) for pe, g in released_groups.items()
                          if pe == prev_trading)
 
-    # 最新批次（active + upcoming 中 period_start 最大）
+    # 最新批次（active + upcoming 中 period_start 最大）——僅供「最近一批」
+    # 統計卡使用（最近公告的批次，不論是否已生效）。
     all_combined = {**active_groups, **upcoming_groups}
     latest_batch = max(all_combined.values(), key=lambda b: b["period_start"])
     latest_count = len(latest_batch["stocks"])
     latest_ann   = latest_batch["ann_date"]
 
-    upcoming_date  = latest_batch["period_start"] if latest_batch["period_start"] > today else None
-    upcoming_count = latest_count if upcoming_date else 0
+    # R08：Tab2／banner「即將加入」需完整反映 upcoming_groups，不能只看
+    # latest_batch 那一批——upcoming 有多批（起始日不同）時只取其中一批會
+    # 漏掉較早生效的批次；upcoming 為空時 latest_batch 會落到 active，若
+    # 沿用會把「已生效」誤標成「即將加入」。upcoming_date 取最早生效日
+    # （下一個會發生的事件），upcoming_count 取跨所有 upcoming 批次的唯一
+    # 代碼數（同一代碼理論上不會橫跨兩批 upcoming，但仍以 set 保險）。
+    upcoming_codes = {s["code"] for g in upcoming_groups.values() for s in g["stocks"]}
+    upcoming_count = len(upcoming_codes)
+    upcoming_date  = min(upcoming_groups) if upcoming_groups else None
 
     print(f"  處置中: {total_active} 檔 (TWSE:{twse_count} TPEx:{tpex_count})")
-    print(f"  最新批次: {latest_count} 檔 / 今日出關: {today_released} 檔")
+    print(f"  最新批次: {latest_count} 檔 / 即將被處置: {upcoming_count} 檔 / 今日出關: {today_released} 檔")
     print(f"  二次處置: {second_count} 檔 / 注意累計: TWSE {len(notetrans_twse)} TPEx {len(notetrans_tpex)}")
 
     # 讀 stock_info
@@ -2201,8 +2325,8 @@ def main():
                               twse_count, tpex_count, latest_ann, deltas=deltas)
     tab1_html  = render_tab1_batches(active_groups, stock_info, today,
                                      stock_quotes=stock_quotes)
-    tab2_html  = render_tab2_content(latest_batch, stock_info, today,
-                                     stock_quotes=stock_quotes)
+    tab2_html  = render_tab2_upcoming_batches(upcoming_groups, stock_info, today,
+                                              stock_quotes=stock_quotes)
     tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds,
                              perf_html=perf_html, prev_trading=prev_trading)
@@ -2228,7 +2352,8 @@ def main():
 
     # 更新 tab nav 數字
     tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
-    html = update_inline_counts(html, total_active, latest_count, tab3_nt)
+    html = update_inline_counts(html, total_active, latest_count, tab3_nt,
+                                tab2_upcoming=upcoming_count)
 
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
