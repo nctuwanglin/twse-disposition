@@ -17,7 +17,7 @@ from update_dashboard import (          # noqa: E402
     ad_to_date, render_risk_detail,
     replace_between, update_inline_counts, MarkerError,
     _perf_complete, _months_between, update_perf_stats, perf_stats_summary,
-    write_snapshot,
+    write_snapshot, _tpex_rows_to_dicts,
 )
 
 
@@ -528,6 +528,48 @@ class TestSnapshotForceProtection(unittest.TestCase):
     def test_weekend_never_writes_history(self):
         write_snapshot({"date": "2026-09-05", "active": []}, force=False)   # 週六
         self.assertFalse(self._hist_file("2026-09-05").exists())
+
+
+
+
+class TestTpexRowsToDicts(unittest.TestCase):
+    """
+    TPEx 表格 API 的「本日無資料」佔位列不得讓整支腳本崩潰
+    （2026-09-14 實際發生：fetch_tpex_warning 對這種列做 row[i] 逐欄取值，
+    IndexError 讓 main() 整個中止，連續多個交易日完全沒有任何資料更新，
+    直到 2026-09-15 才被發現）。
+    """
+
+    FIELDS = ["編號", "證券代號", "證券名稱", "近期達本公司「公布注意交易資訊」標準之情形"]
+
+    def test_normal_row_converted(self):
+        rows = [["1", "1101", "台泥", "連續三日達注意標準"]]
+        out = _tpex_rows_to_dicts(self.FIELDS, rows)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["證券代號"], "1101")
+        self.assertEqual(out[0]["證券名稱"], "台泥")
+
+    def test_placeholder_no_data_row_is_skipped_not_crashed(self):
+        # 真實回應：TPEx 無資料時回傳這種單一元素的佔位列，而非空 data:[]
+        rows = [["本日無公布注意交易累計資訊"]]
+        out = _tpex_rows_to_dicts(self.FIELDS, rows)
+        self.assertEqual(out, [])   # 視同零筆，不得拋例外
+
+    def test_mixed_placeholder_and_valid_rows(self):
+        rows = [["本日無公布注意交易累計資訊"], ["2", "2330", "台積電", "累計六次"]]
+        out = _tpex_rows_to_dicts(self.FIELDS, rows)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["證券代號"], "2330")
+
+    def test_empty_rows_list(self):
+        self.assertEqual(_tpex_rows_to_dicts(self.FIELDS, []), [])
+
+    def test_row_longer_than_fields_still_works(self):
+        # 多餘欄位被忽略，維持既有行為（原本 dict comprehension 也是這樣）
+        rows = [["1", "1101", "台泥", "連續三日達注意標準", "多出來的欄位"]]
+        out = _tpex_rows_to_dicts(self.FIELDS, rows)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["證券代號"], "1101")
 
 
 if __name__ == "__main__":

@@ -292,14 +292,31 @@ def normalize_twse_rows(raw_rows):
     return result
 
 
+def _tpex_rows_to_dicts(fields, rows):
+    """
+    TPEx 表格 API 的 {fields, data} 轉成 list[dict]。
+
+    TPEx 當某清單「本日無資料」時，不是回傳空 data:[]，而是回傳一筆只有單一
+    元素的佔位列（如 ['本日無公布注意交易累計資訊']），欄位數遠少於 fields。
+    原本直接用 row[i] 逐欄取值會撞上 IndexError，讓整支腳本崩潰、當天完全
+    不寫入任何資料（2026-09-14 起連續多個交易日因此停更，直到 09-15 才發現）。
+    這裡改成欄位數不足的列一律略過（視同該筆無效／無資料），不中止整個流程。
+    """
+    out = []
+    for row in rows:
+        if len(row) < len(fields):
+            continue
+        out.append({f: str(row[i]) for i, f in enumerate(fields)})
+    return out
+
+
 def fetch_and_normalize_tpex(referer):
     raw = safe_fetch_json(TPEX_DISPOSAL, {"Referer": referer}, default={"tables": [{"fields":[],"data":[]}]})
     table  = raw["tables"][0]
     fields = table["fields"]
     rows   = table["data"]
     result = []
-    for row in rows:
-        d = {f: str(row[i]) for i, f in enumerate(fields)}
+    for d in _tpex_rows_to_dicts(fields, rows):
         code = clean_name(d.get("證券代號", ""))
         if not code or not is_regular_stock(code):
             continue
@@ -718,8 +735,7 @@ def fetch_tpex_warning():
     fields = table["fields"]
     rows   = table["data"]
     result = []
-    for row in rows:
-        d = {f: str(row[i]) for i, f in enumerate(fields)}
+    for d in _tpex_rows_to_dicts(fields, rows):
         code = clean_name(d.get("證券代號", ""))
         name = clean_name(d.get("證券名稱", ""))
         if not code or not is_regular_stock(code):
