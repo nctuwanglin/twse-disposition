@@ -1727,6 +1727,18 @@ def render_batch_block(batch, stock_info, today, is_latest=False, is_open=True,
 
 
 def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
+    """
+    R09 review R07：處置中股票歸零是合法的市場狀態（所有批次都已出關、
+    尚無新批次生效），不是資料源故障——main() 現在會照常發佈這種狀態，
+    這裡必須有明確的空狀態文字，不能讓 marker 區段變成空白（那看起來像
+    渲染壞掉，而不是「目前沒有處置中股票」）。
+    """
+    if not active_groups:
+        return """    <div class="empty-state-server">
+      <div class="empty-state-icon">✅</div>
+      <div class="empty-state-title">目前沒有處置中的股票</div>
+      <div class="empty-state-hint">所有批次皆已出關，尚無新批次生效</div>
+    </div>"""
     sorted_batches = sorted(active_groups.values(), key=lambda b: b["period_start"], reverse=True)
     blocks = [render_release_schedule(active_groups, today)]
     for i, batch in enumerate(sorted_batches):
@@ -1759,6 +1771,43 @@ def _canonical_active_by_code(active_groups):
                               (cur["period_end"], cur.get("disp_count", 1)):
                 best[s["code"]] = s
     return best
+
+
+def _latest_batch_stats(active_groups, upcoming_groups):
+    """
+    「最近一批」統計卡用：active+upcoming 合併後 period_start 最大的那一批。
+
+    R07：active_groups 現在可能因為「今天沒有任何處置中股票」這種合法情境
+    而為空（見 main()）；若 upcoming_groups 也剛好同時為空（例如公告空窗
+    期），兩者合併後仍是空 dict，對空 dict 取 max() 會丟 ValueError。
+    """
+    all_combined = {**active_groups, **upcoming_groups}
+    if not all_combined:
+        return 0, None
+    latest_batch = max(all_combined.values(), key=lambda b: b["period_start"])
+    return len(latest_batch["stocks"]), latest_batch["ann_date"]
+
+
+def _unexplained_drop(prev_total, total_active, released_groups, last_processed_date):
+    """
+    R07：驟降保護原本只看總數比例，長時間漏跑或大量同批同日期滿都會被誤攔，
+    而且攔下來之後 state 不會前進，下一班仍拿同一個 prev_total 比對，可能
+    永遠卡住。這裡先扣掉「已知合法出關」的部分，只有『扣除後仍解釋不了的
+    下降』才視為異常。
+
+    released_groups 涵蓋近 30 日內 period_end < today 的紀錄；只計入
+    period_end >= last_processed_date 的（上次執行之後才出關的），因為
+    period_end 更早的那些在上次執行時就已經出關，本來就不會被算進
+    prev_total，不能拿來重複解釋這次的下降。
+
+    回傳「扣除已知出關後」仍未被解釋的下降檔數；<= 0 代表沒有異常下降。
+    """
+    drop = prev_total - total_active
+    if drop <= 0 or last_processed_date is None:
+        return drop
+    explained = sum(len(g["stocks"]) for pe, g in released_groups.items()
+                    if pe >= last_processed_date)
+    return drop - explained
 
 
 def render_release_schedule(active_groups, today):
@@ -2234,8 +2283,12 @@ def main():
     active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
 
     if not active_groups:
-        print("WARNING: 今天沒有任何處置中的股票，跳過更新。")
-        return
+        # R07：處置中歸零是合法狀態（全部批次已出關、尚無新批次生效），
+        # 不是資料源故障——上面已經個別驗證過 TWSE/TPEx 處置源本身非空，
+        # 這裡不該再把「業務上真的零筆」跟「資料源故障」混為一談而整批
+        # 放棄更新。舊版在此 return，若這個狀態持續發生，網站會永遠停在
+        # 最後一次還有處置股的舊畫面，因為 last_counts.json 也不會前進。
+        print("  今天沒有任何處置中的股票（合法零筆，照常發佈空狀態）。")
 
     # 統計（R12：改用 _canonical_active_by_code 的「period_end 最大」規則，
     # 不再是「API 回傳時先遇到的那筆」——後者會讓 second_count 隨 API 回傳
@@ -2247,13 +2300,18 @@ def main():
     tpex_count    = sum(1 for s in all_active if s["exchange"] == "TPEx")
     second_count  = sum(1 for s in all_active if s["disp_count"] >= 2)
 
-    # 檔數驟降保險：處置批次出關是漸進的（單日約 10 檔級別），單日驟降過半
-    # 幾乎必是資料源回傳不完整。與上次成功執行的檔數比對，異常即中止。
+    # 檔數驟降保險：處置批次出關是漸進的，單日驟降過半通常是資料源回傳
+    # 不完整；但大量同批同日期滿、或漏跑多日一次補回一大段出關，也會造成
+    # 同樣的降幅，卻是合法的。R07：扣掉「已知合法出關」（released_groups
+    # 裡上次執行之後才出關的）之後，只有仍解釋不了的下降才視為異常中止。
     prev_total = int(state.get("total_active", 0) or 0)
-    if not force and prev_total >= 10 and total_active < prev_total * 0.5:
-        sys.exit(f"ERROR: 處置中檔數驟降 {prev_total} → {total_active}"
-                 f"（上次: {state.get('date','?')}），疑似資料源不完整，"
-                 f"中止更新（確認正常可用 --force）")
+    last_processed_date = date.fromisoformat(state["date"]) if state.get("date") else None
+    unexplained = _unexplained_drop(prev_total, total_active, released_groups, last_processed_date)
+    if not force and prev_total >= 10 and unexplained > prev_total * 0.5:
+        sys.exit(f"ERROR: 處置中檔數異常下降 {prev_total} → {total_active}"
+                 f"（已知合法出關可解釋 {prev_total - total_active - unexplained} 檔，"
+                 f"仍有 {unexplained} 檔無法解釋，上次: {state.get('date','?')}），"
+                 f"疑似資料源不完整，中止更新（確認正常可用 --force）")
 
     # KPI 昨日對比基準：同日重跑沿用原本的 prev_day，跨日則以上次執行為基準
     if state.get("date") == today.isoformat():
@@ -2278,11 +2336,9 @@ def main():
                          if pe == prev_trading)
 
     # 最新批次（active + upcoming 中 period_start 最大）——僅供「最近一批」
-    # 統計卡使用（最近公告的批次，不論是否已生效）。
-    all_combined = {**active_groups, **upcoming_groups}
-    latest_batch = max(all_combined.values(), key=lambda b: b["period_start"])
-    latest_count = len(latest_batch["stocks"])
-    latest_ann   = latest_batch["ann_date"]
+    # 統計卡使用（最近公告的批次，不論是否已生效）。R07：兩者皆空（合法零
+    # 處置 + 公告空窗期同時發生）時不可對空 dict 取 max()，改用安全版本。
+    latest_count, latest_ann = _latest_batch_stats(active_groups, upcoming_groups)
 
     # R08：Tab2／banner「即將加入」需完整反映 upcoming_groups，不能只看
     # latest_batch 那一批——upcoming 有多批（起始日不同）時只取其中一批會

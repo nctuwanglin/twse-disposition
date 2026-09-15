@@ -19,6 +19,7 @@ from update_dashboard import (          # noqa: E402
     _perf_complete, _months_between, update_perf_stats, perf_stats_summary,
     write_snapshot, _tpex_rows_to_dicts, _canonical_active_by_code,
     render_tab2_upcoming_batches, _notetrans_urgency,
+    render_tab1_batches, _latest_batch_stats, _unexplained_drop,
 )
 
 
@@ -303,6 +304,68 @@ class TestCanonicalActiveByCode(unittest.TestCase):
         b = self._stock("2330", date(2026, 9, 12))
         result = _canonical_active_by_code({1: {"stocks": [a, b]}})
         self.assertEqual(set(result.keys()), {"1101", "2330"})
+
+
+class TestR07EmptyStateAndDropGuard(unittest.TestCase):
+    """
+    R07：處置中檔數合法歸零不能被當成資料源故障整批放棄更新；驟降保護
+    也不能因為長時間漏跑或大量同批同日期滿而永久卡住（下一班仍拿同一個
+    prev_total 比對）。
+    """
+
+    def test_render_tab1_batches_empty_shows_explicit_empty_state(self):
+        # 舊 bug：active_groups 為空時 main() 直接 return，Tab1 marker
+        # 區段維持上次舊內容；新版必須能正常渲染出明確的空狀態文字。
+        html = render_tab1_batches({}, {}, date(2026, 9, 16))
+        self.assertIn("目前沒有處置中的股票", html)
+        self.assertNotIn("table-row", html)
+
+    def test_latest_batch_stats_both_empty_does_not_crash(self):
+        # 舊 bug：max({}.values(), key=...) 會丟 ValueError——當 active_groups
+        # 因合法零筆而空，且 upcoming_groups 也剛好同時是空（公告空窗期）時
+        # 會直接讓 main() 崩潰，而不是優雅地顯示「無最新批次」。
+        count, ann = _latest_batch_stats({}, {})
+        self.assertEqual(count, 0)
+        self.assertIsNone(ann)
+
+    def test_latest_batch_stats_picks_max_period_start(self):
+        active = {date(2026, 9, 1): {"period_start": date(2026, 9, 1),
+                                     "ann_date": date(2026, 8, 31),
+                                     "stocks": [1, 2]}}
+        upcoming = {date(2026, 9, 20): {"period_start": date(2026, 9, 20),
+                                        "ann_date": date(2026, 9, 16),
+                                        "stocks": [1, 2, 3]}}
+        count, ann = _latest_batch_stats(active, upcoming)
+        self.assertEqual(count, 3)
+        self.assertEqual(ann, date(2026, 9, 16))
+
+    def _released(self, pe, n):
+        return {pe: {"period_end": pe, "stocks": list(range(n))}}
+
+    def test_drop_fully_explained_by_known_releases_is_not_anomalous(self):
+        # 上次 20 檔，這次只剩 5 檔，乍看驟降 75%；但 15 檔都在
+        # last_processed_date 之後合法出關（released_groups 有紀錄），
+        # 不該被當成資料源故障。
+        released = self._released(date(2026, 9, 15), 15)
+        result = _unexplained_drop(20, 5, released, date(2026, 9, 11))
+        self.assertLessEqual(result, 0)
+
+    def test_drop_not_explained_by_releases_is_anomalous(self):
+        # 上次 20 檔、這次只剩 5 檔，但完全沒有已知出關紀錄能解釋——
+        # 這才是真正該中止的資料源故障情境。
+        result = _unexplained_drop(20, 5, {}, date(2026, 9, 11))
+        self.assertEqual(result, 15)
+
+    def test_release_before_last_processed_date_not_double_counted(self):
+        # period_end 早於上次執行資料日的紀錄，上次執行時就已經出關、
+        # 本來就不在 prev_total 裡，不能被拿來重複解釋這次的下降。
+        released = self._released(date(2026, 9, 5), 15)  # 早於 9/11
+        result = _unexplained_drop(20, 5, released, date(2026, 9, 11))
+        self.assertEqual(result, 15)  # 完全沒被解釋
+
+    def test_no_drop_returns_non_positive(self):
+        result = _unexplained_drop(10, 12, {}, date(2026, 9, 11))
+        self.assertLessEqual(result, 0)
 
 
 class TestTab2UpcomingBatches(unittest.TestCase):
