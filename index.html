@@ -221,11 +221,18 @@
 
   @media (max-width: 640px) {
     .table-row { grid-template-columns: 70px 1fr; }
-    .end-date-mobile { display: block; margin-top: 4px; font-size: 11px; color: var(--ink-dim); }
-    .end-date-desktop { display: none; }
-  }
-  @media (min-width: 641px) {
-    .end-date-mobile { display: none; }
+    /* R14 review：舊版在此把 .end-date-desktop 整欄 display:none，撮合方式、
+       處置迄日、注意股狀態/進度條/明日觸發價這些關鍵管制資訊在手機版完全
+       消失（對應的 .end-date-mobile 替代節點從未被 renderer 產生，是死
+       CSS）。改成讓同一個節點換行展開占滿寬度，不新增手機專屬 DOM，
+       避免手機/桌機兩份文案漂移。 */
+    .end-date-desktop {
+      grid-column: 1 / -1;
+      text-align: left;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.15);
+    }
   }
 
   /* 出關排程（Tab1 時間軸）：桌機單行四欄，手機拆成兩行避免欄位互相擠壓換行錯位 */
