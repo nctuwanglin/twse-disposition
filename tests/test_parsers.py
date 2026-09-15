@@ -17,7 +17,7 @@ from update_dashboard import (          # noqa: E402
     ad_to_date, render_risk_detail,
     replace_between, update_inline_counts, MarkerError,
     _perf_complete, _months_between, update_perf_stats, perf_stats_summary,
-    write_snapshot, _tpex_rows_to_dicts,
+    write_snapshot, _tpex_rows_to_dicts, _canonical_active_by_code,
 )
 
 
@@ -213,6 +213,95 @@ class TestPrevTradingDay(unittest.TestCase):
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "not-a-date"}),
             date(2026, 8, 10))
+
+    # ── R11（2026-09）：trading_days 地面真相優先於 baseline ──
+
+    def test_trading_days_overrides_stale_baseline_after_missed_runs(self):
+        # 實例重現：排程連續漏跑多日（9/11 崩潰到 9/15 才修好），baseline 停在
+        # 9/11，但真實交易日清單（FMTQIK）顯示 9/14 才是 9/15 的前一交易日。
+        # 地面真相必須贏過腳本自己的執行歷史。
+        trading_days = [date(2026, 9, d) for d in (8, 9, 10, 11, 14, 15)]
+        self.assertEqual(
+            prev_trading_day(date(2026, 9, 15), {"date": "2026-09-11"}, trading_days),
+            date(2026, 9, 14))
+
+    def test_trading_days_correctly_skips_holiday_gap(self):
+        # 交易日清單本身已經跳過週末/國定假日，不需要額外處理
+        trading_days = [date(2026, 8, 3), date(2026, 8, 4), date(2026, 8, 6)]
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 6), {"date": "2026-08-04"}, trading_days),
+            date(2026, 8, 4))
+
+    def test_falls_back_to_baseline_when_trading_days_empty(self):
+        # 當月第一個交易日：trading_days 拿不到更早一筆，退回 baseline
+        self.assertEqual(
+            prev_trading_day(date(2026, 9, 1), {"date": "2026-08-31"}, []),
+            date(2026, 8, 31))
+
+    def test_falls_back_to_baseline_when_today_is_earliest_in_trading_days(self):
+        trading_days = [date(2026, 9, 1), date(2026, 9, 2)]
+        self.assertEqual(
+            prev_trading_day(date(2026, 9, 1), {"date": "2026-08-31"}, trading_days),
+            date(2026, 8, 31))
+
+    def test_trading_days_none_behaves_like_before(self):
+        # 未提供 trading_days（例如呼叫端沒傳）時，行為與舊版完全相同
+        self.assertEqual(
+            prev_trading_day(date(2026, 8, 11), {"date": "2026-08-06"}, None),
+            date(2026, 8, 6))
+
+
+class TestCanonicalActiveByCode(unittest.TestCase):
+    """
+    R12：同一代碼重疊處置時，取「現行有效管制」的規則必須與 API 回傳順序無關。
+    舊版 main() 用 seen-set 取「先遇到的那筆」，等同於相信 API 回傳順序，
+    導致 second_count 等 KPI 不穩定。
+    """
+
+    def _stock(self, code, period_end, disp_count=1, exchange="TWSE"):
+        return {"code": code, "name": f"股{code}", "exchange": exchange,
+                "period_start": date(2026, 9, 1), "period_end": period_end,
+                "disp_count": disp_count}
+
+    def test_picks_larger_period_end(self):
+        old_rec = self._stock("1101", date(2026, 9, 10), disp_count=1)
+        new_rec = self._stock("1101", date(2026, 9, 20), disp_count=2)
+        groups = {1: {"stocks": [old_rec]}, 2: {"stocks": [new_rec]}}
+        result = _canonical_active_by_code(groups)
+        self.assertEqual(result["1101"]["period_end"], date(2026, 9, 20))
+        self.assertEqual(result["1101"]["disp_count"], 2)
+
+    def test_order_independent(self):
+        # 同一份重疊資料，groups 走訪順序對調，結果必須完全相同
+        old_rec = self._stock("6933", date(2026, 9, 8), disp_count=1)
+        new_rec = self._stock("6933", date(2026, 9, 11), disp_count=2)
+
+        result_a = _canonical_active_by_code(
+            {1: {"stocks": [old_rec]}, 2: {"stocks": [new_rec]}})
+        result_b = _canonical_active_by_code(
+            {1: {"stocks": [new_rec]}, 2: {"stocks": [old_rec]}})
+
+        self.assertEqual(result_a["6933"], result_b["6933"])
+        self.assertEqual(result_a["6933"]["disp_count"], 2)
+
+    def test_ties_broken_by_disp_count(self):
+        # period_end 相同時，取 disp_count 較大者（較新升級的那筆）
+        first  = self._stock("2317", date(2026, 9, 15), disp_count=1)
+        second = self._stock("2317", date(2026, 9, 15), disp_count=2)
+        result = _canonical_active_by_code({1: {"stocks": [first, second]}})
+        self.assertEqual(result["2317"]["disp_count"], 2)
+
+    def test_no_overlap_keeps_single_record(self):
+        rec = self._stock("2330", date(2026, 9, 12))
+        result = _canonical_active_by_code({1: {"stocks": [rec]}})
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result["2330"], rec)
+
+    def test_multiple_distinct_codes(self):
+        a = self._stock("1101", date(2026, 9, 10))
+        b = self._stock("2330", date(2026, 9, 12))
+        result = _canonical_active_by_code({1: {"stocks": [a, b]}})
+        self.assertEqual(set(result.keys()), {"1101", "2330"})
 
 
 class TestQuoteDate(unittest.TestCase):

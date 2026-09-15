@@ -366,6 +366,31 @@ def fetch_taiex():
         return None
 
 
+def fetch_recent_trading_days():
+    """
+    回傳本月至今的實際交易日清單（由 FMTQIK 加權指數歷史推導），由舊到新排序。
+
+    這是判斷「真正的前一個交易日」的地面真相來源——比「上次腳本成功執行的
+    日期」（data/last_counts.json 的 baseline）更可靠。baseline 混淆了「市場
+    休市」與「我們自己的排程漏跑」這兩件事：一旦腳本連續多天沒跑成功（如
+    2026-09-11～09-15 的 TPEx 崩潰事故），baseline 會停在事故前最後一天，
+    被誤當成「前一交易日」，導致「今日恢復交易」與 KPI 對比基準整批算錯。
+    FMTQIK 本身只在真實交易日發布資料，天然正確跳過週末與國定假日，且不受
+    我們自己排程是否執行影響。
+
+    當月第一個交易日時，這個月的資料還沒有更早一筆可查，呼叫端需自行 fallback
+    （見 prev_trading_day）。
+    """
+    data = safe_fetch_json(TWSE_MI_INDEX, default={})
+    days = []
+    for row in data.get("data", []):
+        try:
+            days.append(roc_to_date(str(row[0]).replace("/", "")))
+        except (ValueError, IndexError, TypeError):
+            continue
+    return sorted(days)
+
+
 def fetch_twse_stock_quotes():
     """
     回傳 TWSE 全股日資料 dict：{code: {close, change, change_pct, vol_k, monthly_avg}}.
@@ -513,12 +538,26 @@ def streak_is_alive(latest_end, today):
         return latest_end >= LAST_TRADE_DATE
     return next_weekday(latest_end) > today
 
-def prev_trading_day(today, baseline=None):
+def prev_trading_day(today, baseline=None, trading_days=None):
     """
-    今天的前一個交易日。優先採用上次成功執行的資料日（data/last_counts.json），
-    那是實際有收盤資料的日子，天然排除國定假日與颱風停市；取不到才退回前一平日。
-    用於判斷「今日出關」：處置迄日當天仍受管制，次一交易日才恢復正常交易。
+    今天的前一個交易日，決定「今日出關」：處置迄日當天仍受管制，次一交易日
+    才恢復正常交易。優先順序（2026-09 review R11 修正）：
+
+    1. trading_days（fetch_recent_trading_days() 取得的真實交易日清單）——
+       地面真相，來自 FMTQIK 加權指數本身只在真實交易日發布的特性，不受我們
+       自己排程是否執行影響，正確跳過週末與國定假日。
+    2. baseline（data/last_counts.json 的上次成功執行資料日）——僅在
+       trading_days 給不出答案時（通常是當月第一個交易日，該月資料還沒有
+       更早一筆）當退路。⚠ baseline 混淆了「市場休市」與「我們自己排程漏跑」：
+       若排程曾連續多天沒跑成功，baseline 會停在事故前最後一天，被誤當成
+       前一交易日（2026-09-11～09-15 的 TPEx 崩潰事故即是實例）。
+    3. 都沒有 → 退回前一平日（原本邏輯，僅作最後手段）。
     """
+    if trading_days:
+        earlier = [d for d in trading_days if d < today]
+        if earlier:
+            return max(earlier)
+
     if baseline and baseline.get("date"):
         try:
             d = date.fromisoformat(baseline["date"])
@@ -1633,8 +1672,18 @@ def render_tab1_batches(active_groups, stock_info, today, stock_quotes=None):
 # ──────────────────────────────────────────────
 # HTML 生成 — Tab 2
 # ──────────────────────────────────────────────
-def render_release_schedule(active_groups, today):
-    """出關時間軸（#18）：現行有效管制（每檔取 period_end 最大）按出關日分組。"""
+def _canonical_active_by_code(active_groups):
+    """
+    同一代碼在 active_groups 可能有多筆重疊處置紀錄（如先 5分撮合、期間內
+    再犯升級 20分撮合）。回傳 {code: 現行有效管制那一筆}，取 period_end 最大
+    （並列時 disp_count 最大）者為現行有效紀錄。
+
+    2026-09 review R12：main() 原本用「rows 裡先遇到的那筆」(seen set 去重)，
+    但 active_groups 的走訪順序繼承自 API 回傳順序——與此處規則不一致，導致
+    重疊時 second_count 等 KPI 隨 API 回傳順序而變、不是穩定值。這裡是唯一
+    正確的選擇規則來源，所有需要「這檔現在算第幾次處置」的地方都應呼叫本函式，
+    不要各自重寫一份等價邏輯。
+    """
     best = {}
     for b in active_groups.values():
         for s in b["stocks"]:
@@ -1642,8 +1691,13 @@ def render_release_schedule(active_groups, today):
             if cur is None or (s["period_end"], s.get("disp_count", 1)) > \
                               (cur["period_end"], cur.get("disp_count", 1)):
                 best[s["code"]] = s
+    return best
+
+
+def render_release_schedule(active_groups, today):
+    """出關時間軸（#18）：現行有效管制（每檔取 period_end 最大）按出關日分組。"""
     by_end = defaultdict(list)
-    for s in best.values():
+    for s in _canonical_active_by_code(active_groups).values():
         by_end[s["period_end"]].append(s)
     if not by_end:
         return ""
@@ -2041,6 +2095,7 @@ def main():
     # 抓大盤 & 注意累計
     print("  大盤指數...")
     taiex = fetch_taiex()
+    trading_days = fetch_recent_trading_days()
     print("  TWSE 注意累計...")
     notetrans_twse = fetch_twse_notetrans()
     print("  TPEx 注意累計...")
@@ -2066,14 +2121,10 @@ def main():
         print("WARNING: 今天沒有任何處置中的股票，跳過更新。")
         return
 
-    # 統計
-    all_active = []
-    seen = set()
-    for b in active_groups.values():
-        for s in b["stocks"]:
-            if s["code"] not in seen:
-                seen.add(s["code"])
-                all_active.append(s)
+    # 統計（R12：改用 _canonical_active_by_code 的「period_end 最大」規則，
+    # 不再是「API 回傳時先遇到的那筆」——後者會讓 second_count 隨 API 回傳
+    # 順序而變，同一份資料重跑兩次可能算出不同結果）
+    all_active = list(_canonical_active_by_code(active_groups).values())
 
     total_active  = len(all_active)
     twse_count    = sum(1 for s in all_active if s["exchange"] == "TWSE")
@@ -2106,7 +2157,7 @@ def main():
     # 今日出關 = 前一交易日為處置最後一日者，今天起恢復正常交易。
     # （舊版比對 pe == today，但 released_groups 的篩選條件是 pe < today，
     #   兩者互斥導致此數字恆為 0；處置迄日當天仍受管制，不算已出關。）
-    prev_trading   = prev_trading_day(today, baseline)
+    prev_trading   = prev_trading_day(today, baseline, trading_days)
     today_released = sum(len(g["stocks"]) for pe, g in released_groups.items()
                          if pe == prev_trading)
 
