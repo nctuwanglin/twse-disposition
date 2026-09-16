@@ -1559,8 +1559,15 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
         end_label = fmt_short(stock["period_end"])
         end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">{end_label} 解禁</div>'
 
+    # R16：data-code/data-name 讓前端搜尋只比對代碼/股名，不再誤中價格、
+    # 成交量等欄位文字；data-group="released" 讓 Tab3 的「注意累計」徽章
+    # 能排除掉同樣用 .table-row 渲染的「近期出關」股票（is_yellow 是既有
+    # 判斷「這是出關股列」的訊號，Tab3 出關區塊是目前唯一傳入
+    # pill_class_override="pill-yellow" 的呼叫端）。
+    group_attr = ' data-group="released"' if is_yellow else ''
     return (
-        f'<div class="table-row"{tags_attr}>'
+        f'<div class="table-row" data-code="{stock["code"]}" data-name="{stock["name"]}"'
+        f'{group_attr}{tags_attr}>'
         f'<div class="flex items-center gap-2">'
         f'<span class="severity-bar {severity_color}" style="height:32px;"></span>'
         f'<span class="ticker {ticker_class}">{stock["code"]}</span>'
@@ -1828,6 +1835,7 @@ def render_release_schedule(active_groups, today):
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">📅 出關排程</div>
         <div class="text-[11px] text-slate-400 mt-1">日期為處置<span class="text-slate-300">最後一日</span>，次一交易日恢復正常交易 · 依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
+        <div class="text-[10px] text-slate-500 mt-0.5">※ 本時間軸為全市場總覽，不受下方搜尋/產業篩選影響</div>
       </div>
       <div>{"".join(rows)}</div>
     </div>"""
@@ -1982,7 +1990,9 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
 
         rows.append(
-            f'<div class="table-row"{tags}>'
+            # R16：data-code/data-name 讓前端搜尋只比對代碼/股名（見
+            # render_stock_row 的同一備註），不會誤中收盤價、成交量等文字。
+            f'<div class="table-row" data-code="{r["code"]}" data-name="{r["name"]}"{tags}>'
             f'<div class="flex items-center gap-2">'
             f'<span class="severity-bar {sev_color}" style="height:32px;"></span>'
             f'<span class="ticker {ticker_cl}">{r["code"]}</span>'

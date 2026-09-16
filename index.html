@@ -925,6 +925,10 @@
     applyFilter();
   }
 
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   function applyFilter() {
     // Single-select: find the one active chip
     const activeChip = document.querySelector('.chip[data-active="true"]');
@@ -932,11 +936,16 @@
     const showAll = activeTag === '';
 
     // Filter rows（產業 chips ∩ 代碼/股名搜尋）
+    // R16：搜尋只比對 data-code/data-name（renderer 端已加上），不再用
+    // row.textContent——後者連收盤價、成交量、說明文字都算進去，搜尋
+    // "100" 這種數字很容易誤中「100張」之類的量而不是股票本身。
     const q = (document.getElementById('stockSearch')?.value || '').trim().toLowerCase();
     document.querySelectorAll('.table-row').forEach(row => {
       const rowTags = (row.dataset.tags || '').split(/\s+/).filter(Boolean);
       const tagOk = showAll || rowTags.includes(activeTag);
-      const qOk = !q || row.textContent.toLowerCase().includes(q);
+      const code = (row.dataset.code || '').toLowerCase();
+      const name = (row.dataset.name || '').toLowerCase();
+      const qOk = !q || code.includes(q) || name.includes(q);
       row.style.display = (tagOk && qOk) ? '' : 'none';
     });
 
@@ -952,8 +961,12 @@
     [1, 2, 3].forEach(n => {
       const panel = document.querySelector(`.tab-panel[data-panel="${n}"]`);
       if (!panel) return;
-      const rows = panel.querySelectorAll('.table-row');
-      const visibleRows = Array.from(rows).filter(r => r.style.display !== 'none');
+      // R16：Tab3 的「近期出關」股票也用 .table-row 渲染（視覺樣式一致），
+      // 但徽章／空狀態代表的是「注意累計」檔數，renderer 端已在出關列標
+      // data-group="released"，這裡統計時要排除，避免口徑混在一起。
+      const rows = Array.from(panel.querySelectorAll('.table-row'))
+        .filter(r => r.dataset.group !== 'released');
+      const visibleRows = rows.filter(r => r.style.display !== 'none');
       const uniqueTickers = new Set();
       visibleRows.forEach(r => {
         const tickerEl = r.querySelector('.ticker');
@@ -969,12 +982,18 @@
     });
 
     // Update filter status text
+    // R16：狀態文字原本只看產業 chip，清空搜尋詞或反過來只打搜尋詞不選
+    // chip 時，文字跟實際篩選結果對不上（例如只打搜尋詞卻顯示「顯示全
+    // 部」）。改成兩個條件各自可能出現，都沒有才是「顯示全部」。
     const status = document.getElementById('filterStatus');
     if (status) {
-      if (showAll) {
+      if (showAll && !q) {
         status.innerHTML = '顯示全部';
       } else {
-        status.innerHTML = '篩選中 · <span class="num">' + (TAG_NAMES[activeTag] || activeTag) + '</span>';
+        const parts = [];
+        if (!showAll) parts.push(escapeHtml(TAG_NAMES[activeTag] || activeTag));
+        if (q) parts.push('搜尋「' + escapeHtml(q) + '」');
+        status.innerHTML = '篩選中 · <span class="num">' + parts.join(' + ') + '</span>';
       }
     }
   }

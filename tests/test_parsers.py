@@ -21,6 +21,7 @@ from update_dashboard import (          # noqa: E402
     render_tab2_upcoming_batches, _notetrans_urgency,
     render_tab1_batches, _latest_batch_stats, _unexplained_drop,
     render_attention_conditions, render_notetrans_rows,
+    render_stock_row, exchange_section, render_release_schedule,
 )
 
 
@@ -260,6 +261,57 @@ class TestAttentionConditionsRenderingR10(unittest.TestCase):
         self.assertIn(f'{80.0 * 1.32:.2f}', html)     # next_session_threshold
         self.assertNotIn(f'明日收盤 ≥ <span class="mono text-slate-300">{200.0 * 1.32:.2f}',
                          html)  # 不能是今天的 threshold
+
+
+class TestR16SearchAndBadgeDataAttrs(unittest.TestCase):
+    """
+    R16：搜尋統計混合注意與出關、搜尋比對整列文字（誤中價量）、狀態文字
+    與結果不一致。這裡驗證伺服器端 renderer 有正確輸出前端 JS 依賴的
+    data-code/data-name/data-group 屬性（實際篩選行為由 index.html 的
+    applyFilter() 消費，已在瀏覽器手動驗證過）。
+    """
+
+    def _stock(self, code, name, disp_count=1, period_end=None):
+        return {"code": code, "name": name, "exchange": "TWSE",
+                "period_end": period_end or date(2026, 9, 20), "disp_count": disp_count}
+
+    def test_render_stock_row_has_code_and_name_attrs(self):
+        html = render_stock_row(self._stock("8996", "高力"), {}, date(2026, 9, 16))
+        self.assertIn('data-code="8996"', html)
+        self.assertIn('data-name="高力"', html)
+
+    def test_render_stock_row_marks_released_group_via_yellow_pill(self):
+        # exchange_section 在 render_tab3 的「近期出關」區塊固定傳
+        # pill_class_override="pill-yellow"；這是目前唯一的呼叫端，
+        # 用它來標記 data-group="released" 讓前端徽章能排除這些列。
+        html = render_stock_row(self._stock("8996", "高力"), {}, date(2026, 9, 16),
+                                pill_class_override="pill-yellow", pill_label_override="今日恢復交易")
+        self.assertIn('data-group="released"', html)
+
+    def test_render_stock_row_active_batch_not_marked_released(self):
+        html = render_stock_row(self._stock("8996", "高力"), {}, date(2026, 9, 16))
+        self.assertNotIn('data-group="released"', html)
+
+    def test_exchange_section_released_rows_carry_group_attr(self):
+        stocks = [self._stock("8996", "高力"), self._stock("8227", "巨有科技")]
+        html = exchange_section("TWSE 上市", stocks, {}, date(2026, 9, 16),
+                                pill_class_override="pill-yellow", pill_label_override="今日恢復交易")
+        self.assertEqual(html.count('data-group="released"'), 2)
+
+    def test_notetrans_row_has_code_and_name_attrs(self):
+        record = {"code": "2305", "name": "全友", "exchange": "TWSE",
+                  "raw_criteria": "與本項無關的文字"}
+        html = render_notetrans_rows([record], {}, date(2026, 9, 16),
+                                     stock_quotes={}, nt_thresholds={})
+        self.assertIn('data-code="2305"', html)
+        self.assertIn('data-name="全友"', html)
+
+    def test_release_schedule_states_it_ignores_filter(self):
+        active = {date(2026, 9, 1): {"period_start": date(2026, 9, 1),
+                                     "ann_date": date(2026, 8, 31),
+                                     "stocks": [self._stock("8996", "高力")]}}
+        html = render_release_schedule(active, date(2026, 9, 16))
+        self.assertIn("不受下方搜尋/產業篩選影響", html)
 
 class TestPrevTradingDay(unittest.TestCase):
     """
