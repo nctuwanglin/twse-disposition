@@ -20,6 +20,7 @@ from update_dashboard import (          # noqa: E402
     write_snapshot, _tpex_rows_to_dicts, _canonical_active_by_code,
     render_tab2_upcoming_batches, _notetrans_urgency,
     render_tab1_batches, _latest_batch_stats, _unexplained_drop,
+    render_attention_conditions, render_notetrans_rows,
 )
 
 
@@ -181,6 +182,84 @@ class TestThresholds(unittest.TestCase):
     def test_insufficient_history(self):
         self.assertIsNone(calculate_attention_thresholds(self._hist([100.0] * 3)))
 
+    def test_clause2_window_is_30_days_including_today_not_31(self):
+        # R10：條文是「30 個營業日含當日起迄」，起日本身就是這 30 天之一。
+        # 舊版 nth_before(30) 等於多抓了一天當基準（用窗口外的第 31 天），
+        # 這裡用兩個可區分的基準價驗證正確基準是 nth_before(29)。
+        # index0=999（舊 bug 會誤用的「第 31 天」）、index1=50（正確基準）、
+        # index2..30=100（其餘 29 天），latest=100。
+        closes = [999.0, 50.0] + [100.0] * 29
+        hist = self._hist(closes)
+        self.assertEqual(len(hist), 31)
+        t = calculate_attention_thresholds(hist, 32.0, 100.0)
+        self.assertAlmostEqual(t["clause2"]["ref_close"], 50.0)
+        self.assertEqual(t["clause2"]["ref_date"], hist[1]["date"])
+        self.assertAlmostEqual(t["clause2"]["cum_pct"], 100.0)  # (100-50)/50*100
+
+    def test_clause1_next_session_threshold_uses_rolled_window(self):
+        # R10：明天的 6 日窗口基準會從 latest-6 移到 latest-5，不能沿用今天
+        # 算出的 threshold 當「明日收盤」門檻。用兩個不同基準價驗證
+        # next_session_threshold 確實用了 nth_before(5) 而非 nth_before(6)。
+        closes = [200.0, 80.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+        hist = self._hist(closes)
+        t = calculate_attention_thresholds(hist, 32.0, 100.0)
+        self.assertFalse(t["clause1"]["triggered"])
+        self.assertAlmostEqual(t["clause1"]["threshold"], 200.0 * 1.32)       # 今天的門檻
+        self.assertAlmostEqual(t["clause1"]["next_session_threshold"], 80.0 * 1.32)  # 明天的門檻
+        self.assertEqual(t["clause1"]["next_session_ref_date"], hist[1]["date"])
+
+    def test_clause1_no_next_session_threshold_when_already_triggered(self):
+        # 今天已達標時，「明日門檻」這個概念沒有意義（今天已經觸發了），
+        # 不應該算出一個容易被誤讀成「還要等明天」的數字。
+        hist = self._hist([100.0] * 9 + [135.0])
+        t = calculate_attention_thresholds(hist, 32.0, 100.0)
+        self.assertTrue(t["clause1"]["triggered"])
+        self.assertNotIn("next_session_threshold", t["clause1"])
+
+
+class TestAttentionConditionsRenderingR10(unittest.TestCase):
+    """
+    R10：畫面文字必須與實際判定邏輯（>=）一致，不能顯示「門檻＞」；
+    且必須明示這只是單一價格/量條件試算，不是完整觸發判定。
+    """
+
+    def _hist(self, closes):
+        d0 = date(2026, 6, 1)
+        out = []
+        d = d0
+        for c in closes:
+            while d.weekday() >= 5:
+                d = d.replace(day=d.day + 1)
+            out.append({"date": d, "close": c, "vol_k": 100})
+            d = d.fromordinal(d.toordinal() + 1)
+        return out
+
+    def test_threshold_symbol_matches_gte_logic(self):
+        hist = self._hist([100.0] * 10)
+        t = calculate_attention_thresholds(hist, 32.0, 100.0)
+        html = render_attention_conditions(t, date(2026, 9, 16))
+        self.assertNotIn("門檻＞", html)
+        self.assertIn("門檻≥32%", html)
+
+    def test_scope_caveat_present(self):
+        hist = self._hist([100.0] * 10)
+        t = calculate_attention_thresholds(hist, 32.0, 100.0)
+        html = render_attention_conditions(t, date(2026, 9, 16))
+        self.assertIn("僅供參考、不代表確定觸發", html)
+
+    def test_notetrans_row_tomo_uses_next_session_threshold_not_todays(self):
+        # R10 端對端：render_notetrans_rows 的「明日收盤 ≥ X」必須是
+        # next_session_threshold，不能是今天窗口算出的 c1["threshold"]。
+        closes = [200.0, 80.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+        hist = self._hist(closes)
+        thr = calculate_attention_thresholds(hist, 32.0, 100.0)
+        record = {"code": "9999", "name": "測試股", "exchange": "TWSE",
+                  "raw_criteria": "115年9月10日至115年9月11日連續二次"}
+        html = render_notetrans_rows([record], {}, date(2026, 9, 16),
+                                     stock_quotes={}, nt_thresholds={"9999": thr})
+        self.assertIn(f'{80.0 * 1.32:.2f}', html)     # next_session_threshold
+        self.assertNotIn(f'明日收盤 ≥ <span class="mono text-slate-300">{200.0 * 1.32:.2f}',
+                         html)  # 不能是今天的 threshold
 
 class TestPrevTradingDay(unittest.TestCase):
     """

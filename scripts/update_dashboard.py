@@ -878,11 +878,18 @@ def fetch_twse_stock_history(code, today, since=None):
 def calculate_attention_thresholds(history, pct6=32.0, pct30=100.0):
     """
     依注意交易資訊「異常標準詳細數據」計算觸發門檻（免費資料可算的絕對條件）。
-    - 第一款: 最近 6 個營業日累積收盤漲幅 > pct6（TWSE 32% / TPEx 30%）
-    - 第二款: 最近 30 個營業日起迄收盤漲幅 > pct30（兩市場皆 100%）
-    - 量參考: 60 日平均量（量/週轉率各款的部分依據，集中度條件不在此計算）
+    - 第一款: 最近 6 個營業日累積收盤漲幅 ≥ pct6（TWSE 32% / TPEx 30%）。
+      基準價為窗口前一日收盤（不含在 6 日窗口內）。
+    - 第二款: 最近 30 個營業日「含當日」起迄收盤漲幅 ≥ pct30（兩市場皆 100%）。
+      條文是「30 個營業日含當日起迄」，起日本身就是這 30 天之一（不是額外
+      多抓一天當基準），故基準價為 nth_before(29)——window 為
+      [latest-29, latest] 共 30 天，起日 latest-29 兼作基準與窗口第一天。
+      R10 review：舊版誤用 nth_before(30)，等於用「窗口外的第 31 天」當
+      基準，多算了一天。
+    - 量參考: 60 日平均量（量/週轉率各款的部分依據，集中度條件不在此計算）。
     法規另有「與大盤及同類股差幅」相對條件無法以免費資料完整計算，
-    故本門檻為「可能觸發的最低價位」（必要非充分）。
+    故本門檻為「可能觸發的最低價位」（必要非充分）——僅供單一絕對價格
+    條件試算，不代表完整觸發判定。
     回傳 dict 或 None（資料不足時）。
     """
     if len(history) < 7:
@@ -914,8 +921,16 @@ def calculate_attention_thresholds(history, pct6=32.0, pct30=100.0):
             "diff_pct":  (thr6 - current_close) / current_close * 100,
             "triggered": current_close >= thr6,
         }
+        # R10：下一交易日的 6 日窗口會往前滾一天（基準從 latest-6 移到
+        # latest-5），不能沿用今天的 threshold 當「明日收盤」門檻——那是
+        # 用今天的窗口算的，只對「今天」這個判定時點有效。
+        ref5 = nth_before(5)
+        if ref5 and not result["clause1"]["triggered"]:
+            thr6_next = ref5["close"] * (1 + pct6 / 100)
+            result["clause1"]["next_session_ref_date"]   = ref5["date"]
+            result["clause1"]["next_session_threshold"]  = thr6_next
 
-    ref30 = nth_before(30)
+    ref30 = nth_before(29)
     if ref30:
         cum30 = (current_close - ref30["close"]) / ref30["close"] * 100
         thr30 = ref30["close"] * (1 + pct30 / 100)
@@ -956,39 +971,6 @@ def render_attention_conditions(thresholds, trade_date):
         f'注意股觸發條件 {fmt_weekday(trade_date)}（任一即可）</div>'
     )
 
-    def condition_row(label, cum_pct, cum_threshold_pct, thr_price, diff_pct, triggered):
-        cum_s   = f"{cum_pct:+.1f}%"
-        cum_clr = "text-red-400" if cum_pct >= cum_threshold_pct else (
-                  "text-amber-300" if cum_pct >= cum_threshold_pct * 0.7 else "text-slate-400")
-        if triggered:
-            status_s = '<span class="text-red-300 font-semibold">今日已達標</span>'
-        elif diff_pct <= 0:
-            # threshold below current (stock can fall and still trigger)
-            gap_s    = f"{abs(diff_pct):.1f}%"
-            status_s = (
-                f'收盤需 ≥ <span class="mono text-amber-300 font-semibold">{thr_price:.2f}</span>'
-                f'<span class="text-green-600">（跌 {gap_s} 仍觸發）</span>'
-            )
-        elif diff_pct <= 5:
-            status_s = (
-                f'收盤需 ≥ <span class="mono text-amber-300 font-semibold">{thr_price:.2f}</span>'
-                f'<span class="text-slate-500">（還差 {diff_pct:.1f}%）</span>'
-            )
-        else:
-            status_s = (
-                f'收盤需 ≥ <span class="mono text-slate-300">{thr_price:.2f}</span>'
-                f'<span class="text-slate-600">（還差 {diff_pct:.1f}%）</span>'
-            )
-        return (
-            f'<div class="flex items-start gap-2 mb-0.5">'
-            f'<span class="mono text-slate-600 shrink-0 w-10">{label}</span>'
-            f'<span class="text-slate-400">'
-            f'累積 <span class="mono {cum_clr}">{cum_s}</span>'
-            f'<span class="text-slate-600">（門檻≥{cum_threshold_pct:.0f}%）</span>'
-            f' → {status_s}'
-            f'</span></div>'
-        )
-
     c1 = thresholds.get("clause1")
     if c1:
         ref_s = fmt_short(c1["ref_date"])
@@ -999,7 +981,7 @@ def render_attention_conditions(thresholds, trade_date):
             f'<span class="text-slate-400">'
             f'6日累積 <span class="mono {"text-red-400" if c1["cum_pct"]>=p1 else ("text-amber-300" if c1["cum_pct"]>=p1*0.7 else "text-slate-400")}">'
             f'{c1["cum_pct"]:+.1f}%</span>'
-            f'<span class="text-slate-600">（{ref_s} 起，門檻＞{p1:.0f}%）</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻≥{p1:.0f}%）</span>'
             f' → '
             + (
                 '<span class="text-red-300 font-semibold">今日已達標</span>'
@@ -1024,7 +1006,7 @@ def render_attention_conditions(thresholds, trade_date):
             f'<span class="text-slate-400">'
             f'30日起迄 <span class="mono {"text-red-400" if c2["cum_pct"]>=p2 else ("text-amber-300" if c2["cum_pct"]>=p2*0.7 else "text-slate-400")}">'
             f'{c2["cum_pct"]:+.1f}%</span>'
-            f'<span class="text-slate-600">（{ref_s} 起，門檻＞{p2:.0f}%）</span>'
+            f'<span class="text-slate-600">（{ref_s} 起，門檻≥{p2:.0f}%）</span>'
             f' → '
             + (
                 '<span class="text-red-300 font-semibold">今日已達標</span>'
@@ -1052,6 +1034,15 @@ def render_attention_conditions(thresholds, trade_date):
             f'<span class="text-slate-600 text-[10px]">（×3，另需集中度條件）</span>'
             f'</span></div>'
         )
+
+    # R10：以上僅為可用免費資料算出的單一絕對價格/量條件試算，法規另有
+    # 與大盤及同類股相對差幅等條件無法計算，任一款門檻達標不代表確定
+    # 觸發注意/處置，僅供接近程度參考。
+    lines.append(
+        '<div class="text-[10px] text-slate-600 mt-1">'
+        '※ 以上為可計算之單一價格/量條件試算，與大盤及同類股相對差幅等'
+        '條件未列入，達標僅供參考、不代表確定觸發</div>'
+    )
 
     return "".join(lines)
 
@@ -1963,11 +1954,21 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         else:
             prog_note = f"連續 {live_streak}/3"
 
-        # 明日觸發價（第一款絕對條件）
-        if c1 and not c1["triggered"]:
+        # 明日觸發價（第一款絕對條件）。R10：c1["threshold"] 是用「今天」的
+        # 6 日窗口算的，明天窗口會往前滾一天、基準價不同，不能直接沿用；
+        # 必須用 calculate_attention_thresholds 另外算好的
+        # next_session_threshold（用明天窗口實際會用到的基準價）。算不出來
+        # （史料不足）就不displaying 具體價位，避免給錯誤的明日門檻。
+        next_thr = c1.get("next_session_threshold") if c1 else None
+        if c1 and not c1["triggered"] and next_thr is not None:
             tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">明日收盤 ≥ '
+                    f'<span class="mono text-slate-300">{next_thr:.2f}</span>'
+                    f'<span class="text-slate-600">（單一價格條件試算，明日窗口基準價）</span>'
+                    f'</span></div>')
+        elif c1 and not c1["triggered"]:
+            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">今日收盤需 ≥ '
                     f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
-                    f'（差 {c1["diff_pct"]:.1f}%）</span></div>')
+                    f'（差 {c1["diff_pct"]:.1f}%，明日門檻窗口滾動後另計）</span></div>')
         elif c1:
             tomo = ('<div class="mt-0.5"><span class="text-red-300 text-[11px]">'
                     '最新收盤已達第一款門檻</span></div>')
