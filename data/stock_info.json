@@ -1116,5 +1116,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "3467": {
+    "name": "台灣精材",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6221": {
+    "name": "晉泰",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "資訊服務"
   }
 }
