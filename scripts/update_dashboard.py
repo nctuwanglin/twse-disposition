@@ -24,8 +24,7 @@ import re
 import sys
 import urllib.request
 import urllib.error
-from datetime import date, timedelta, datetime
-from zoneinfo import ZoneInfo
+from datetime import date, timedelta
 from pathlib import Path
 from collections import defaultdict
 
@@ -111,11 +110,48 @@ def fetch_json(url, extra_headers=None):
         return json.loads(resp.read().decode("utf-8"))
 
 
-def safe_fetch_json(url, extra_headers=None, default=None):
+# ──────────────────────────────────────────────
+# 來源健康度（2026-09 review R02）
+# ──────────────────────────────────────────────
+# 舊版所有抓取失敗都被 safe_fetch_* 吞掉並回傳與「合法零筆」一模一樣的空值，
+# 呼叫端無從分辨「API 說今天沒有」與「根本沒抓到」，於是只能用「兩市場都有
+# 處置股才算正常」這種啟發式猜測；報價全掛時甚至退回系統時鐘偽造資料日。
+#
+# 所有網路失敗都必經 safe_fetch_json / safe_fetch_text 這個唯一窄口，所以在
+# 這裡登記來源狀態，就能讓呼叫端精確區分兩者，不必改寫 11 個 fetch_* 的簽名。
+SOURCE_STATUS = {}
+
+
+def record_source(name, *, ok, as_of=None, rows=None, error=None):
+    """登記一個資料來源這次執行的結果。name 為來源代號（如 twse_punish）。"""
+    if not name:
+        return
+    SOURCE_STATUS[name] = {
+        "ok": bool(ok),
+        "as_of": as_of.isoformat() if isinstance(as_of, date) else as_of,
+        "rows": rows,
+        "error": error,
+    }
+
+
+def source_ok(name):
+    """該來源這次是否成功取得回應（沒登記過視為未取得）。"""
+    return bool(SOURCE_STATUS.get(name, {}).get("ok"))
+
+
+def degraded_sources():
+    """回傳所有抓取失敗的來源代號，供 UI 明示降級與部署 manifest 記錄。"""
+    return sorted(n for n, s in SOURCE_STATUS.items() if not s.get("ok"))
+
+
+def safe_fetch_json(url, extra_headers=None, default=None, source=None):
     try:
-        return fetch_json(url, extra_headers)
+        data = fetch_json(url, extra_headers)
+        record_source(source, ok=True)
+        return data
     except Exception as e:
         print(f"  WARNING: 無法取得 {url}: {e}", file=sys.stderr)
+        record_source(source, ok=False, error=f"{type(e).__name__}: {e}")
         return default
 
 
@@ -131,11 +167,14 @@ def fetch_text(url, extra_headers=None):
         return resp.read().decode("utf-8")
 
 
-def safe_fetch_text(url, extra_headers=None, default=""):
+def safe_fetch_text(url, extra_headers=None, default="", source=None):
     try:
-        return fetch_text(url, extra_headers)
+        text = fetch_text(url, extra_headers)
+        record_source(source, ok=True)
+        return text
     except Exception as e:
         print(f"  WARNING: 無法取得 {url}: {e}", file=sys.stderr)
+        record_source(source, ok=False, error=f"{type(e).__name__}: {e}")
         return default
 
 
@@ -312,7 +351,9 @@ def _tpex_rows_to_dicts(fields, rows):
 
 
 def fetch_and_normalize_tpex(referer):
-    raw = safe_fetch_json(TPEX_DISPOSAL, {"Referer": referer}, default={"tables": [{"fields":[],"data":[]}]})
+    raw = safe_fetch_json(TPEX_DISPOSAL, {"Referer": referer},
+                          default={"tables": [{"fields":[],"data":[]}]},
+                          source="tpex_disposal")
     table  = raw["tables"][0]
     fields = table["fields"]
     rows   = table["data"]
@@ -345,7 +386,7 @@ def fetch_and_normalize_tpex(referer):
 
 def fetch_taiex():
     """回傳最新一日加權指數資料，找不到時回傳 None。"""
-    data = safe_fetch_json(TWSE_MI_INDEX, default={})
+    data = safe_fetch_json(TWSE_MI_INDEX, default={}, source="taiex")
     rows = data.get("data", [])
     if not rows:
         return None
@@ -432,7 +473,7 @@ def _fetch_twse_stock_day_csv():
     (resp_date_yyyymmdd, {code: (close, change, vol_k)})。
     CSV 欄位索引：0=日期(民國) 1=代號 2=名稱 3=成交股數 8=收盤價 9=漲跌價差
     """
-    text = safe_fetch_text(TWSE_STOCK_DAY, default="")
+    text = safe_fetch_text(TWSE_STOCK_DAY, default="", source="twse_quotes")
     resp_date = ""
     quotes = {}
     if not text:
@@ -453,6 +494,10 @@ def _fetch_twse_stock_day_csv():
         except (ValueError, TypeError):
             continue
         quotes[code] = (close, change, vol_k)
+    # R02：抓取成功才補登資料日與筆數（失敗時 safe_fetch_text 已記 ok=False，
+    # 不可在這裡覆寫成成功）。
+    if source_ok("twse_quotes"):
+        record_source("twse_quotes", ok=True, as_of=resp_date or None, rows=len(quotes))
     return resp_date, quotes
 
 
@@ -461,7 +506,7 @@ def fetch_tpex_quotes():
     TPEx 全上櫃收盤 {code: {close, change, change_pct, vol_k, date}}。
     date 為 AD yyyymmdd（openapi 回傳 ROC 7 碼）。
     """
-    raw = safe_fetch_json(TPEX_QUOTES, default=[]) or []
+    raw = safe_fetch_json(TPEX_QUOTES, default=[], source="tpex_quotes") or []
     out = {}
     for r in raw:
         code = (r.get("SecuritiesCompanyCode") or "").strip()
@@ -481,6 +526,9 @@ def fetch_tpex_quotes():
         pct  = (change / prev * 100) if (prev and prev != 0) else None
         out[code] = {"close": close, "change": change, "change_pct": pct,
                      "vol_k": vol_k, "date": ad}
+    if source_ok("tpex_quotes"):
+        as_of = next((q["date"] for q in out.values() if q.get("date")), None)
+        record_source("tpex_quotes", ok=True, as_of=as_of, rows=len(out))
     return out
 
 
@@ -791,7 +839,7 @@ def parse_criteria(raw):
 
 def fetch_twse_notetrans():
     """注意累計次數異常（TWSE，接近處置門檻）。只回傳 4 碼股票。"""
-    data = safe_fetch_json(TWSE_NOTETRANS, default=[])
+    data = safe_fetch_json(TWSE_NOTETRANS, default=[], source="twse_notetrans")
     return [
         {"code": r.get("Code",""), "name": clean_name(r.get("Name","")),
          "exchange": "TWSE",
@@ -804,7 +852,8 @@ def fetch_twse_notetrans():
 def fetch_tpex_warning():
     """TPEx 注意累計（接近處置門檻）。只回傳 4 碼股票。"""
     raw = safe_fetch_json(TPEX_WARNING, {"Referer": TPEX_REFERER_W},
-                          default={"tables": [{"fields":[],"data":[]}]})
+                          default={"tables": [{"fields":[],"data":[]}]},
+                          source="tpex_warning")
     table  = raw["tables"][0]
     fields = table["fields"]
     rows   = table["data"]
@@ -1582,6 +1631,30 @@ def exchange_section(label, stocks, stock_info, today,
 # ──────────────────────────────────────────────
 # HTML 生成 — Context Banner
 # ──────────────────────────────────────────────
+SOURCE_LABELS = {
+    "twse_quotes":    "上市報價",
+    "tpex_quotes":    "上櫃報價",
+    "taiex":          "大盤指數",
+    "twse_punish":    "上市處置公告",
+    "tpex_disposal":  "上櫃處置公告",
+    "twse_notetrans": "上市注意累計",
+    "tpex_warning":   "上櫃注意累計",
+}
+
+
+def render_source_notice():
+    """
+    R02：有來源抓取失敗（或資料被判定不可用而棄用）時，必須在頁面上明示，
+    不能讓「沒抓到」長得跟「今天真的沒有」一樣。全部正常時不佔版面。
+    """
+    bad = degraded_sources()
+    if not bad:
+        return ""
+    names = "、".join(SOURCE_LABELS.get(n, n) for n in bad)
+    return (f'        <div class="text-[11px] text-amber-300 mt-1">'
+            f'⚠ 部分更新：{names} 本次未取得，該區塊顯示的數字不代表市場實況</div>\n')
+
+
 def render_context_banner(taiex, total_active, today_released_count,
                           upcoming_count, upcoming_date, notetrans_twse, notetrans_tpex, today):
     # 大盤數字
@@ -1640,7 +1713,7 @@ def render_context_banner(taiex, total_active, today_released_count,
           注意累計 {nt_detail}：<span class="text-slate-400">{nt_codes}</span>
           ｜ 自動更新 {update_str}
         </div>
-      </div>
+{render_source_notice()}      </div>
     </div>
   </div>"""
 
@@ -1997,6 +2070,9 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
     # ── Section 1: 注意累計 — 依觸發距離排序（原「下一批雷達」已併入此處）──
     # TWSE+TPEx 合併成單一排序清單，越上面越接近進處置；每列可展開門檻明細。
     all_notetrans = notetrans_twse + notetrans_tpex
+    # R02：注意累計來源抓取失敗時，清單會是空的——但那跟「今天真的沒有注意
+    # 累計股」是完全不同的兩件事，不能長得一樣。來源掛掉就明講掛掉。
+    nt_down = [n for n in ("twse_notetrans", "tpex_warning") if not source_ok(n)]
     if all_notetrans:
         nt_rows = render_notetrans_rows(all_notetrans, stock_info, today, sq, thr)
         sections.append(f"""    <div class="card mb-3">
@@ -2005,6 +2081,14 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
         <div class="text-[11px] text-slate-400 mt-1">連續 3 次（或 30 日累計 6 次）達注意標準即進處置，越上面越接近觸發。門檻為第一款絕對條件（必要非充分）。</div>
       </div>
       <div>{nt_rows}</div>
+    </div>""")
+    elif nt_down:
+        down_names = "、".join(SOURCE_LABELS.get(n, n) for n in nt_down)
+        sections.append(f"""    <div class="card mb-3">
+      <div class="p-3">
+        <div class="text-sm font-semibold text-amber-300">⚠ 注意累計：來源暫時無法取得</div>
+        <div class="text-[11px] text-slate-400 mt-1">{down_names}本次抓取失敗，此清單<span class="text-slate-300">不是「今天沒有注意累計股」</span>，而是查不到。下一班會自動重試。</div>
+      </div>
     </div>""")
 
     # ── Section 1.5: 處置績效統計（歷史庫樣本）──
@@ -2194,16 +2278,22 @@ def main():
     if twse_qdate and tpex_qdate and twse_qdate != tpex_qdate:
         print(f"  WARNING: 報價日不一致 TWSE {twse_qdate} vs TPEx {tpex_qdate}，"
               f"棄用 TPEx 報價", file=sys.stderr)
+        # R02：被棄用等於這次沒有可用的上櫃報價，要跟抓取失敗一樣登記為降級並
+        # 在頁面明示——否則上櫃個股整片沒有價格，畫面上看不出是什麼原因。
+        record_source("tpex_quotes", ok=False, as_of=tpex_qdate,
+                      error=f"報價日 {tpex_qdate} 與 TWSE {twse_qdate} 不一致，已棄用")
     else:
         stock_quotes = {**stock_quotes, **tpex_quotes}
 
-    if twse_qdate:
-        today = date(int(twse_qdate[:4]), int(twse_qdate[4:6]), int(twse_qdate[6:8]))
-    else:
-        # 報價完全抓不到（總體性 API 故障）時退回系統時鐘，僅供繼續執行的
-        # 最後手段；後面的處置源防呆通常會先中止。
-        today = datetime.now(ZoneInfo("Asia/Taipei")).date()
-        print(f"  WARNING: 無法取得報價資料日，退回系統時鐘 {today}", file=sys.stderr)
+    if not twse_qdate:
+        # R02：舊版在這裡退回系統時鐘當資料日。那等於在「完全不知道現在是哪個
+        # 交易日」的狀態下繼續產頁面、寫快照、推進 last_counts 的日期——正是
+        # 2026-07-14 那類 bug 的溫床（時鐘跨日 → 資料日比實際交易日新一天）。
+        # 資料日只能來自資料本身；拿不到就中止，讓 workflow 亮紅燈。
+        sys.exit("ERROR: 無法取得 TWSE 報價資料日（"
+                 + ("報價來源抓取失敗" if not source_ok("twse_quotes") else "回應中沒有可解析的日期")
+                 + "），無法確定資料日，中止更新")
+    today = date(int(twse_qdate[:4]), int(twse_qdate[4:6]), int(twse_qdate[6:8]))
 
     print(f"開始更新，資料日（今天）: {today}" + ("（--force）" if force else ""))
 
@@ -2228,18 +2318,23 @@ def main():
 
     # 抓處置股資料
     print("  TWSE 處置股...")
-    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=[])
+    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=[], source="twse_punish")
     twse_rows = normalize_twse_rows(twse_raw)
     print(f"  TPEx 處置股...")
     tpex_rows = fetch_and_normalize_tpex(TPEX_REFERER_D)
 
-    # 資料源防呆：任一處置源為空幾乎必是 API 故障（正常時兩市場都有處置股）。
-    # 缺一源仍往下走會發佈「只剩半個市場」的錯誤頁面，寧可中止讓 workflow 亮紅燈。
-    if not force:
-        if not twse_rows:
-            sys.exit("ERROR: TWSE 處置股資料為空，疑似 API 故障，中止更新（確認正常可用 --force）")
-        if not tpex_rows:
-            sys.exit("ERROR: TPEx 處置股資料為空，疑似 API 故障，中止更新（確認正常可用 --force）")
+    # 資料源防呆。R02：判斷依據從「列表是不是空的」改成「這個來源有沒有抓到
+    # 回應」。舊版把「API 正常回答今天沒有處置股」與「根本沒抓到」當成同一件事，
+    # 只能靠「正常時兩市場都有處置股」這個啟發式猜測，所以真的清零那天會誤判成
+    # 故障而中止（也逼人用 --force 覆寫，連帶解除其他防線）。
+    # 抓不到回應 → 中止讓 workflow 亮紅燈；抓到但零筆 → 合法狀態，照常發佈空狀態。
+    for label, name, rows in (("TWSE", "twse_punish", twse_rows),
+                              ("TPEx", "tpex_disposal", tpex_rows)):
+        if not source_ok(name):
+            sys.exit(f"ERROR: {label} 處置股來源抓取失敗"
+                     f"（{SOURCE_STATUS.get(name, {}).get('error', '未取得回應')}），中止更新")
+        if not rows:
+            print(f"  {label} 處置股：來源正常但回傳 0 筆（合法零筆，非故障）")
 
     all_rows = twse_rows + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")

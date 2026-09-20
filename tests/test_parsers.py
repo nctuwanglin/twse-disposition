@@ -22,7 +22,9 @@ from update_dashboard import (          # noqa: E402
     render_tab1_batches, _latest_batch_stats, _unexplained_drop,
     render_attention_conditions, render_notetrans_rows,
     render_stock_row, exchange_section, render_release_schedule,
+    render_tab3, render_source_notice,
 )
+import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
 
 
 class TestDates(unittest.TestCase):
@@ -1048,3 +1050,79 @@ class TestTpexRowsToDicts(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestR02SourceStatus(unittest.TestCase):
+    """
+    R02：抓取失敗與「API 正常回答零筆」必須可區分。舊版兩者都回傳空值，
+    呼叫端只能靠「正常時兩市場都有處置股」這種啟發式猜，真的清零那天會
+    被誤判成故障；報價全掛時甚至退回系統時鐘偽造資料日繼續發佈。
+    """
+
+    def setUp(self):
+        self._saved = dict(ud.SOURCE_STATUS)
+        ud.SOURCE_STATUS.clear()
+
+    def tearDown(self):
+        ud.SOURCE_STATUS.clear()
+        ud.SOURCE_STATUS.update(self._saved)
+
+    def _fetch(self, *, exc=None, payload=None, source):
+        """在 fetch_json 這個接縫模擬「連線失敗」與「正常回應」兩種結果。"""
+        def fake(url, extra_headers=None):
+            if exc:
+                raise exc
+            return payload
+        real = ud.fetch_json
+        ud.fetch_json = fake
+        try:
+            return ud.safe_fetch_json("https://example.test/x", default=[], source=source)
+        finally:
+            ud.fetch_json = real
+
+    def test_transport_failure_is_recorded_as_not_ok(self):
+        out = self._fetch(exc=OSError("connection reset"), source="twse_punish")
+        self.assertEqual(out, [])                       # 仍回傳 default
+        self.assertFalse(ud.source_ok("twse_punish"))   # 但狀態記為失敗
+        self.assertIn("twse_punish", ud.degraded_sources())
+
+    def test_legitimate_empty_response_is_ok(self):
+        # API 正常回答「今天沒有」→ 同樣是空 list，但來源狀態必須是成功
+        out = self._fetch(payload=[], source="twse_punish")
+        self.assertEqual(out, [])
+        self.assertTrue(ud.source_ok("twse_punish"))
+        self.assertEqual(ud.degraded_sources(), [])
+
+    def test_empty_and_failure_are_distinguishable(self):
+        # 這就是 R02 的核心：兩種情境的「資料」完全一樣，只有來源狀態不同
+        empty = self._fetch(payload=[], source="tpex_disposal")
+        empty_ok = ud.source_ok("tpex_disposal")
+        ud.SOURCE_STATUS.clear()
+        failed = self._fetch(exc=OSError("boom"), source="tpex_disposal")
+        self.assertEqual(empty, failed)          # 資料相同
+        self.assertNotEqual(empty_ok, ud.source_ok("tpex_disposal"))   # 狀態不同
+
+    def test_source_notice_hidden_when_all_healthy(self):
+        ud.record_source("twse_quotes", ok=True, rows=900)
+        self.assertEqual(render_source_notice(), "")
+
+    def test_source_notice_names_degraded_sources(self):
+        ud.record_source("tpex_quotes", ok=False, error="報價日不一致，已棄用")
+        html = render_source_notice()
+        self.assertIn("部分更新", html)
+        self.assertIn("上櫃報價", html)
+
+    def test_tab3_distinguishes_source_down_from_genuinely_empty(self):
+        # 來源掛掉 → 明講查不到
+        ud.record_source("twse_notetrans", ok=False, error="boom")
+        ud.record_source("tpex_warning", ok=False, error="boom")
+        down = render_tab3([], [], {}, {}, date(2026, 9, 18))
+        self.assertIn("來源暫時無法取得", down)
+        self.assertIn("不是「今天沒有注意累計股」", down)
+
+        # 來源正常但真的零筆 → 不可出現「無法取得」的說法
+        ud.SOURCE_STATUS.clear()
+        ud.record_source("twse_notetrans", ok=True, rows=0)
+        ud.record_source("tpex_warning", ok=True, rows=0)
+        empty = render_tab3([], [], {}, {}, date(2026, 9, 18))
+        self.assertNotIn("來源暫時無法取得", empty)
