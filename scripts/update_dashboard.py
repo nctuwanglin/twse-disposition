@@ -673,45 +673,30 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
         f'</div>'
     )
 
-    # ── 最後交易日數值（收盤、漲跌、量、偏離月均）──
-    if quote and quote.get("close") is not None:
-        close = quote["close"]
-        chg   = quote.get("change", 0) or 0
-        pct   = quote.get("change_pct")
-        vol_k = quote.get("vol_k", 0)
-        mavg  = quote.get("monthly_avg")
+    # ── 報價補充（報價日 + 偏離月均）──
+    # R15：收盤/漲跌%/量在列摘要的 _quote_span 已經有了，明細再列一次只是讓
+    # 手機滑動距離變長。這裡只保留列上沒有的兩項：報價資料日與偏離月均。
+    # 報價日必須取自 quote 本身的資料日，不可用 latest_end（那是「最後注意
+    # 達標日」，與報價日是兩件事；兩者不同日時會把報價標成錯誤日期）。
+    qdate = ad_to_date(quote.get("date")) if quote else None
+    mavg  = quote.get("monthly_avg") if quote else None
+    close = quote.get("close") if quote else None
 
-        sign  = "+" if chg >= 0 else ""
-        clr   = "text-green-400" if chg >= 0 else "text-red-400"
-        pct_s = f" ({sign}{pct:.1f}%)" if pct is not None else ""
-        vol_s = f"{vol_k:,} 張" if vol_k else "—"
+    quote_parts = []
+    if qdate:
+        quote_parts.append(f'<span class="text-slate-500">報價日</span>'
+                           f'<span class="mono text-slate-300 ml-1">{fmt_weekday(qdate)} 收盤</span>')
+    if close is not None and mavg and mavg > 0:
+        dev = (close - mavg) / mavg * 100
+        dev_clr = "text-red-400" if dev > 20 else ("text-amber-400" if dev > 10 else "text-slate-300")
+        quote_parts.append(f'<span class="text-slate-500">偏離月均</span>'
+                           f'<span class="mono {dev_clr} ml-1">{"+" if dev >= 0 else ""}{dev:.1f}%</span>')
 
-        # 報價日必須取自 quote 本身的資料日，不可用 latest_end（那是「最後注意
-        # 達標日」，與報價日是兩件事；兩者不同日時會把報價標成錯誤日期）。
-        qdate   = ad_to_date(quote.get("date"))
-        qdate_s = (f'<span class="text-slate-600 ml-1">（{fmt_weekday(qdate)} 收盤）</span>'
-                   if qdate else "")
-
-        # 偏離月均價
-        dev_s = ""
-        if mavg and mavg > 0:
-            dev = (close - mavg) / mavg * 100
-            dev_clr = "text-red-400" if dev > 20 else ("text-amber-400" if dev > 10 else "text-slate-300")
-            dev_s = f'<span class="text-slate-500 ml-2">偏離月均</span><span class="mono {dev_clr} ml-0.5">{"+" if dev>=0 else ""}{dev:.1f}%</span>'
-
-        quote_html = (
-            f'<div class="flex flex-wrap gap-x-4 gap-y-0.5 mb-1.5 border-l-2 border-slate-700 pl-2">'
-            f'<span class="text-slate-500">收盤</span>'
-            f'<span class="mono {clr} font-semibold">{close:.2f}</span>'
-            f'<span class="mono {clr}">{sign}{chg:.2f}{pct_s}</span>'
-            f'<span class="text-slate-500 ml-2">量</span>'
-            f'<span class="mono text-slate-200">{vol_s}</span>'
-            + dev_s
-            + qdate_s
-            + f'</div>'
-        )
-    else:
-        quote_html = ""
+    quote_html = (
+        f'<div class="flex flex-wrap gap-x-4 gap-y-0.5 mb-1.5 border-l-2 border-slate-700 pl-2">'
+        + "".join(quote_parts)
+        + f'</div>'
+    ) if quote_parts else ""
 
     # ── 風險預警 ──
     # R09：改用 live_streak／cumulative_hit 驅動，不再用 max_c（歷史最大值，
@@ -775,28 +760,19 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
     else:
         warn_html = ""
 
-    # ── 進度條（連續3日門檻）── R09：改用 live_streak，已失效的連續不再顯示滿格。
-    filled    = min(live_streak, 3)
-    empty     = max(0, 3 - filled)
-    exceeded  = live_streak >= 3
-    bar_color = "bg-red-500" if exceeded else "bg-yellow-500"
-    bar = ("".join(f'<span class="inline-block w-5 h-1.5 rounded-sm {bar_color} mr-0.5"></span>'
-                   for _ in range(filled))
-           + "".join(f'<span class="inline-block w-5 h-1.5 rounded-sm bg-slate-700 mr-0.5"></span>'
-                     for _ in range(empty)))
-    status_txt = "已達門檻" if exceeded else f"{live_streak}/3"
-    bar_html = (
-        f'<div class="flex items-center gap-2 mt-1.5">'
-        f'<div class="flex items-center">{bar}</div>'
-        f'<span class="text-slate-500">{status_txt} 連續3日門檻</span>'
-        f'</div>'
-    )
-
+    # R15：改成真正的 <details>，預設收合。舊版回傳一般 div，「可展開」其實
+    # 永遠展開，每檔都把達標摘要＋門檻試算整段攤開，手機要滑很久才看得完下一檔。
+    # 連續進度條不在這裡重複渲染——列摘要（render_notetrans_rows 的 prog）已經有
+    # 同一組 3 點進度條，兩邊畫同一個數字只是佔版面。
     return (
-        f'<div style="grid-column:1/-1" '
-        f'class="mt-1 pt-2 border-t border-slate-800/50 text-[11px] leading-5 pb-1">'
-        + summary_html + quote_html + warn_html + bar_html + extra_html
-        + '</div>'
+        f'<details class="risk-detail" style="grid-column:1/-1">'
+        f'<summary class="flex items-center gap-1 text-[11px] text-slate-500 '
+        f'mt-1 pt-2 border-t border-slate-800/50">'
+        f'<span>達標明細與門檻試算</span>{SVG_CHEV}'
+        f'</summary>'
+        f'<div class="text-[11px] leading-5 pb-1 pt-1">'
+        + summary_html + quote_html + warn_html + extra_html
+        + '</div></details>'
     )
 
 

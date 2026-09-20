@@ -275,6 +275,14 @@
   details[open] .chev { transform: rotate(180deg); }
   .chev { transition: transform 0.2s; }
 
+  /* R15：注意累計列的門檻明細改成預設收合的 <details>（舊版是一般 div，
+     「可展開」其實永遠展開）。summary 要有夠大的點擊／觸控範圍，展開後
+     內容縮排一點與列本身區隔。鍵盤操作由原生 <summary> 提供，不需 JS。 */
+  .risk-detail > summary { padding: 4px 0; }
+  .risk-detail > summary:hover { color: var(--ink-dim); }
+  .risk-detail > summary .chev { width: 12px; height: 12px; }
+  .risk-detail[open] > summary { color: var(--ink-dim); }
+
   /* Tag chips for sector */
   .sector { font-size: 10px; color: var(--ink-mute); font-weight: 500; }
 

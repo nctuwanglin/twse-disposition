@@ -670,14 +670,59 @@ class TestQuoteDate(unittest.TestCase):
         self.assertIn("9/8（二） 收盤", html)
 
     def test_missing_quote_date_omits_label(self):
+        # R15 後：收盤/漲跌/量只留在列摘要（_quote_span），明細不再重複。
+        # 缺報價日時明細不得編造任何報價日期。
         html = self._detail({"close": 10.0, "change": 0.0, "change_pct": 0.0,
                              "vol_k": 1, "monthly_avg": None})
-        self.assertIn("收盤", html)          # 數值仍在
-        self.assertNotIn("收盤）", html)      # 但不編造日期
+        self.assertNotIn("報價日", html)
+        self.assertNotIn("收盤", html)
 
     def test_no_quote_at_all(self):
         html = self._detail(None)
         self.assertNotIn("收盤）", html)
+
+
+class TestR15CollapsibleDetail(unittest.TestCase):
+    """
+    R15：注意累計清單的「可展開」明細，舊版回傳一般 div 所以永遠展開，
+    而且與列摘要重複渲染收盤/漲跌/量與同一組 3 點進度條，手機滑動距離很長。
+    """
+    CRITERIA = "115年9月7日至115年9月8日連續二次"
+
+    def _detail(self, quote=None):
+        return render_risk_detail(analyze_criteria(self.CRITERIA), date(2026, 9, 9),
+                                  quote=quote)
+
+    def test_detail_is_a_real_details_element(self):
+        html = self._detail()
+        self.assertIn("<details", html)
+        self.assertIn("<summary", html)
+
+    def test_detail_defaults_to_collapsed(self):
+        # <details open> 會讓它一載入就展開 —— 正是舊版的行為，不可再出現
+        html = self._detail()
+        self.assertNotIn("<details class=\"risk-detail\" open", html)
+        self.assertNotIn(" open>", html)
+
+    def test_detail_does_not_repeat_progress_bar(self):
+        # 列摘要（render_notetrans_rows）已有 3 點進度條，明細不可再畫一組
+        html = self._detail()
+        self.assertNotIn("連續3日門檻", html)
+        self.assertNotIn("rounded-sm bg-slate-700", html)
+
+    def test_detail_keeps_info_the_row_lacks(self):
+        # 報價日與偏離月均是列摘要沒有的，必須保留在明細
+        html = self._detail({"close": 120.0, "change": 5.0, "change_pct": 4.3,
+                             "vol_k": 900, "monthly_avg": 100.0, "date": "20260909"})
+        self.assertIn("報價日", html)
+        self.assertIn("9/9（三） 收盤", html)
+        self.assertIn("偏離月均", html)
+
+    def test_detail_does_not_repeat_close_and_volume(self):
+        html = self._detail({"close": 120.0, "change": 5.0, "change_pct": 4.3,
+                             "vol_k": 900, "monthly_avg": 100.0, "date": "20260909"})
+        self.assertNotIn("120.00", html)   # 收盤價只在列摘要
+        self.assertNotIn("900 張", html)   # 成交量只在列摘要
 
 
 class TestMarkerFailFast(unittest.TestCase):
