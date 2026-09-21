@@ -1115,21 +1115,45 @@ def render_attention_conditions(thresholds, trade_date):
 CAREER_COUNTS = {}  # code -> 期數；main() 填入後供 render/_stock_entry 讀取
 
 
+# 歷史庫覆蓋度（review 其他優化 #4）：前科數與績效統計都只是「本站收錄到的」，
+# 不是官方累犯次數，也不是完整歷史。載入時一併記錄涵蓋範圍供畫面揭露。
+HISTORY_COVERAGE = {"since": None, "days": 0, "backfill": 0}
+
+
 def load_career_counts(active_records):
     periods = defaultdict(set)
     hist_dir = REPO_ROOT / "data" / "history"
+    dates, backfill = [], 0
     if hist_dir.exists():
         for f in sorted(hist_dir.glob("*.json")):
             try:
                 snap = json.loads(f.read_text(encoding="utf-8"))
             except Exception:
                 continue
+            dates.append(snap.get("date") or f.stem)
+            if snap.get("source") == "backfill":
+                backfill += 1
             for s in snap.get("active", []):
                 if s.get("code") and s.get("period_start"):
                     periods[s["code"]].add(s["period_start"])
+    HISTORY_COVERAGE.update({"since": min(dates) if dates else None,
+                             "days": len(dates), "backfill": backfill})
     for s in active_records:
         periods[s["code"]].add(s["period_start"].isoformat())
     return {c: len(v) for c, v in periods.items()}
+
+
+def render_history_coverage_note():
+    """歷史庫涵蓋範圍。回填快照是從 git 歷史重建的，沒有當時的報價。"""
+    cov = HISTORY_COVERAGE
+    if not cov["since"] or not cov["days"]:
+        return ""
+    bf = (f"，其中 {cov['backfill']} 個交易日為事後回填、不含當時報價"
+          if cov["backfill"] else "")
+    return (f'<div class="text-[10px] text-slate-500 mt-1 leading-4">'
+            f'歷史庫自 {cov["since"]} 起收錄 {cov["days"]} 個交易日快照{bf}。'
+            f'「收錄 N 段」是本站觀測到的處置期數，<span class="text-slate-400">'
+            f'不是官方累犯次數</span>，也不代表完整歷史。</div>')
 
 
 # ──────────────────────────────────────────────
@@ -1328,6 +1352,7 @@ def render_perf_stats_card(summary, sample_since="2026-06"):
           未調整除權息與交易成本；同一檔多次處置分別計為獨立事件。
           樣本小，僅描述已發生的分布，不足以推論處置造成漲跌。
         </div>
+        {render_history_coverage_note()}
       </div>
     </div>"""
 
@@ -1413,7 +1438,8 @@ def _stock_entry(s, stock_quotes):
 
 def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
                    notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
-                   counts, source="live", released_stocks=(), prev_trading=None):
+                   counts, source="live", released_stocks=(), prev_trading=None,
+                   announcement_asof=None):
     """
     快照同時是 dispo.json（下游消費）與 data/history/ 稽核檔，R03 起也是
     --render-only 的輸入。新增欄位一律採「純新增」：下游（績效儀表板的
@@ -1450,6 +1476,10 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
         "quotes": {c: _jsonable(q) for c, q in sorted((stock_quotes or {}).items())
                    if c in codes},
         "prev_trading":    prev_trading.isoformat() if prev_trading else None,
+        # 公告與報價是不同的發布時程，資料可信度列要分開顯示；離線重繪也需要它
+        # 才能產生與 live 完全相同的頁面。
+        "announcement_asof": (announcement_asof.isoformat()
+                              if hasattr(announcement_asof, "isoformat") else announcement_asof),
         "last_trade_date": LAST_TRADE_DATE.isoformat() if LAST_TRADE_DATE else None,
         "sources": dict(sorted(SOURCE_STATUS.items())),
     }
@@ -1682,8 +1712,12 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
         name_html += f' <span class="pill pill-red ml-1">{nth}</span>'
     career = CAREER_COUNTS.get(stock["code"], 0)
     if career >= 2:
+        # 「前科N」聽起來像官方累犯紀錄，但這只是本站歷史庫觀測到的段數
+        since = HISTORY_COVERAGE.get("since")
+        since_s = f"（自 {since} 起收錄）" if since else ""
         name_html += (f' <span class="pill pill-gray ml-1" '
-                      f'title="歷史庫觀測以來共 {career} 段處置期">前科{career}</span>')
+                      f'title="本站歷史庫收錄到 {career} 段處置期{since_s}，'
+                      f'非官方累犯次數">收錄{career}段</span>')
 
     end_html = ""
     if "period_end" in stock and not is_yellow:
@@ -1751,6 +1785,38 @@ SOURCE_LABELS = {
 }
 
 
+def _fmt_src_date(name):
+    """來源的資料日（yyyymmdd 字串或 ISO）→ M/D；沒有就回 None。"""
+    d = ad_to_date((SOURCE_STATUS.get(name) or {}).get("as_of"))
+    return fmt_short(d) if d else None
+
+
+def render_data_freshness(today, announcement_asof=None):
+    """
+    資料可信度列（2026-09 review 其他優化 #1）。
+
+    舊版整個頁面只有一個「自動更新 {日期}」，而那其實是**報價資料日**，不是
+    「這頁什麼時候被檢查過」。收盤報價、處置公告、注意累計是三個不同的發布
+    時程（R01 的成因正是把它們當成同一件事），各自的資料日必須分開講。
+
+    刻意不顯示「最近檢查時間」：那需要寫入執行當下的時鐘，會讓頁面每班都
+    產生 diff，R01 好不容易做到的「內容沒變就不 commit」會退化成每天兩個
+    空 commit。頁面只呈現資料本身帶的日期，這些都是決定性的。
+    """
+    parts = [f'<span class="text-slate-400">報價</span> '
+             f'<span class="mono text-slate-300">{fmt_short(today)}</span>']
+    tpex_q = _fmt_src_date("tpex_quotes")
+    if tpex_q and tpex_q != fmt_short(today):
+        parts.append(f'<span class="text-slate-400">上櫃報價</span> '
+                     f'<span class="mono text-amber-300">{tpex_q}</span>')
+    if announcement_asof:
+        parts.append(f'<span class="text-slate-400">最新公告</span> '
+                     f'<span class="mono text-slate-300">{fmt_short(announcement_asof)}</span>')
+    return ('        <div class="text-[11px] text-slate-500 mt-1">資料日｜'
+            + '　'.join(parts)
+            + '</div>\n')
+
+
 def render_source_notice():
     """
     R02：有來源抓取失敗（或資料被判定不可用而棄用）時，必須在頁面上明示，
@@ -1765,7 +1831,8 @@ def render_source_notice():
 
 
 def render_context_banner(taiex, total_active, today_released_count,
-                          upcoming_count, upcoming_date, notetrans_twse, notetrans_tpex, today):
+                          upcoming_count, upcoming_date, notetrans_twse, notetrans_tpex, today,
+                          announcement_asof=None):
     # 大盤數字
     if taiex:
         close  = float(taiex["收盤指數"].replace(",",""))
@@ -1805,8 +1872,6 @@ def render_context_banner(taiex, total_active, today_released_count,
         f'{r["code"]}{r["name"]}' for r in (notetrans_twse + notetrans_tpex)
     )
 
-    update_str = today.strftime("%Y/%m/%d")
-
     return f"""  <div class="card mb-6 p-4 border-l-4" style="border-left-color: var(--amber);">
     <div class="flex items-start gap-3">
       <div class="text-amber-400 text-xl">⚡</div>
@@ -1820,9 +1885,8 @@ def render_context_banner(taiex, total_active, today_released_count,
         </div>
         <div class="text-[11px] text-slate-500">
           注意累計 {nt_detail}：<span class="text-slate-400">{nt_codes}</span>
-          ｜ 自動更新 {update_str}
         </div>
-{render_source_notice()}      </div>
+{render_data_freshness(today, announcement_asof)}{render_source_notice()}      </div>
     </div>
   </div>"""
 
@@ -2604,7 +2668,8 @@ def bundle_from_snapshot(path=None):
         "taiex": snap.get("taiex"),
         "all_rows": [_row_from_entry(e) for e in
                      snap.get("active", []) + snap.get("upcoming", []) + snap.get("released", [])],
-        "ann_asof": None,
+        "ann_asof": (date.fromisoformat(snap["announcement_asof"])
+                     if snap.get("announcement_asof") else None),
         "notetrans_twse": [e for e in notetrans if e.get("exchange") == "TWSE"],
         "notetrans_tpex": [e for e in notetrans if e.get("exchange") != "TWSE"],
         "nt_thresholds": nt_thresholds, "trading_days": None,
@@ -2624,6 +2689,7 @@ def render_and_publish(bundle, *, allow_drop=False):
     notetrans_twse = bundle["notetrans_twse"]
     notetrans_tpex = bundle["notetrans_tpex"]
     nt_thresholds  = bundle["nt_thresholds"]
+    ann_asof       = bundle["ann_asof"]
 
     # 分組
     active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
@@ -2729,6 +2795,7 @@ def render_and_publish(bundle, *, allow_drop=False):
         bundle["taiex"], total_active, today_released,
         upcoming_count, upcoming_date,
         notetrans_twse, notetrans_tpex, today,
+        announcement_asof=ann_asof,
     )
     stats_html = render_stats(total_active, latest_count, second_count,
                               twse_count, tpex_count, latest_ann, deltas=deltas)
@@ -2785,6 +2852,7 @@ def render_and_publish(bundle, *, allow_drop=False):
                 "second": second_count,
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
         released_stocks=released_stocks, prev_trading=prev_trading,
+        announcement_asof=ann_asof,
     )
     snap["release_stats"] = perf_summary
     write_snapshot(snap)
@@ -2792,7 +2860,6 @@ def render_and_publish(bundle, *, allow_drop=False):
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
     # 注意：這個檔案必須保持決定性——不可寫入任何執行時間戳，否則每班都會
     # 產生 diff，R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
-    ann_asof = bundle["ann_asof"]
     LAST_COUNTS_PATH.write_text(json.dumps({
         "date": today.isoformat(),
         "quote_date": today.isoformat(),

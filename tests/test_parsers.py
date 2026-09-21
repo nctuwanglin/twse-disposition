@@ -28,6 +28,8 @@ from update_dashboard import (          # noqa: E402
     render_tab3, render_source_notice,
     build_snapshot, _parse_args, bundle_from_snapshot,
     write_build_manifest, _sha256_file, render_perf_stats_card,
+    render_data_freshness, render_context_banner, load_career_counts,
+    render_history_coverage_note,
 )
 import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
 
@@ -1436,3 +1438,101 @@ class TestPerfCardBaselineWording(unittest.TestCase):
         # 原本就有的規則：樣本不足不出那一行
         html = render_perf_stats_card({"during": {"avg": 1, "med": 1, "win": 50, "n": 2}})
         self.assertEqual(html, "")
+
+
+class TestDataFreshnessLine(unittest.TestCase):
+    """
+    其他優化 #1：整頁原本只有一個「自動更新 {日期}」，而那其實是**報價資料日**，
+    不是「這頁什麼時候被檢查過」。收盤報價、處置公告、注意累計是三個不同的
+    發布時程（R01 的成因正是把它們當成同一件事），各自的資料日要分開講。
+    """
+
+    def setUp(self):
+        self._saved = dict(ud.SOURCE_STATUS)
+        ud.SOURCE_STATUS.clear()
+
+    def tearDown(self):
+        ud.SOURCE_STATUS.clear()
+        ud.SOURCE_STATUS.update(self._saved)
+
+    def test_shows_quote_and_announcement_dates_separately(self):
+        html = render_data_freshness(date(2026, 9, 18), date(2026, 9, 17))
+        self.assertIn("報價", html)
+        self.assertIn("9/18", html)
+        self.assertIn("最新公告", html)
+        self.assertIn("9/17", html)
+
+    def test_flags_tpex_quote_date_when_it_differs(self):
+        # 上櫃報價日與上市不同時（例如被棄用那次）要看得出來
+        ud.record_source("tpex_quotes", ok=False, as_of="20260917",
+                         error="報價日不一致，已棄用")
+        html = render_data_freshness(date(2026, 9, 18))
+        self.assertIn("上櫃報價", html)
+        self.assertIn("9/17", html)
+
+    def test_no_wallclock_timestamp(self):
+        # 刻意不顯示「最近檢查時間」：那需要寫入執行當下的時鐘，會讓頁面每班
+        # 都產生 diff，R01 的「內容沒變就不 commit」會退化成每天兩個空 commit
+        a = render_data_freshness(date(2026, 9, 18), date(2026, 9, 18))
+        b = render_data_freshness(date(2026, 9, 18), date(2026, 9, 18))
+        self.assertEqual(a, b)
+        self.assertNotIn(":", a.replace("https:", ""))   # 沒有 HH:MM 這種時間
+
+    def test_banner_no_longer_calls_data_date_an_update_time(self):
+        html = render_context_banner(None, 3, 0, 0, None, [], [], date(2026, 9, 18),
+                                     announcement_asof=date(2026, 9, 18))
+        self.assertNotIn("自動更新 2026/09/18", html)
+        self.assertIn("資料日", html)
+
+
+class TestHistoryCoverageDisclosure(unittest.TestCase):
+    """
+    其他優化 #4：「前科N」聽起來像官方累犯紀錄，但那只是本站歷史庫觀測到的
+    段數；而且回填快照沒有當時的報價，覆蓋範圍也該講清楚。
+    """
+
+    def setUp(self):
+        import tempfile
+        self._orig = ud.REPO_ROOT
+        self._tmp = tempfile.mkdtemp()
+        ud.REPO_ROOT = Path(self._tmp)
+        hist = ud.REPO_ROOT / "data" / "history"
+        hist.mkdir(parents=True)
+        import json as _j
+        for d, source in (("2026-06-22", "backfill"), ("2026-06-23", "backfill"),
+                          ("2026-09-18", "live")):
+            (hist / f"{d}.json").write_text(_j.dumps(
+                {"date": d, "source": source,
+                 "active": [{"code": "1101", "period_start": d}]}), encoding="utf-8")
+
+    def tearDown(self):
+        import shutil
+        ud.REPO_ROOT = self._orig
+        shutil.rmtree(self._tmp, ignore_errors=True)
+
+    def test_coverage_is_recorded_when_loading_history(self):
+        load_career_counts([])
+        self.assertEqual(ud.HISTORY_COVERAGE["since"], "2026-06-22")
+        self.assertEqual(ud.HISTORY_COVERAGE["days"], 3)
+        self.assertEqual(ud.HISTORY_COVERAGE["backfill"], 2)
+
+    def test_note_states_backfill_lacks_quotes(self):
+        load_career_counts([])
+        note = render_history_coverage_note()
+        self.assertIn("2026-06-22 起收錄 3 個交易日", note)
+        self.assertIn("2 個交易日為事後回填", note)
+        self.assertIn("不是官方累犯次數", note)
+
+    def test_badge_no_longer_says_criminal_record(self):
+        load_career_counts([])
+        ud.CAREER_COUNTS.clear()
+        ud.CAREER_COUNTS["1101"] = 3
+        try:
+            html = render_stock_row(
+                {"code": "1101", "name": "台泥", "exchange": "TWSE",
+                 "period_end": date(2026, 9, 30), "disp_count": 1}, {}, date(2026, 9, 18))
+            self.assertNotIn("前科", html)
+            self.assertIn("收錄3段", html)
+            self.assertIn("非官方累犯次數", html)
+        finally:
+            ud.CAREER_COUNTS.clear()
