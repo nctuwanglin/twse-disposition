@@ -1365,7 +1365,13 @@ def _stock_entry(s, stock_quotes):
 
 def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
                    notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
-                   counts, source="live"):
+                   counts, source="live", released_stocks=(), prev_trading=None):
+    """
+    快照同時是 dispo.json（下游消費）與 data/history/ 稽核檔，R03 起也是
+    --render-only 的輸入。新增欄位一律採「純新增」：下游（績效儀表板的
+    dashlib/related.py、active-etf 的 crosslinks.py）都是 .get() 寬鬆取值、
+    沒有 schema 檢查，多幾個鍵不會壞。
+    """
     def nt_entry(r):
         e = {"code": r["code"], "name": r["name"], "exchange": r["exchange"],
              "criteria": r["criteria"], "raw_criteria": r["raw_criteria"]}
@@ -1378,6 +1384,8 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
     # 期間內再犯升級 20分撮合）。counts.active 計唯一代碼；下游取現行有效
     # 管制時應選 period_end 最大（並列時 disp_count 最大）的那筆。
     key = lambda s: (s["exchange"], s["code"], s["period_start"], s["period_end"])
+    codes = {s["code"] for s in list(active_stocks) + list(upcoming_stocks)
+             + list(released_stocks)} | {r["code"] for r in notetrans_twse + notetrans_tpex}
     return {
         "schema": 1,
         "date": today.isoformat(),
@@ -1387,6 +1395,15 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
         "active":    [_stock_entry(s, stock_quotes) for s in sorted(active_stocks, key=key)],
         "upcoming":  [_stock_entry(s, stock_quotes) for s in sorted(upcoming_stocks, key=key)],
         "notetrans": [nt_entry(r) for r in notetrans_twse + notetrans_tpex],
+        # ── 以下為 R03 新增，供 --render-only 離線重繪還原畫面 ──
+        "released":  [_stock_entry(s, stock_quotes) for s in sorted(released_stocks, key=key)],
+        # _stock_entry 只留 close/change_pct/vol_k（下游夠用），但明細面板還要
+        # change/monthly_avg/報價日，所以另外存一份完整報價（只存畫面用得到的代碼）。
+        "quotes": {c: _jsonable(q) for c, q in sorted((stock_quotes or {}).items())
+                   if c in codes},
+        "prev_trading":    prev_trading.isoformat() if prev_trading else None,
+        "last_trade_date": LAST_TRADE_DATE.isoformat() if LAST_TRADE_DATE else None,
+        "sources": dict(sorted(SOURCE_STATUS.items())),
     }
 
 
@@ -2266,12 +2283,70 @@ def update_inline_counts(html, tab1_total, tab1_latest, tab3_nt=0, tab2_upcoming
 # ──────────────────────────────────────────────
 # 主流程
 # ──────────────────────────────────────────────
-def main():
-    force = "--force" in sys.argv
+# R03：舊版只有一個 --force，而它一次解除了四道互不相干的防線（無新交易日、
+# TWSE 空來源、TPEx 空來源、檔數驟降）。實際上大家用 --force 幾乎都只是想在
+# 改了 renderer 之後重新產生頁面，卻順手把資料品質防線全關掉。
+#
+# 拆解後：
+#   - 「改版後重新渲染」已由 R01（每班都抓、內容有變才寫出）自動達成，
+#     另提供 --render-only 從已驗證快照離線重繪，完全不碰即時 API。
+#   - 空來源判斷改由 R02 的來源狀態自動分辨，不需要人工覆寫。
+#   - 只剩檔數驟降需要人工確認，對應單一旗標 --allow-drop。
+USAGE = """用法：
+  python3 scripts/update_dashboard.py [選項]
+
+  （無選項）        正常執行：抓取最新資料、重繪頁面、寫入快照與狀態
+  --render-only [快照]
+                    離線重繪：從已驗證的快照（預設 dispo.json）重新產生
+                    index.html，完全不連外部 API，也不會寫快照／狀態檔。
+                    改 renderer 或 CSS 後在本機預覽用。
+  --allow-drop      確認過檔數驟降屬實時，放行驟降守則（僅此一項）
+"""
+
+
+def _parse_args(argv):
+    args = {"render_only": False, "snapshot": None, "allow_drop": False}
+    rest = argv[1:]
+    i = 0
+    while i < len(rest):
+        a = rest[i]
+        if a == "--force":
+            sys.exit("ERROR: --force 已移除（2026-09 review R03：它會一次解除所有資料品質"
+                     "防線）。改版後重新渲染已不需要旗標——每班都會重抓並重繪，內容有變"
+                     "就會寫出；要離線重繪請用 --render-only。\n\n" + USAGE)
+        elif a == "--render-only":
+            args["render_only"] = True
+            if i + 1 < len(rest) and not rest[i + 1].startswith("-"):
+                args["snapshot"] = rest[i + 1]
+                i += 1
+        elif a == "--allow-drop":
+            args["allow_drop"] = True
+        elif a in ("-h", "--help"):
+            print(USAGE)
+            sys.exit(0)
+        else:
+            sys.exit(f"ERROR: 未知選項 {a}\n\n{USAGE}")
+        i += 1
+    return args
+
+
+def _load_state():
+    """上次執行狀態（驟降保險 + KPI 昨日對比共用）。讀不到就當第一次跑。"""
+    if not LAST_COUNTS_PATH.exists():
+        return {}
+    try:
+        return json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def gather_live():
+    """抓取所有來源並驗證，回傳渲染所需的資料束（bundle）。"""
+    global LAST_TRADE_DATE
 
     # 「今天」一律以報價 API 回傳的實際交易日為準，不用系統時鐘（無論 UTC 或
     # Asia/Taipei）。教訓（2026-07-14）：GitHub 排程延遲跨過午夜時，若用系統
-    # 時鐘取「今天」，錢在市場尚未開盤前就已跨日，導致「今天」比最新報價日
+    # 時鐘取「今天」，在市場尚未開盤前就已跨日，導致「今天」比最新報價日
     # 還新一天，誤判成「非交易日」而整批放棄更新——7/13 兩次排程因此都沒有
     # 寫入任何資料，卻仍回報 success。改用資料本身的日期，不受執行時間影響。
     print("  TWSE 個股報價...")
@@ -2301,18 +2376,9 @@ def main():
                  + "），無法確定資料日，中止更新")
     today = date(int(twse_qdate[:4]), int(twse_qdate[4:6]), int(twse_qdate[6:8]))
 
-    print(f"開始更新，資料日（今天）: {today}" + ("（--force）" if force else ""))
-
-    global LAST_TRADE_DATE
+    print(f"開始更新，資料日（今天）: {today}")
     LAST_TRADE_DATE = today
-
-    # 讀上次執行狀態（驟降保險 + KPI 昨日對比 + 新交易日守則共用）
-    state = {}
-    if LAST_COUNTS_PATH.exists():
-        try:
-            state = json.loads(LAST_COUNTS_PATH.read_text(encoding="utf-8"))
-        except Exception:
-            state = {}
+    state = _load_state()
 
     # R01：這裡原本有「資料日沒比上次新就整班 return」的守則，而且位置在所有
     # 公告抓取之前——收盤價、處置公告、注意累計根本不是同一個發布時程，於是
@@ -2381,15 +2447,107 @@ def main():
             if t:
                 nt_thresholds[r["code"]] = t
 
+    return {
+        "live": True, "today": today, "state": state,
+        "stock_quotes": stock_quotes, "taiex": taiex,
+        "all_rows": all_rows, "ann_asof": ann_asof,
+        "notetrans_twse": notetrans_twse, "notetrans_tpex": notetrans_tpex,
+        "nt_thresholds": nt_thresholds, "trading_days": trading_days,
+        "prev_trading": None, "release_stats": None,
+    }
+
+
+def _revive_dates(obj, keys):
+    """快照裡的日期是 ISO 字串，渲染端要的是 date 物件。"""
+    for k in keys:
+        v = obj.get(k)
+        if isinstance(v, str):
+            try:
+                obj[k] = date.fromisoformat(v)
+            except ValueError:
+                obj[k] = None
+    return obj
+
+
+def _row_from_entry(e):
+    """快照的股票 entry → group_into_batches 吃的 row dict。"""
+    row = {"code": e["code"], "name": e["name"], "exchange": e["exchange"],
+           "auction": e.get("auction", ""), "disp_count": e.get("disp_count", 1)}
+    row.update({k: date.fromisoformat(e[k])
+                for k in ("ann_date", "period_start", "period_end")})
+    return row
+
+
+def bundle_from_snapshot(path=None):
+    """
+    R03：從已驗證的快照離線重繪。改 renderer／CSS 時不必碰即時 API，本機也不
+    必再繞過 SSL 憑證問題（本機 Python 對證交所憑證鏈較嚴格，urllib 會失敗）。
+    """
+    global LAST_TRADE_DATE
+    snap_path = Path(path) if path else (REPO_ROOT / "dispo.json")
+    if not snap_path.exists():
+        sys.exit(f"ERROR: 找不到快照 {snap_path}（--render-only 需要已驗證的快照）")
+    snap = json.loads(snap_path.read_text(encoding="utf-8"))
+
+    missing = [k for k in ("released", "quotes", "last_trade_date") if k not in snap]
+    if missing:
+        sys.exit(f"ERROR: 快照 {snap_path.name} 缺少 {missing}，是 R03 之前的舊格式；"
+                 f"請先正常執行一次產生新版快照再用 --render-only")
+
+    today = date.fromisoformat(snap["date"])
+    LAST_TRADE_DATE = (date.fromisoformat(snap["last_trade_date"])
+                       if snap.get("last_trade_date") else today)
+
+    notetrans = snap.get("notetrans", [])
+    nt_thresholds = {}
+    for e in notetrans:
+        t = e.get("thresholds")
+        if not t:
+            continue
+        t = json.loads(json.dumps(t))          # 複製，避免改到 snap
+        _revive_dates(t, ["latest_date"])
+        for clause in ("clause1", "clause2"):
+            if isinstance(t.get(clause), dict):
+                _revive_dates(t[clause], ["ref_date", "next_session_ref_date"])
+        nt_thresholds[e["code"]] = t
+
+    print(f"離線重繪（--render-only），快照 {snap_path.name}，資料日 {today}")
+    return {
+        "live": False, "today": today, "state": _load_state(),
+        "stock_quotes": {c: dict(q) for c, q in (snap.get("quotes") or {}).items()},
+        "taiex": snap.get("taiex"),
+        "all_rows": [_row_from_entry(e) for e in
+                     snap.get("active", []) + snap.get("upcoming", []) + snap.get("released", [])],
+        "ann_asof": None,
+        "notetrans_twse": [e for e in notetrans if e.get("exchange") == "TWSE"],
+        "notetrans_tpex": [e for e in notetrans if e.get("exchange") != "TWSE"],
+        "nt_thresholds": nt_thresholds, "trading_days": None,
+        "prev_trading": (date.fromisoformat(snap["prev_trading"])
+                         if snap.get("prev_trading") else None),
+        "release_stats": snap.get("release_stats"),
+    }
+
+
+def render_and_publish(bundle, *, allow_drop=False):
+    """把 bundle 渲染成頁面；live 執行才寫快照與狀態檔。"""
+    live           = bundle["live"]
+    today          = bundle["today"]
+    state          = bundle["state"]
+    stock_quotes   = bundle["stock_quotes"]
+    all_rows       = bundle["all_rows"]
+    notetrans_twse = bundle["notetrans_twse"]
+    notetrans_tpex = bundle["notetrans_tpex"]
+    nt_thresholds  = bundle["nt_thresholds"]
+
     # 分組
     active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
 
     if not active_groups:
         # R07：處置中歸零是合法狀態（全部批次已出關、尚無新批次生效），
-        # 不是資料源故障——上面已經個別驗證過 TWSE/TPEx 處置源本身非空，
-        # 這裡不該再把「業務上真的零筆」跟「資料源故障」混為一談而整批
-        # 放棄更新。舊版在此 return，若這個狀態持續發生，網站會永遠停在
-        # 最後一次還有處置股的舊畫面，因為 last_counts.json 也不會前進。
+        # 不是資料源故障——前面已經個別驗證過處置源本身有回應，這裡不該再把
+        # 「業務上真的零筆」跟「資料源故障」混為一談而整批放棄更新。舊版在此
+        # return，若這個狀態持續發生，網站會永遠停在最後一次還有處置股的舊
+        # 畫面，因為 last_counts.json 也不會前進。
         print("  今天沒有任何處置中的股票（合法零筆，照常發佈空狀態）。")
 
     # 統計（R12：改用 _canonical_active_by_code 的「period_end 最大」規則，
@@ -2406,14 +2564,17 @@ def main():
     # 不完整；但大量同批同日期滿、或漏跑多日一次補回一大段出關，也會造成
     # 同樣的降幅，卻是合法的。R07：扣掉「已知合法出關」（released_groups
     # 裡上次執行之後才出關的）之後，只有仍解釋不了的下降才視為異常中止。
-    prev_total = int(state.get("total_active", 0) or 0)
-    last_processed_date = date.fromisoformat(state["date"]) if state.get("date") else None
-    unexplained = _unexplained_drop(prev_total, total_active, released_groups, last_processed_date)
-    if not force and prev_total >= 10 and unexplained > prev_total * 0.5:
-        sys.exit(f"ERROR: 處置中檔數異常下降 {prev_total} → {total_active}"
-                 f"（已知合法出關可解釋 {prev_total - total_active - unexplained} 檔，"
-                 f"仍有 {unexplained} 檔無法解釋，上次: {state.get('date','?')}），"
-                 f"疑似資料源不完整，中止更新（確認正常可用 --force）")
+    # 離線重繪沒有抓取行為，沒有「資料源不完整」的可能，不適用本守則。
+    if live:
+        prev_total = int(state.get("total_active", 0) or 0)
+        last_processed_date = date.fromisoformat(state["date"]) if state.get("date") else None
+        unexplained = _unexplained_drop(prev_total, total_active, released_groups,
+                                        last_processed_date)
+        if not allow_drop and prev_total >= 10 and unexplained > prev_total * 0.5:
+            sys.exit(f"ERROR: 處置中檔數異常下降 {prev_total} → {total_active}"
+                     f"（已知合法出關可解釋 {prev_total - total_active - unexplained} 檔，"
+                     f"仍有 {unexplained} 檔無法解釋，上次: {state.get('date','?')}），"
+                     f"疑似資料源不完整，中止更新（確認屬實可用 --allow-drop）")
 
     # KPI 昨日對比基準：同日重跑沿用原本的 prev_day，跨日則以上次執行為基準
     if state.get("date") == today.isoformat():
@@ -2433,7 +2594,8 @@ def main():
     # 今日出關 = 前一交易日為處置最後一日者，今天起恢復正常交易。
     # （舊版比對 pe == today，但 released_groups 的篩選條件是 pe < today，
     #   兩者互斥導致此數字恆為 0；處置迄日當天仍受管制，不算已出關。）
-    prev_trading   = prev_trading_day(today, baseline, trading_days)
+    prev_trading = (prev_trading_day(today, baseline, bundle["trading_days"])
+                    if live else bundle["prev_trading"])
     today_released = sum(len(g["stocks"]) for pe, g in released_groups.items()
                          if pe == prev_trading)
 
@@ -2456,26 +2618,29 @@ def main():
     print(f"  最新批次: {latest_count} 檔 / 即將被處置: {upcoming_count} 檔 / 今日出關: {today_released} 檔")
     print(f"  二次處置: {second_count} 檔 / 注意累計: TWSE {len(notetrans_twse)} TPEx {len(notetrans_tpex)}")
 
-    # 讀 stock_info
+    # 讀 stock_info（離線重繪不對外補抓缺漏的公司基本資料）
     stock_info = load_stock_info()
-    needed = ({s["code"] for s in all_rows}
-              | {r["code"] for r in notetrans_twse + notetrans_tpex})
-    added = autofill_stock_info(stock_info, needed)
-    if added:
-        print(f"  ✓ stock_info.json 自動補 {added} 檔（name/sector，tags 留手動）")
+    if live:
+        needed = ({s["code"] for s in all_rows}
+                  | {r["code"] for r in notetrans_twse + notetrans_tpex})
+        added = autofill_stock_info(stock_info, needed)
+        if added:
+            print(f"  ✓ stock_info.json 自動補 {added} 檔（name/sector，tags 留手動）")
 
-    # 前科追蹤（#13）：渲染與快照前先聚合歷史庫
+    # 前科追蹤（#13）：渲染與快照前先聚合歷史庫（讀本地歷史檔，離線也可用）
     active_records = [s for b in active_groups.values() for s in b["stocks"]]
     CAREER_COUNTS.update(load_career_counts(active_records))
 
-    # 出關股績效（#12）
-    perf_stats   = update_perf_stats(released_groups, today)
-    perf_summary = perf_stats_summary(perf_stats)
-    perf_html    = render_perf_stats_card(perf_summary)
+    # 出關股績效（#12）。離線重繪沿用快照裡算好的統計，不重抓個股歷史。
+    if live:
+        perf_summary = perf_stats_summary(update_perf_stats(released_groups, today))
+    else:
+        perf_summary = bundle["release_stats"] or {}
+    perf_html = render_perf_stats_card(perf_summary)
 
     # 生成 HTML 片段
     context_html = render_context_banner(
-        taiex, total_active, today_released,
+        bundle["taiex"], total_active, today_released,
         upcoming_count, upcoming_date,
         notetrans_twse, notetrans_tpex, today,
     )
@@ -2516,16 +2681,22 @@ def main():
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
 
+    if not live:
+        print("離線重繪完成（未寫入快照與狀態檔）")
+        return
+
     # 結構化輸出：dispo.json（供績效儀表板等下游讀取）+ 每日歷史快照
     # active 傳「全部處置紀錄」而非 all_active（後者按 code 去重，會丟失重疊
     # 處置中較新的那筆，如二次處置升級）；active_records 已於前面計算
     upcoming_stocks = [s for g in upcoming_groups.values() for s in g["stocks"]]
+    released_stocks = [s for g in released_groups.values() for s in g["stocks"]]
     snap = build_snapshot(
-        today, taiex, active_records, upcoming_stocks,
+        today, bundle["taiex"], active_records, upcoming_stocks,
         notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
         counts={"active": total_active, "twse": twse_count, "tpex": tpex_count,
                 "second": second_count,
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
+        released_stocks=released_stocks, prev_trading=prev_trading,
     )
     snap["release_stats"] = perf_summary
     write_snapshot(snap)
@@ -2533,6 +2704,7 @@ def main():
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
     # 注意：這個檔案必須保持決定性——不可寫入任何執行時間戳，否則每班都會
     # 產生 diff，R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
+    ann_asof = bundle["ann_asof"]
     LAST_COUNTS_PATH.write_text(json.dumps({
         "date": today.isoformat(),
         "quote_date": today.isoformat(),
@@ -2545,6 +2717,13 @@ def main():
         "prev_day": baseline,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("更新完成！")
+
+
+def main(argv=None):
+    args = _parse_args(list(argv if argv is not None else sys.argv))
+    bundle = (bundle_from_snapshot(args["snapshot"]) if args["render_only"]
+              else gather_live())
+    render_and_publish(bundle, allow_drop=args["allow_drop"])
 
 
 if __name__ == "__main__":

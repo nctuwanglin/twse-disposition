@@ -23,6 +23,7 @@ from update_dashboard import (          # noqa: E402
     render_attention_conditions, render_notetrans_rows,
     render_stock_row, exchange_section, render_release_schedule,
     render_tab3, render_source_notice,
+    build_snapshot, _parse_args, bundle_from_snapshot,
 )
 import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
 
@@ -1133,3 +1134,112 @@ class TestR02SourceStatus(unittest.TestCase):
         ud.record_source("tpex_warning", ok=True, rows=0)
         empty = render_tab3([], [], {}, {}, date(2026, 9, 18))
         self.assertNotIn("來源暫時無法取得", empty)
+
+
+class TestR03Flags(unittest.TestCase):
+    """
+    R03：舊版一個 --force 同時解除四道不相干的防線（無新交易日、兩個空來源、
+    檔數驟降），而大家用它幾乎只是想重新渲染頁面。拆解後每個旗標只管一件事。
+    """
+
+    def test_no_flags_is_live_run(self):
+        args = _parse_args(["prog"])
+        self.assertFalse(args["render_only"])
+        self.assertFalse(args["allow_drop"])
+
+    def test_render_only_accepts_optional_snapshot_path(self):
+        self.assertIsNone(_parse_args(["prog", "--render-only"])["snapshot"])
+        self.assertEqual(
+            _parse_args(["prog", "--render-only", "data/history/2026-09-18.json"])["snapshot"],
+            "data/history/2026-09-18.json")
+
+    def test_allow_drop_is_independent_of_render_only(self):
+        args = _parse_args(["prog", "--allow-drop"])
+        self.assertTrue(args["allow_drop"])
+        self.assertFalse(args["render_only"])
+
+    def test_force_is_rejected_with_migration_hint(self):
+        # 舊習慣會踩到，必須給明確指引而不是默默照舊執行
+        with self.assertRaises(SystemExit) as cm:
+            _parse_args(["prog", "--force"])
+        msg = str(cm.exception)
+        self.assertIn("--force 已移除", msg)
+        self.assertIn("--render-only", msg)
+
+    def test_unknown_flag_rejected(self):
+        with self.assertRaises(SystemExit):
+            _parse_args(["prog", "--nope"])
+
+
+class TestR03SnapshotRoundTrip(unittest.TestCase):
+    """
+    R03：--render-only 要能從快照還原出渲染所需的一切，所以快照必須含
+    released／quotes／prev_trading／last_trade_date（純新增欄位，下游
+    dashlib/related.py 與 crosslinks.py 都是 .get() 取值，不受影響）。
+    """
+
+    def _stock(self, code, ps, pe, exch="TWSE"):
+        return {"code": code, "name": f"股{code}", "exchange": exch,
+                "ann_date": ps - timedelta(days=1), "period_start": ps,
+                "period_end": pe, "auction": "2分撮合", "disp_count": 1}
+
+    def _snap(self):
+        active   = [self._stock("1101", date(2026, 9, 15), date(2026, 9, 21))]
+        upcoming = [self._stock("2330", date(2026, 9, 25), date(2026, 10, 1))]
+        released = [self._stock("6666", date(2026, 9, 1), date(2026, 9, 10))]
+        quotes = {"1101": {"close": 50.0, "change": 1.5, "change_pct": 3.1,
+                           "vol_k": 800, "monthly_avg": 45.0, "date": "20260918"}}
+        nt = [{"code": "2468", "name": "華經", "exchange": "TWSE",
+               "criteria": "連續四次", "raw_criteria": "115年9月15日至115年9月18日連續四次"}]
+        return build_snapshot(
+            date(2026, 9, 18), None, active, upcoming, nt, [],
+            {"2468": calculate_attention_thresholds(
+                [{"date": date(2026, 9, d), "close": 100.0, "vol_k": 10} for d in range(1, 11)],
+                32.0, 100.0)},
+            quotes, counts={"active": 1}, released_stocks=released,
+            prev_trading=date(2026, 9, 17))
+
+    def test_snapshot_carries_render_inputs(self):
+        snap = self._snap()
+        for key in ("released", "quotes", "prev_trading", "last_trade_date", "sources"):
+            self.assertIn(key, snap, f"快照缺少 {key}，--render-only 會還原不出畫面")
+        self.assertEqual(snap["prev_trading"], "2026-09-17")
+        self.assertEqual([r["code"] for r in snap["released"]], ["6666"])
+
+    def test_quotes_keep_fields_the_detail_panel_needs(self):
+        # _stock_entry 只留 close/change_pct/vol_k，但明細面板還要
+        # change/monthly_avg/報價日
+        q = self._snap()["quotes"]["1101"]
+        for key in ("change", "monthly_avg", "date"):
+            self.assertIn(key, q)
+
+    def test_bundle_round_trip_restores_rows_and_dates(self):
+        import tempfile, json as _j
+        snap = self._snap()
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "dispo.json"
+            path.write_text(_j.dumps(snap, ensure_ascii=False), encoding="utf-8")
+            bundle = bundle_from_snapshot(str(path))
+        self.assertFalse(bundle["live"])
+        self.assertEqual(bundle["today"], date(2026, 9, 18))
+        self.assertEqual(bundle["prev_trading"], date(2026, 9, 17))
+        # active + upcoming + released 都要回到 all_rows，日期要還原成 date 物件
+        self.assertEqual(sorted(r["code"] for r in bundle["all_rows"]),
+                         ["1101", "2330", "6666"])
+        self.assertIsInstance(bundle["all_rows"][0]["period_start"], date)
+        # 門檻裡的日期同樣要還原，否則 fmt_short 會炸
+        thr = bundle["nt_thresholds"]["2468"]
+        self.assertIsInstance(thr["latest_date"], date)
+        self.assertIsInstance(thr["clause1"]["ref_date"], date)
+
+    def test_old_format_snapshot_is_rejected_with_hint(self):
+        import tempfile, json as _j
+        snap = self._snap()
+        for k in ("released", "quotes", "last_trade_date"):
+            snap.pop(k)
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "dispo.json"
+            path.write_text(_j.dumps(snap, ensure_ascii=False), encoding="utf-8")
+            with self.assertRaises(SystemExit) as cm:
+                bundle_from_snapshot(str(path))
+        self.assertIn("舊格式", str(cm.exception))

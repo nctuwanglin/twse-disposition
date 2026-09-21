@@ -11,8 +11,8 @@ on:
   # 允許手動觸發（測試用）
   workflow_dispatch:
     inputs:
-      force:
-        description: "強制重新產生（略過「無新交易日」守則；改版後要讓當天頁面重新渲染時使用）"
+      allow_drop:
+        description: "確認過處置檔數驟降屬實時打勾，放行驟降守則（僅此一項防線）"
         type: boolean
         default: false
 
@@ -43,12 +43,14 @@ jobs:
         run: python -m unittest discover -s tests -q
 
       - name: Run update script
+        # R03：--force 已移除（它會一次解除所有資料品質防線）。改版後要重新
+        # 渲染不再需要任何旗標——每班都會重抓並重繪，內容有變就會寫出。
         # 經 env 傳入布林值再由 shell 判斷，避免把 inputs 直接內插進 run:
         env:
-          FORCE: ${{ inputs.force }}
+          ALLOW_DROP: ${{ inputs.allow_drop }}
         run: |
-          if [ "$FORCE" = "true" ]; then
-            python scripts/update_dashboard.py --force
+          if [ "$ALLOW_DROP" = "true" ]; then
+            python scripts/update_dashboard.py --allow-drop
           else
             python scripts/update_dashboard.py
           fi
