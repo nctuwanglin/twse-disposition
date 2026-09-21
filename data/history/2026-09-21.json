@@ -63,20 +63,6 @@
    "code": "8227",
    "name": "巨有科技",
    "exchange": "TPEx",
-   "ann_date": "2026-09-14",
-   "period_start": "2026-09-15",
-   "period_end": "2026-09-21",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 287.5,
-   "change_pct": 3.046594982078853,
-   "vol_k": 931
-  },
-  {
-   "code": "8227",
-   "name": "巨有科技",
-   "exchange": "TPEx",
    "ann_date": "2026-09-17",
    "period_start": "2026-09-18",
    "period_end": "2026-09-24",
@@ -236,7 +222,7 @@
    "thresholds": {
     "current_close": 67.7,
     "latest_date": "2026-09-21",
-    "history_days": 36,
+    "history_days": 15,
     "clause1": {
      "ref_date": "2026-09-11",
      "ref_close": 44.9,
@@ -246,17 +232,8 @@
      "diff_pct": -13.781388478581988,
      "triggered": true
     },
-    "clause2": {
-     "ref_date": "2026-08-11",
-     "ref_close": 35.75,
-     "cum_pct": 89.37062937062937,
-     "pct": 100.0,
-     "threshold": 71.5,
-     "diff_pct": 5.612998522895121,
-     "triggered": false
-    },
-    "vol_avg": 3110.714285714286,
-    "vol_days": 35
+    "vol_avg": 6285.857142857143,
+    "vol_days": 14
    }
   },
   {
