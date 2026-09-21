@@ -1,7 +1,9 @@
 {
   "date": "2026-09-18",
-  "total_active": 7,
-  "twse": 3,
+  "quote_date": "2026-09-18",
+  "announcement_asof": "2026-09-18",
+  "total_active": 6,
+  "twse": 2,
   "tpex": 4,
   "second": 0,
   "notetrans": 2,

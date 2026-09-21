@@ -1,0 +1,55 @@
+{
+  "announcement_asof": "2026-09-18",
+  "artifacts": {
+    "dispo.json": "3207eea1ac252de4a01302bdfa11a35906e27f9fa84cbf32869cba262e41f5bb",
+    "index.html": "599df67f1dba57ccc5deccbb2daad2cf0ebbeb4c6e0ffa2ae444d517524980f8"
+  },
+  "data_date": "2026-09-18",
+  "generator": "2f56e786c5cd",
+  "mode": "live",
+  "schema": 1,
+  "sources": {
+    "taiex": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "tpex_disposal": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "tpex_quotes": {
+      "as_of": "20260918",
+      "error": null,
+      "ok": true,
+      "rows": 990
+    },
+    "tpex_warning": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "twse_notetrans": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "twse_punish": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "twse_quotes": {
+      "as_of": "20260918",
+      "error": null,
+      "ok": true,
+      "rows": 1377
+    }
+  }
+}

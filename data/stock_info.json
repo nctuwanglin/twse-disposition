@@ -1128,5 +1128,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "資訊服務"
+  },
+  "2468": {
+    "name": "華經",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "資訊服務"
   }
 }
