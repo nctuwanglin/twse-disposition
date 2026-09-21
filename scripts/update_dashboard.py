@@ -23,6 +23,7 @@ import hashlib
 import io
 import re
 import sys
+import time
 import urllib.request
 import urllib.error
 from datetime import date, timedelta
@@ -99,7 +100,40 @@ SVG_CHEV = (
 # ──────────────────────────────────────────────
 # HTTP 工具
 # ──────────────────────────────────────────────
-def fetch_json(url, extra_headers=None):
+# 暫時性錯誤退避重試。R02 之後「必需來源抓取失敗」會硬中止整班，所以一次
+# 網路瞬斷就等於當天不更新又亮紅燈；一次退避重試能擋掉大部分這種假警報。
+# 只對「可能自己好起來」的錯誤重試：連線層錯誤、逾時、以及 5xx/429/408。
+# 404/403 這種是真的沒有或被擋，重試只是浪費時間。
+HTTP_ATTEMPTS = 3
+HTTP_BACKOFF_SECONDS = (1, 3)
+_RETRYABLE_STATUS = {408, 429, 500, 502, 503, 504}
+
+
+def _is_retryable(exc):
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code in _RETRYABLE_STATUS
+    return isinstance(exc, (urllib.error.URLError, TimeoutError, OSError))
+
+
+def _read_with_retry(req, url, attempts):
+    """回傳 response bytes；attempts=1 等同不重試。"""
+    for i in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                if i:
+                    print(f"  （重試第 {i} 次後成功：{url}）")
+                return resp.read()
+        except Exception as e:
+            last = i == attempts - 1
+            if last or not _is_retryable(e):
+                raise
+            wait = HTTP_BACKOFF_SECONDS[min(i, len(HTTP_BACKOFF_SECONDS) - 1)]
+            print(f"  WARNING: {type(e).__name__} {url}，{wait} 秒後重試"
+                  f"（{i + 2}/{attempts}）", file=sys.stderr)
+            time.sleep(wait)
+
+
+def fetch_json(url, extra_headers=None, attempts=HTTP_ATTEMPTS):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
         "Accept": "application/json",
@@ -107,8 +141,7 @@ def fetch_json(url, extra_headers=None):
     if extra_headers:
         headers.update(extra_headers)
     req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    return json.loads(_read_with_retry(req, url, attempts).decode("utf-8"))
 
 
 # ──────────────────────────────────────────────
@@ -145,9 +178,10 @@ def degraded_sources():
     return sorted(n for n, s in SOURCE_STATUS.items() if not s.get("ok"))
 
 
-def safe_fetch_json(url, extra_headers=None, default=None, source=None):
+def safe_fetch_json(url, extra_headers=None, default=None, source=None,
+                    attempts=HTTP_ATTEMPTS):
     try:
-        data = fetch_json(url, extra_headers)
+        data = fetch_json(url, extra_headers, attempts=attempts)
         record_source(source, ok=True)
         return data
     except Exception as e:
@@ -156,7 +190,7 @@ def safe_fetch_json(url, extra_headers=None, default=None, source=None):
         return default
 
 
-def fetch_text(url, extra_headers=None):
+def fetch_text(url, extra_headers=None, attempts=HTTP_ATTEMPTS):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
         "Accept": "text/csv,application/json,*/*",
@@ -164,13 +198,13 @@ def fetch_text(url, extra_headers=None):
     if extra_headers:
         headers.update(extra_headers)
     req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return resp.read().decode("utf-8")
+    return _read_with_retry(req, url, attempts).decode("utf-8")
 
 
-def safe_fetch_text(url, extra_headers=None, default="", source=None):
+def safe_fetch_text(url, extra_headers=None, default="", source=None,
+                    attempts=HTTP_ATTEMPTS):
     try:
-        text = fetch_text(url, extra_headers)
+        text = fetch_text(url, extra_headers, attempts=attempts)
         record_source(source, ok=True)
         return text
     except Exception as e:
@@ -548,7 +582,9 @@ def fetch_tpex_stock_history(code, today, since=None):
         spans = _months_between(since, today)
     for y, m in spans:
         url = f"{TPEX_STOCK_HIST}?code={code}&date={y}/{m:02d}/01&response=json"
-        data = safe_fetch_json(url, {"Referer": TPEX_REFERER_D}, default={})
+        # attempts=1：逐檔迴圈會跑數十次，全面故障時重試會把延遲乘上數十倍；
+        # 個股歷史抓不到只會少算門檻，本來就能優雅降級，不值得重試。
+        data = safe_fetch_json(url, {"Referer": TPEX_REFERER_D}, default={}, attempts=1)
         tables = data.get("tables") or [{}]
         for row in (tables[0].get("data") or []):
             try:
@@ -886,7 +922,7 @@ def fetch_twse_stock_history(code, today, since=None):
         spans = _months_between(since, today)
     for y, m in spans:
         url = f"{TWSE_STOCK_HIST}?response=json&date={y}{m:02d}01&stockNo={code}"
-        data = safe_fetch_json(url, default={})
+        data = safe_fetch_json(url, default={}, attempts=1)   # 同上：逐檔迴圈不重試
         if not isinstance(data, dict) or data.get("stat") != "OK":
             continue
         for row in data.get("data", []):
@@ -1555,7 +1591,7 @@ def autofill_stock_info(stock_info, codes_needed):
         (TPEX_COMPANY_API, "SecuritiesCompanyCode", "CompanyAbbreviation",
          "SecuritiesIndustryCode", "TPEx"),
     ):
-        for r in (safe_fetch_json(url, default=[]) or []):
+        for r in (safe_fetch_json(url, default=[], attempts=1) or []):
             c = (r.get(code_k) or "").strip()
             if c:
                 maps.setdefault(c, ((r.get(abbr_k) or "").strip(),

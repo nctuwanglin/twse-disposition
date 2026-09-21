@@ -4,8 +4,11 @@ Parser 固定測資：公告文字/日期/撮合方式解析的回歸測試。
 TWSE/櫃買改字樣時這裡會先紅，避免靜默解析失敗（歷史教訓：解析 0 筆照樣發佈）。
 執行：python3 -m unittest discover -s tests -q
 """
+import contextlib
+import io
 import sys
 import unittest
+import urllib.error
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -27,6 +30,13 @@ from update_dashboard import (          # noqa: E402
     write_build_manifest, _sha256_file,
 )
 import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
+
+
+@contextlib.contextmanager
+def _quiet():
+    """重試會往 stdout/stderr 印進度，測試輸出不需要看到。"""
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        yield
 
 
 class TestDates(unittest.TestCase):
@@ -1078,7 +1088,7 @@ class TestR02SourceStatus(unittest.TestCase):
 
     def _fetch(self, *, exc=None, payload=None, source):
         """在 fetch_json 這個接縫模擬「連線失敗」與「正常回應」兩種結果。"""
-        def fake(url, extra_headers=None):
+        def fake(url, extra_headers=None, attempts=1):
             if exc:
                 raise exc
             return payload
@@ -1311,3 +1321,88 @@ class TestR04BuildManifest(unittest.TestCase):
         write_build_manifest(date(2026, 9, 18), mode="live")
         self.assertEqual(self._manifest()["generator"],
                          _sha256_file(Path(ud.__file__).resolve())[:12])
+
+
+class TestHttpRetry(unittest.TestCase):
+    """
+    R02 之後「必需來源抓取失敗」會硬中止整班，一次網路瞬斷就等於當天不更新
+    又亮紅燈。退避重試擋掉這類假警報，但只能對「可能自己好起來」的錯誤重試：
+    404/403 是真的沒有或被擋，重試只是浪費時間（逐檔迴圈更會把延遲乘上數十倍）。
+    """
+
+    def setUp(self):
+        self._orig = ud.urllib.request.urlopen
+        # 退避是真的 time.sleep，測試不該等真實秒數（會讓整份測試從 0.02 秒變 10 秒）
+        self._orig_sleep = ud.time.sleep
+        self.slept = []
+        ud.time.sleep = self.slept.append
+        ud.SOURCE_STATUS.clear()
+
+    def tearDown(self):
+        ud.urllib.request.urlopen = self._orig
+        ud.time.sleep = self._orig_sleep
+        ud.SOURCE_STATUS.clear()
+
+    def _install(self, errors, payload=b'{"ok": 1}'):
+        """前 len(errors) 次拋出對應例外，之後成功。回傳呼叫次數計數器。"""
+        import contextlib
+        calls = {"n": 0}
+        seq = list(errors)
+
+        class _Resp:
+            def read(self_inner):
+                return payload
+
+        @contextlib.contextmanager
+        def fake(req, timeout=None):
+            calls["n"] += 1
+            if seq:
+                raise seq.pop(0)
+            yield _Resp()
+
+        ud.urllib.request.urlopen = fake
+        return calls
+
+    def test_transient_error_is_retried_then_succeeds(self):
+        calls = self._install([urllib.error.URLError("temporary blip")])
+        with _quiet():
+            out = ud.fetch_json("https://example.test/x")
+        self.assertEqual(out, {"ok": 1})
+        self.assertEqual(calls["n"], 2)        # 失敗一次後重試成功
+
+    def test_server_error_is_retried(self):
+        err = urllib.error.HTTPError("https://example.test/x", 503, "busy", {}, None)
+        calls = self._install([err])
+        with _quiet():
+            ud.fetch_json("https://example.test/x")
+        self.assertEqual(calls["n"], 2)
+
+    def test_not_found_is_not_retried(self):
+        # 404 重試沒有意義，必須立刻放棄
+        err = urllib.error.HTTPError("https://example.test/x", 404, "nope", {}, None)
+        calls = self._install([err, err, err])
+        with _quiet(), self.assertRaises(urllib.error.HTTPError):
+            ud.fetch_json("https://example.test/x")
+        self.assertEqual(calls["n"], 1)
+
+    def test_gives_up_after_configured_attempts(self):
+        err = urllib.error.URLError("down")
+        calls = self._install([err] * 10)
+        with _quiet(), self.assertRaises(urllib.error.URLError):
+            ud.fetch_json("https://example.test/x")
+        self.assertEqual(calls["n"], ud.HTTP_ATTEMPTS)
+        self.assertEqual(self.slept, list(ud.HTTP_BACKOFF_SECONDS[:ud.HTTP_ATTEMPTS - 1]))
+
+    def test_attempts_one_disables_retry(self):
+        # 逐檔迴圈用 attempts=1，全面故障時才不會把延遲乘上數十倍
+        calls = self._install([urllib.error.URLError("down")] * 3)
+        with _quiet(), self.assertRaises(urllib.error.URLError):
+            ud.fetch_json("https://example.test/x", attempts=1)
+        self.assertEqual(calls["n"], 1)
+
+    def test_retry_failure_still_recorded_as_degraded_source(self):
+        self._install([urllib.error.URLError("down")] * 5)
+        with _quiet():
+            out = ud.safe_fetch_json("https://example.test/x", default=[], source="twse_punish")
+        self.assertEqual(out, [])
+        self.assertFalse(ud.source_ok("twse_punish"))
