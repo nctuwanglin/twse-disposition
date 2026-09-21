@@ -27,7 +27,7 @@ from update_dashboard import (          # noqa: E402
     render_stock_row, exchange_section, render_release_schedule,
     render_tab3, render_source_notice,
     build_snapshot, _parse_args, bundle_from_snapshot,
-    write_build_manifest, _sha256_file,
+    write_build_manifest, _sha256_file, render_perf_stats_card,
 )
 import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
 
@@ -1406,3 +1406,33 @@ class TestHttpRetry(unittest.TestCase):
             out = ud.safe_fetch_json("https://example.test/x", default=[], source="twse_punish")
         self.assertEqual(out, [])
         self.assertFalse(ud.source_ok("twse_punish"))
+
+
+class TestPerfCardBaselineWording(unittest.TestCase):
+    """
+    績效卡原本統一寫「報酬以處置前一日收盤為基準」，但兩個指標基準不同：
+    處置期間是 vs 處置前一日，出關後5日是 vs **處置末日**（見 update_perf_stats
+    的 during 用 entry_c、after5 用 exit_c）。統一那句話對 after5 是錯的。
+    """
+    SUMMARY = {"during": {"avg": 2.5, "med": 1.0, "win": 60.0, "n": 50},
+               "after5": {"avg": -1.7, "med": -0.8, "win": 48.0, "n": 50}}
+
+    def test_does_not_claim_one_shared_baseline(self):
+        html = render_perf_stats_card(self.SUMMARY)
+        self.assertNotIn("報酬以處置前一日收盤為基準", html)
+
+    def test_states_each_metrics_own_baseline(self):
+        html = render_perf_stats_card(self.SUMMARY)
+        self.assertIn("處置期間＝處置末日 vs 處置", html)
+        self.assertIn("出關後5日＝出關後第5個交易日 vs", html)
+        self.assertIn("處置末日", html)
+
+    def test_discloses_method_limits(self):
+        html = render_perf_stats_card(self.SUMMARY)
+        self.assertIn("未調整除權息與交易成本", html)
+        self.assertIn("不足以推論處置造成漲跌", html)
+
+    def test_small_sample_still_suppressed(self):
+        # 原本就有的規則：樣本不足不出那一行
+        html = render_perf_stats_card({"during": {"avg": 1, "med": 1, "win": 50, "n": 2}})
+        self.assertEqual(html, "")

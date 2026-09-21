@@ -1309,14 +1309,25 @@ def render_perf_stats_card(summary, sample_since="2026-06"):
                 f'<span>上漲比例 <span class="mono text-slate-300">{g["win"]:.0f}%</span></span>'
                 f'<span class="text-slate-600 mono">n={g["n"]}</span>'
                 f'</div>')
+    # 兩個指標的基準價**不同**，不能共用一句說明（原本統一寫「以處置前一日收盤
+    # 為基準」是錯的）：
+    #   處置期間  = 處置末日收盤 / 處置前一日收盤 - 1
+    #   出關後5日 = 出關後第5個交易日收盤 / **處置末日**收盤 - 1
+    # 見 update_perf_stats()：during 用 entry_c，after5 用 exit_c。
     return f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">📊 處置績效統計</div>
-        <div class="text-[11px] text-slate-400 mt-1">出關樣本自 {sample_since} 起累積 · 報酬以處置前一日收盤為基準</div>
+        <div class="text-[11px] text-slate-400 mt-1">出關樣本自 {sample_since} 起累積</div>
       </div>
       <div class="p-3 flex flex-col gap-1.5">
         {line("處置期間", d)}
         {line("出關後5日", a)}
+        <div class="text-[10px] text-slate-500 mt-1 leading-4">
+          基準：處置期間＝處置末日 vs 處置<span class="text-slate-400">前一日</span>收盤；
+          出關後5日＝出關後第5個交易日 vs <span class="text-slate-400">處置末日</span>收盤。
+          未調整除權息與交易成本；同一檔多次處置分別計為獨立事件。
+          樣本小，僅描述已發生的分布，不足以推論處置造成漲跌。
+        </div>
       </div>
     </div>"""
 
