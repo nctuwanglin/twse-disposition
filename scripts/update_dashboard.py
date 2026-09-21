@@ -19,6 +19,7 @@ GitHub scheduled workflows 為 best-effort，實際起跑可能再延遲數小�
 
 import json
 import csv
+import hashlib
 import io
 import re
 import sys
@@ -1440,6 +1441,44 @@ def write_snapshot(snap):
     print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
 
 
+def _sha256_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def write_build_manifest(today, *, mode, announcement_asof=None):
+    """
+    產出 build-manifest.json（隨 Pages 發佈，線上可直接抓）。
+
+    R04：舊的部署驗證只比對頁面 <title> 裡的 `Updated YYYY/MM/DD`。同一天內
+    改了 CSS、補抓到新公告、或 dispo.json 變了但 HTML 沒上線，日期字串都一樣，
+    於是一律判定「線上已是最新」——2026-09-16 就實際踩到：CI 回報部署成功，
+    線上其實還是舊內容。改以內容雜湊為準才問得出「線上的東西是不是我這次產的」。
+
+    內容必須是決定性的：**不可寫入建置時間**，否則每班都產生 diff，
+    R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
+    generator 取本腳本自身的雜湊——改了 renderer 會自動變動，不必手動 bump 版號。
+    """
+    artifacts = {rel: _sha256_file(REPO_ROOT / rel)
+                 for rel in ("index.html", "dispo.json")
+                 if (REPO_ROOT / rel).exists()}
+    manifest = {
+        "schema": 1,
+        "generator": _sha256_file(Path(__file__).resolve())[:12],
+        "mode": mode,
+        "data_date": today.isoformat(),
+        "announcement_asof": (announcement_asof.isoformat()
+                              if hasattr(announcement_asof, "isoformat") else announcement_asof),
+        "sources": dict(sorted(SOURCE_STATUS.items())),
+        "artifacts": artifacts,
+    }
+    path = REPO_ROOT / "build-manifest.json"
+    path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8")
+    print(f"  ✓ 寫入 build-manifest.json（generator {manifest['generator']}，"
+          f"{len(artifacts)} 個產物雜湊）")
+    return manifest
+
+
 # ──────────────────────────────────────────────
 # HTML 生成 — 共用
 # ──────────────────────────────────────────────
@@ -2681,15 +2720,17 @@ def render_and_publish(bundle, *, allow_drop=False):
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
 
-    if not live:
-        print("離線重繪完成（未寫入快照與狀態檔）")
-        return
-
     # 結構化輸出：dispo.json（供績效儀表板等下游讀取）+ 每日歷史快照
     # active 傳「全部處置紀錄」而非 all_active（後者按 code 去重，會丟失重疊
     # 處置中較新的那筆，如二次處置升級）；active_records 已於前面計算
     upcoming_stocks = [s for g in upcoming_groups.values() for s in g["stocks"]]
     released_stocks = [s for g in released_groups.values() for s in g["stocks"]]
+    if not live:
+        # 離線重繪不得改寫快照與狀態檔（那是 live 抓取的產物），但仍要更新
+        # manifest —— 頁面已經重繪過了，部署驗證要比對的是新頁面的雜湊。
+        write_build_manifest(today, mode="render-only")
+        print("離線重繪完成（未寫入快照與狀態檔）")
+        return
     snap = build_snapshot(
         today, bundle["taiex"], active_records, upcoming_stocks,
         notetrans_twse, notetrans_tpex, nt_thresholds, stock_quotes,
@@ -2716,6 +2757,9 @@ def render_and_publish(bundle, *, allow_drop=False):
         "notetrans": len(notetrans_twse) + len(notetrans_tpex),
         "prev_day": baseline,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    # manifest 必須最後寫：它記錄 index.html 與 dispo.json 的雜湊
+    write_build_manifest(today, mode="live", announcement_asof=ann_asof)
     print("更新完成！")
 
 

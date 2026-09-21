@@ -24,6 +24,7 @@ from update_dashboard import (          # noqa: E402
     render_stock_row, exchange_section, render_release_schedule,
     render_tab3, render_source_notice,
     build_snapshot, _parse_args, bundle_from_snapshot,
+    write_build_manifest, _sha256_file,
 )
 import update_dashboard as ud          # noqa: E402  （需要操作模組層的來源狀態）
 
@@ -1243,3 +1244,70 @@ class TestR03SnapshotRoundTrip(unittest.TestCase):
             with self.assertRaises(SystemExit) as cm:
                 bundle_from_snapshot(str(path))
         self.assertIn("舊格式", str(cm.exception))
+
+
+class TestR04BuildManifest(unittest.TestCase):
+    """
+    R04：部署驗證原本只比對 <title> 的 Updated 日期字串，同一天內換了內容
+    照樣判定「線上已是最新」（2026-09-16 實際踩到：CI 綠燈、線上仍是舊內容）。
+    manifest 記錄產物的實際雜湊，讓驗證問得出「線上的東西是不是我這次產的」。
+    """
+
+    def setUp(self):
+        import tempfile
+        self._orig_root = ud.REPO_ROOT
+        self._tmp = tempfile.mkdtemp()
+        ud.REPO_ROOT = Path(self._tmp)
+        (ud.REPO_ROOT / "index.html").write_text("<html>頁面</html>", encoding="utf-8")
+        (ud.REPO_ROOT / "dispo.json").write_text('{"active": []}', encoding="utf-8")
+
+    def tearDown(self):
+        import shutil
+        ud.REPO_ROOT = self._orig_root
+        shutil.rmtree(self._tmp, ignore_errors=True)
+
+    def _manifest(self):
+        import json as _j
+        return _j.loads((ud.REPO_ROOT / "build-manifest.json").read_text(encoding="utf-8"))
+
+    def test_hashes_match_actual_file_contents(self):
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        m = self._manifest()
+        self.assertEqual(m["artifacts"]["index.html"],
+                         _sha256_file(ud.REPO_ROOT / "index.html"))
+        self.assertEqual(m["artifacts"]["dispo.json"],
+                         _sha256_file(ud.REPO_ROOT / "dispo.json"))
+
+    def test_manifest_is_deterministic(self):
+        # 不可含建置時間：否則每班都產生 diff，R01 的「內容沒變就不 commit」
+        # 會退化成每天兩個空 commit
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        first = (ud.REPO_ROOT / "build-manifest.json").read_text(encoding="utf-8")
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        self.assertEqual(first, (ud.REPO_ROOT / "build-manifest.json").read_text(encoding="utf-8"))
+
+    def test_content_change_changes_hash(self):
+        # 這就是舊版抓不到的情境：日期一樣、內容不一樣
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        before = self._manifest()["artifacts"]["index.html"]
+        (ud.REPO_ROOT / "index.html").write_text("<html>改過的頁面</html>", encoding="utf-8")
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        self.assertNotEqual(before, self._manifest()["artifacts"]["index.html"])
+        self.assertEqual(self._manifest()["data_date"], "2026-09-18")   # 日期仍相同
+
+    def test_records_mode_and_sources(self):
+        ud.SOURCE_STATUS.clear()
+        ud.record_source("tpex_quotes", ok=False, error="報價日不一致")
+        try:
+            write_build_manifest(date(2026, 9, 18), mode="render-only")
+            m = self._manifest()
+            self.assertEqual(m["mode"], "render-only")
+            self.assertFalse(m["sources"]["tpex_quotes"]["ok"])
+        finally:
+            ud.SOURCE_STATUS.clear()
+
+    def test_generator_tracks_the_renderer_itself(self):
+        # renderer 改了就該換 generator 值，不必手動 bump 版號
+        write_build_manifest(date(2026, 9, 18), mode="live")
+        self.assertEqual(self._manifest()["generator"],
+                         _sha256_file(Path(ud.__file__).resolve())[:12])

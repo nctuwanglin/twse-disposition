@@ -59,7 +59,7 @@ jobs:
         id: diff
         run: |
           # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
-          git add index.html data/ dispo.json
+          git add index.html data/ dispo.json build-manifest.json
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
@@ -76,33 +76,54 @@ jobs:
           git push
 
       # Pages 部署間歇性出現 "Deployment failed, try again later."（2026/07/03、07/06 各一次），
-      # workflow 綠燈但線上是舊資料。這裡以「repo 內 index.html 的 Updated 日期」為基準
-      # 驗證線上頁面，不符時依序：等待 → Pages API 重建 → 空 commit 觸發全新部署 → 仍失敗才亮紅燈。
+      # workflow 綠燈但線上是舊資料。
+      #
+      # R04：舊版以「index.html 的 Updated 日期字串」為基準，同一天內改了 CSS、
+      # 補抓到新公告、或 HTML 上線了但 dispo.json 還是舊的，日期都一樣，於是一律
+      # 判定「線上已是最新」——2026-09-16 實際踩到：CI 回報成功，線上仍是舊內容。
+      # 現在改以 build-manifest.json 的內容雜湊為準，且不只信 manifest 自己說的，
+      # 而是真的把線上的 index.html / dispo.json 抓下來重算 sha256 逐一比對。
+      # 不符時的補救階梯維持不變：等待 → Pages API 重建 → 空 commit → 仍失敗才亮紅燈。
       - name: Verify live deployment
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -u
           URL="https://nctuwanglin.github.io/twse-disposition/"
-          EXPECTED=$(grep -oE 'Updated [0-9]{4}/[0-9]{2}/[0-9]{2}' index.html | head -1)
-          echo "預期線上版本: $EXPECTED"
+          EXPECT_HTML=$(jq -r '.artifacts["index.html"]' build-manifest.json)
+          EXPECT_JSON=$(jq -r '.artifacts["dispo.json"]' build-manifest.json)
+          EXPECT_GEN=$(jq -r '.generator' build-manifest.json)
+          echo "預期內容雜湊: index.html=${EXPECT_HTML:0:12} dispo.json=${EXPECT_JSON:0:12} generator=$EXPECT_GEN"
 
           check_live() {
-            curl -fsS --max-time 20 "${URL}?nocache=$(date +%s)" 2>/dev/null \
-              | grep -oE 'Updated [0-9]{4}/[0-9]{2}/[0-9]{2}' | head -1
+            local m live_html live_json m_html m_json
+            m=$(curl -fsS --max-time 20 "${URL}build-manifest.json?nocache=$(date +%s)" 2>/dev/null) || return 1
+            live_html=$(curl -fsS --max-time 30 "${URL}index.html?nocache=$(date +%s)" 2>/dev/null | sha256sum | cut -d" " -f1) || return 1
+            live_json=$(curl -fsS --max-time 30 "${URL}dispo.json?nocache=$(date +%s)" 2>/dev/null | sha256sum | cut -d" " -f1) || return 1
+            m_html=$(echo "$m" | jq -r '.artifacts["index.html"]')
+            m_json=$(echo "$m" | jq -r '.artifacts["dispo.json"]')
+            # 四項都要對：線上 manifest 要是這次產的，且線上實際檔案要與 manifest 相符
+            # （只比 manifest 會漏掉「manifest 上線了但 HTML 還是舊的」這種部分部署）
+            [ "$m_html" = "$EXPECT_HTML" ] && [ "$m_json" = "$EXPECT_JSON" ] \
+              && [ "$live_html" = "$EXPECT_HTML" ] && [ "$live_json" = "$EXPECT_JSON" ]
+          }
+
+          describe_live() {
+            curl -fsS --max-time 20 "${URL}build-manifest.json?nocache=$(date +%s)" 2>/dev/null \
+              | jq -rc '{gen: .generator, date: .data_date, html: .artifacts["index.html"][0:12]}' \
+              || echo "無法取得線上 manifest"
           }
 
           poll() {  # poll <次數> <間隔秒>
             for i in $(seq 1 "$1"); do
               sleep "$2"
-              LIVE=$(check_live || true)
-              echo "  第 $i 次檢查: live='$LIVE'"
-              if [ "$LIVE" = "$EXPECTED" ]; then return 0; fi
+              if check_live; then echo "  第 $i 次檢查: 內容雜湊相符"; return 0; fi
+              echo "  第 $i 次檢查: 尚未相符 $(describe_live)"
             done
             return 1
           }
 
-          if poll 10 15; then echo "✅ 線上已是最新"; exit 0; fi
+          if poll 10 15; then echo "✅ 線上內容與本次產物一致"; exit 0; fi
 
           echo "⚠️ 線上未更新，透過 Pages API 觸發重建..."
           gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
@@ -115,5 +136,5 @@ jobs:
           git push
           if poll 12 15; then echo "✅ 空 commit 部署後已更新"; exit 0; fi
 
-          echo "❌ 部署驗證失敗：線上仍為 '$(check_live || echo 無法取得)'，預期 '$EXPECTED'"
+          echo "❌ 部署驗證失敗：線上為 $(describe_live)，預期 index.html=$EXPECT_HTML"
           exit 1
