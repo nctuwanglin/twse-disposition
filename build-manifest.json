@@ -1,11 +1,11 @@
 {
   "announcement_asof": "2026-09-18",
   "artifacts": {
-    "dispo.json": "3207eea1ac252de4a01302bdfa11a35906e27f9fa84cbf32869cba262e41f5bb",
-    "index.html": "599df67f1dba57ccc5deccbb2daad2cf0ebbeb4c6e0ffa2ae444d517524980f8"
+    "dispo.json": "57d27eaa1c57c6dd68417aedffe355f1433d7ffcd98ee91649416356140b1b7c",
+    "index.html": "78d68c0e14295a59f1a8727ca64dfe51abfb651823c6b9c9b95a9885b76cbd60"
   },
-  "data_date": "2026-09-18",
-  "generator": "2f56e786c5cd",
+  "data_date": "2026-09-21",
+  "generator": "1e3b63d55484",
   "mode": "live",
   "schema": 1,
   "sources": {
@@ -23,9 +23,9 @@
     },
     "tpex_quotes": {
       "as_of": "20260918",
-      "error": null,
-      "ok": true,
-      "rows": 990
+      "error": "報價日 20260918 與 TWSE 20260921 不一致，已棄用",
+      "ok": false,
+      "rows": null
     },
     "tpex_warning": {
       "as_of": null,
@@ -46,10 +46,10 @@
       "rows": null
     },
     "twse_quotes": {
-      "as_of": "20260918",
+      "as_of": "20260921",
       "error": null,
       "ok": true,
-      "rows": 1377
+      "rows": 1380
     }
   }
 }
