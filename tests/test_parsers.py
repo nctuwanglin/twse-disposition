@@ -943,11 +943,15 @@ class TestPerfStatsCache(unittest.TestCase):
         self.assertIsNotNone(out[key]["during_pct"], "超窗的未完成事件應仍被補算")
 
 
-class TestSnapshotForceProtection(unittest.TestCase):
+class TestSnapshotHistoryProtection(unittest.TestCase):
     """
-    --force 不得覆寫既有歷史快照（P0-4）。
-    正常排程走不到「檔案已存在」這條路（資料日沒推進就早期 return），
-    所以會覆寫歷史的只有 force —— 那等於回頭篡改稽核軌跡。
+    歷史快照的覆寫規則（R01 後改為永遠生效，不再綁在 --force 上）：
+    只允許覆寫「最新的那一天」，不得回頭改寫更舊的日期。
+
+    允許覆寫同一天：R01 修好後每班都重抓公告，晚間第二班補抓到的新公告
+    本來就該併進當天快照。
+    不得覆寫更舊的日期：實例是 2026-09-03 上午的執行改寫了 09-02 的快照，
+    把當時還沒公告的個股補了進去，等於回頭篡改稽核軌跡。
     """
 
     def setUp(self):
@@ -966,46 +970,49 @@ class TestSnapshotForceProtection(unittest.TestCase):
     def _hist_file(self, d="2026-09-02"):
         return self.U.REPO_ROOT / "data" / "history" / f"{d}.json"
 
+    def _read(self, d="2026-09-02"):
+        import json as _j
+        return _j.loads(self._hist_file(d).read_text(encoding="utf-8"))
+
     SNAP_OLD = {"date": "2026-09-02", "active": [{"code": "1111"}]}
     SNAP_NEW = {"date": "2026-09-02", "active": [{"code": "1111"}, {"code": "3008"}]}
 
     def test_normal_run_writes_history(self):
-        write_snapshot(self.SNAP_OLD, force=False)
+        write_snapshot(self.SNAP_OLD)
         self.assertTrue(self._hist_file().exists())
 
-    def test_normal_rerun_may_update_same_day(self):
-        # 同一資料日的正常重跑（例如前次寫檔後才失敗）仍應能更新
-        write_snapshot(self.SNAP_OLD, force=False)
-        write_snapshot(self.SNAP_NEW, force=False)
-        import json as _j
-        got = _j.loads(self._hist_file().read_text(encoding="utf-8"))
-        self.assertEqual(len(got["active"]), 2)
+    def test_same_day_rerun_updates_history(self):
+        # R01 驗收：同一交易日第二班補抓到新公告，當天快照要跟著更新
+        write_snapshot(self.SNAP_OLD)
+        write_snapshot(self.SNAP_NEW)
+        self.assertEqual(len(self._read()["active"]), 2)
 
-    def test_force_does_not_overwrite_existing_history(self):
-        write_snapshot(self.SNAP_OLD, force=False)          # 當天正常寫入
+    def test_newer_day_writes_its_own_file(self):
+        write_snapshot(self.SNAP_OLD)
+        write_snapshot({"date": "2026-09-03", "active": [{"code": "2222"}]})
+        self.assertTrue(self._hist_file("2026-09-03").exists())
+        self.assertEqual(len(self._read()["active"]), 1)      # 舊日期原封不動
+
+    def test_older_day_never_overwrites(self):
+        # 稽核軌跡保護：已經有 09-03 之後，不得再回頭改寫 09-02
+        write_snapshot(self.SNAP_OLD)
+        write_snapshot({"date": "2026-09-03", "active": [{"code": "2222"}]})
         before = self._hist_file().read_text(encoding="utf-8")
-        write_snapshot(self.SNAP_NEW, force=True)           # 事後 force 重新渲染
-        self.assertEqual(self._hist_file().read_text(encoding="utf-8"), before,
-                         "force 不得改寫既有歷史快照")
+        write_snapshot(self.SNAP_NEW)                          # 試圖改寫 09-02
+        self.assertEqual(self._hist_file().read_text(encoding="utf-8"), before)
 
-    def test_force_still_updates_dispo_json(self):
-        # 歷史保護不影響當前狀態輸出，否則改版後線上頁面拿不到新內容
-        write_snapshot(self.SNAP_OLD, force=False)
-        write_snapshot(self.SNAP_NEW, force=True)
+    def test_dispo_json_always_updated_even_when_history_skipped(self):
+        # 歷史保護不影響當前狀態輸出，否則線上頁面拿不到新內容
         import json as _j
+        write_snapshot(self.SNAP_OLD)
+        write_snapshot({"date": "2026-09-03", "active": [{"code": "2222"}]})
+        write_snapshot(self.SNAP_NEW)                          # 歷史被擋
         live = _j.loads((self.U.REPO_ROOT / "dispo.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(live["active"]), 2)
-
-    def test_force_writes_history_when_absent(self):
-        # 該日還沒有快照時，force 仍應建立（例如補跑漏掉的交易日）
-        write_snapshot(self.SNAP_NEW, force=True)
-        self.assertTrue(self._hist_file().exists())
+        self.assertEqual(len(live["active"]), 2)               # 但 dispo.json 有更新
 
     def test_weekend_never_writes_history(self):
-        write_snapshot({"date": "2026-09-05", "active": []}, force=False)   # 週六
+        write_snapshot({"date": "2026-09-05", "active": []})   # 週六
         self.assertFalse(self._hist_file("2026-09-05").exists())
-
-
 
 
 class TestTpexRowsToDicts(unittest.TestCase):

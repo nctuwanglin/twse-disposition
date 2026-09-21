@@ -1,21 +1,29 @@
-name: 公告來源時效探測（唯讀）
+name: 公告來源時效探測
 
 # 目的：釐清證交所處置公告幾點才真的取得到。
 #
 # 背景：回推 55 天歷史快照發現 59 筆公告當天沒收錄、隔一交易日才出現，且高度
-# 偏向證交所（TWSE 漏 52、TPEx 漏 7）。既有的兩班排程（實測落在台灣 ~21:47 與
-# ~00:40）都在盤後深夜，若證交所其實是隔天清晨才更新，補在第二班也無效。
-# 這支 workflow 只讀取並印進 log，不寫檔、不 commit、不碰儀表板。
+# 偏向證交所（TWSE 漏 52、TPEx 漏 7）。既有的兩班更新排程（實測落在台灣 ~21:47
+# 與 ~00:40）都在盤後深夜；R01 修好後第二班已會補抓，但公告真正出現的時間窗
+# 仍未證實，所以繼續蒐集實證再決定要不要調整時段。
 #
-# 收集 2–3 個交易日後即可定案 R01 修法（每班都抓 / 換 RWD 前瞻端點 / 加盤前班）。
+# 每次執行會把當下兩個來源的內容印進 run log，並追加一行 JSON 到
+# data/probe_log.jsonl（含「實際執行時刻」——排程延遲數小時是常態，名目時間
+# 沒有參考價值）。
+#
+# ⚠ 這是暫時性的實證蒐集，會產生每日數筆小 commit。
+#    蒐集到足以判斷公告時間窗（約 1–2 週）之後，請直接停用本 workflow，
+#    並視情況清掉 data/probe_log.jsonl。
 
 on:
   schedule:
     - cron: "30 23 * * 0-4"  # 台灣 07:30（隔日）＝盤前，判斷是否需要加盤前一班
     - cron: "0 3 * * 1-5"    # 台灣 11:00＝盤中，作為對照基準
+    - cron: "0 9 * * 1-5"    # 台灣 17:00＝盤後公告時段前緣
+    - cron: "0 12 * * 1-5"   # 台灣 20:00＝兩班更新排程之間
   workflow_dispatch:
 
-# 探測彼此無關聯，重疊執行無害，但仍避免同時多跑浪費額度
+# 探測彼此無關聯，但會 commit，必須避免同時多跑造成 push 衝突
 concurrency:
   group: probe-announcement-sources
   cancel-in-progress: false
@@ -25,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read          # 唯讀：不需要寫入權限
+      contents: write         # 需要寫入：追加 data/probe_log.jsonl
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,3 +41,17 @@ jobs:
           python-version: "3.11"
       - name: Probe announcement sources
         run: python scripts/probe_announcement_sources.py
+      - name: Commit probe log
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/probe_log.jsonl
+          if git diff --cached --quiet; then
+            echo "探測紀錄沒有變化，不 commit"
+            exit 0
+          fi
+          git commit -m "chore: 公告來源探測紀錄"
+          # 更新排程可能在這期間推了新 commit，rebase 後再推
+          git pull --rebase --autostash
+          git push

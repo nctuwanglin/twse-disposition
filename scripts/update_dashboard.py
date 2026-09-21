@@ -1390,16 +1390,20 @@ def build_snapshot(today, taiex, active_stocks, upcoming_stocks,
     }
 
 
-def write_snapshot(snap, force=False):
+def write_snapshot(snap):
     """
     寫出 dispo.json（當前狀態，覆寫屬正常）與 data/history/{資料日}.json（歷史庫）。
 
-    force 執行不得覆寫既有歷史快照（2026-09 review 外的額外發現）：
-    正常排程永遠不會覆寫歷史檔——資料日沒推進時「無新交易日」守則就先 return 了，
-    所以會走到「檔案已存在」這條路的只有 force。而 force 常用於改版後重新渲染，
-    此時當下抓到的名單可能已與當初那天不同（實例：2026-09-03 上午的 force 執行
-    改寫了 data/history/2026-09-02.json，把當時還沒公告的個股補了進去），
-    等於回頭篡改稽核軌跡，也會讓「當天到底抓到什麼」的事後分析失真。
+    歷史檔的覆寫規則（R01 後改為永遠生效，不再綁在 --force 上）：
+    **只允許覆寫「最新的那一天」，不得回頭改寫更舊的日期。**
+
+    為什麼要允許覆寫同一天：R01 修好後每班都會重抓公告，晚間第二班補抓到的
+    新公告本來就該併進當天的快照（review 的 R01 驗收明確要求「第二次新增一筆
+    → HTML/JSON/快照更新」）。
+
+    為什麼仍不得覆寫更舊的日期：實例是 2026-09-03 上午的 force 執行改寫了
+    data/history/2026-09-02.json，把當時還沒公告的個股補了進去——等於用「現在」
+    的名單回頭篡改稽核軌跡，會讓「那天到底抓到什麼」的事後分析失真。
     """
     text = json.dumps(snap, ensure_ascii=False, indent=1) + "\n"
     (REPO_ROOT / "dispo.json").write_text(text, encoding="utf-8")
@@ -1410,8 +1414,10 @@ def write_snapshot(snap, force=False):
     hist_dir = REPO_ROOT / "data" / "history"
     hist_dir.mkdir(parents=True, exist_ok=True)
     hist_file = hist_dir / f"{snap['date']}.json"
-    if force and hist_file.exists():
-        print(f"  ✓ 寫入 dispo.json（--force：保留既有 {hist_file.name}，不覆寫歷史快照）")
+    newest = max((p.stem for p in hist_dir.glob("*.json")), default=None)
+    if newest and snap["date"] < newest:
+        print(f"  ✓ 寫入 dispo.json（不覆寫較舊的歷史快照 {hist_file.name}，"
+              f"歷史庫最新為 {newest}）")
         return
     hist_file.write_text(text, encoding="utf-8")
     print(f"  ✓ 寫入 dispo.json + data/history/{snap['date']}.json")
@@ -2308,13 +2314,18 @@ def main():
         except Exception:
             state = {}
 
-    # 新交易日守則：資料日沒有比上次成功處理的日期更新，代表還沒有新收盤資料
-    # 可更新（同日重跑、假日/颱風停市時報價 API 只會重複回傳上個交易日）。
-    # 用「資料日」而非系統時鐘比較，不受排程延遲跨日影響（見上方教訓）。
-    if not force and state.get("date") and today.isoformat() <= state["date"]:
-        print(f"  資料日 {today} 未晚於上次已處理日期 {state['date']}，"
-              f"尚無新交易日資料，跳過更新（確要執行可用 --force）")
-        return
+    # R01：這裡原本有「資料日沒比上次新就整班 return」的守則，而且位置在所有
+    # 公告抓取之前——收盤價、處置公告、注意累計根本不是同一個發布時程，於是
+    # 第一班跑完之後，第二班即使有新公告也完全不會去抓（實測公告抓取呼叫次數
+    # 為 0），形同失效。排程實測延遲讓第一班約 21:47、第二班約 00:40 才執行，
+    # 證交所的晚間公告正好落在兩者之間，這正是大量「公告當天漏抓」的成因。
+    #
+    # 現在改成每班都完整抓取並重繪。內容真的沒變時產出的 bytes 也相同
+    # （快照與頁面都是決定性的、不含執行時間戳），workflow 既有的
+    # `git diff --cached --quiet` 會自然判定無變更而不 commit，不需要額外機制。
+    if state.get("date") and today.isoformat() <= state["date"]:
+        print(f"  資料日 {today} 與上次相同（{state['date']}）；仍照常抓取公告，"
+              f"內容有變才會寫出變更")
 
     # 抓處置股資料
     print("  TWSE 處置股...")
@@ -2338,6 +2349,15 @@ def main():
 
     all_rows = twse_rows + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")
+
+    # R01：公告的發布時程與收盤報價不同，所以「公告看到哪一天」要跟資料日
+    # 分開記錄。這一行是判讀「第二班有沒有補抓到晚間新公告」的唯一依據——
+    # 沒有它，log 上看起來只是又跑了一次一模一樣的流程。
+    ann_asof = max((r["ann_date"] for r in all_rows), default=None)
+    prev_ann = state.get("announcement_asof")
+    if ann_asof:
+        moved = " ← 較上次新" if prev_ann and ann_asof.isoformat() > prev_ann else ""
+        print(f"  公告最新日期: {ann_asof}（上次 {prev_ann or '—'}）{moved}")
 
     # 抓大盤 & 注意累計
     print("  大盤指數...")
@@ -2508,11 +2528,15 @@ def main():
                 "notetrans": len(notetrans_twse) + len(notetrans_tpex)},
     )
     snap["release_stats"] = perf_summary
-    write_snapshot(snap, force=force)
+    write_snapshot(snap)
 
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
+    # 注意：這個檔案必須保持決定性——不可寫入任何執行時間戳，否則每班都會
+    # 產生 diff，R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
     LAST_COUNTS_PATH.write_text(json.dumps({
         "date": today.isoformat(),
+        "quote_date": today.isoformat(),
+        "announcement_asof": ann_asof.isoformat() if ann_asof else None,
         "total_active": total_active,
         "twse": twse_count,
         "tpex": tpex_count,
