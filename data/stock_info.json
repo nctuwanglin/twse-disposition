@@ -1134,5 +1134,23 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "資訊服務"
+  },
+  "6140": {
+    "name": "訊達電腦",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "資訊服務"
+  },
+  "6218": {
+    "name": "豪勉",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "6945": {
+    "name": "圓祥生技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
   }
 }

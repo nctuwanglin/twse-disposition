@@ -1,12 +1,12 @@
 {
   "date": "2026-09-21",
   "quote_date": "2026-09-21",
-  "announcement_asof": "2026-09-18",
+  "announcement_asof": "2026-09-21",
   "total_active": 8,
   "twse": 3,
   "tpex": 5,
   "second": 1,
-  "notetrans": 2,
+  "notetrans": 5,
   "prev_day": {
     "date": "2026-09-18",
     "total_active": 6,

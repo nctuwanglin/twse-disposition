@@ -1,8 +1,8 @@
 {
-  "announcement_asof": "2026-09-18",
+  "announcement_asof": "2026-09-21",
   "artifacts": {
-    "dispo.json": "64928e3bff01e81a9867f9013a1a79c53f8539d5dcd205652191f6ffb0b6bfc2",
-    "index.html": "117ecce69cd8edcfe4b796405cd3e67f57c6fdb9eaf445eaef2798750baf161d"
+    "dispo.json": "a2b13714ec1373570247f3cb637d967ab95375b223ae579750afc6d5b1b2a299",
+    "index.html": "18c6cda1e86eb52581cb7f0dd94cc2b8d0794c83082850767633e93b99e34583"
   },
   "data_date": "2026-09-21",
   "generator": "7af256a0879b",
@@ -22,10 +22,10 @@
       "rows": null
     },
     "tpex_quotes": {
-      "as_of": "20260918",
-      "error": "報價日 20260918 與 TWSE 20260921 不一致，已棄用",
-      "ok": false,
-      "rows": null
+      "as_of": "20260921",
+      "error": null,
+      "ok": true,
+      "rows": 989
     },
     "tpex_warning": {
       "as_of": null,
