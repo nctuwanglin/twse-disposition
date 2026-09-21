@@ -35,7 +35,7 @@ jobs:
       # 唯讀探測：把兩個公告來源在「這個時刻」的內容印進 run log，用以定案
       # R01 修法（證交所公告幾點才取得到、openapi 與 RWD 是否有差）。
       # 不寫檔、不 commit、continue-on-error —— 絕不影響更新流程本身。
-      - name: Probe announcement sources (read-only diagnostic)
+      - name: Probe announcement sources (diagnostic)
         continue-on-error: true
         run: python scripts/probe_announcement_sources.py
 
@@ -58,21 +58,38 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
+          # 儀表板產物與「探測紀錄」要分開判斷：上面的探測步驟每次都會往
+          # data/probe_log.jsonl 追加一行（含執行時刻，必然有差異），若混在一起
+          # 判斷，等於每班都有變更，R01 的「內容沒變就不 commit」就失效了。
           # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
-          git add index.html data/ dispo.json build-manifest.json
+          git add index.html dispo.json build-manifest.json \
+                  data/history data/last_counts.json data/perf_stats.json data/stock_info.json
           if git diff --cached --quiet; then
-            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "dashboard=false" >> $GITHUB_OUTPUT
           else
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "dashboard=true" >> $GITHUB_OUTPUT
+          fi
+          git add data/probe_log.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "any=false" >> $GITHUB_OUTPUT
+          else
+            echo "any=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit and push
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.diff.outputs.any == 'true'
+        env:
+          DASHBOARD_CHANGED: ${{ steps.diff.outputs.dashboard }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           DATE=$(TZ=Asia/Taipei date "+%Y/%m/%d %H:%M")
-          git commit -m "auto: 盤後更新處置股資料 ${DATE}"
+          if [ "$DASHBOARD_CHANGED" = "true" ]; then
+            git commit -m "auto: 盤後更新處置股資料 ${DATE}"
+          else
+            # 儀表板內容沒變，只有探測紀錄——訊息要誠實反映，不要看起來像有更新
+            git commit -m "chore: 公告來源探測紀錄 ${DATE}（儀表板內容無變化）"
+          fi
           git push
 
       # Pages 部署間歇性出現 "Deployment failed, try again later."（2026/07/03、07/06 各一次），
