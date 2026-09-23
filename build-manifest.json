@@ -1,10 +1,10 @@
 {
-  "announcement_asof": "2026-09-22",
+  "announcement_asof": "2026-09-23",
   "artifacts": {
-    "dispo.json": "9e67514fc5915345756ccbb66c6be156bc67414a9b2ef7c3f390964710d0d272",
-    "index.html": "83a9e5480c4fd20cadb41bc4900e94cdbf9604a14d4af043a710efadda1069e4"
+    "dispo.json": "47233020ed0617a9ea41e2d6c3f40a7d63cf896c18827343c93e67fc90aa96b6",
+    "index.html": "00d98cfdffb9f882602429d7b4438a2a769581a3e94907ef4eac3a1b05cb7b9d"
   },
-  "data_date": "2026-09-22",
+  "data_date": "2026-09-23",
   "generator": "7af256a0879b",
   "mode": "live",
   "schema": 1,
@@ -22,10 +22,10 @@
       "rows": null
     },
     "tpex_quotes": {
-      "as_of": "20260922",
+      "as_of": "20260923",
       "error": null,
       "ok": true,
-      "rows": 993
+      "rows": 982
     },
     "tpex_warning": {
       "as_of": null,
@@ -46,10 +46,10 @@
       "rows": null
     },
     "twse_quotes": {
-      "as_of": "20260922",
+      "as_of": "20260923",
       "error": null,
       "ok": true,
-      "rows": 1381
+      "rows": 1380
     }
   }
 }

@@ -1158,5 +1158,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "綠能環保"
+  },
+  "6168": {
+    "name": "宏齊",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
