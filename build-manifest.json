@@ -1,8 +1,8 @@
 {
-  "announcement_asof": "2026-09-24",
+  "announcement_asof": "2026-09-23",
   "artifacts": {
-    "dispo.json": "b6699ab8f359b5c3dbaf2b894a84b3a37ea5dbda5c358f7e91dec5c237589049",
-    "index.html": "35f8048d47070cd9a3a0e2ff6c0b68e0c4df3a245c2d42e1ab450a6a19a80407"
+    "dispo.json": "85b1059c578890504ab6be792b6c6e494df43ac5903e147023b4d6b8c06693ca",
+    "index.html": "c7531b3029ded61927fbda2b2068bd4b960eaa675296d7749e75693e5cc53ed8"
   },
   "data_date": "2026-09-24",
   "generator": "7af256a0879b",
