@@ -1164,5 +1164,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "2033": {
+    "name": "佳大",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "鋼鐵工業"
   }
 }
