@@ -1170,5 +1170,23 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "鋼鐵工業"
+  },
+  "1560": {
+    "name": "中砂",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電機機械"
+  },
+  "4956": {
+    "name": "光鋐",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
+  },
+  "6526": {
+    "name": "達發",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
   }
 }
