@@ -10,9 +10,9 @@
   "日期": "1150924"
  },
  "counts": {
-  "active": 17,
+  "active": 14,
   "twse": 7,
-  "tpex": 10,
+  "tpex": 7,
   "second": 3,
   "notetrans": 5
  },
@@ -44,20 +44,6 @@
    "close": 181.0,
    "change_pct": 1.971830985915493,
    "vol_k": 565
-  },
-  {
-   "code": "3467",
-   "name": "台灣精材",
-   "exchange": "TPEx",
-   "ann_date": "2026-09-17",
-   "period_start": "2026-09-18",
-   "period_end": "2026-09-24",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 81.5,
-   "change_pct": -5.780346820809249,
-   "vol_k": 613
   },
   {
    "code": "5314",
@@ -128,34 +114,6 @@
    "close": 180.0,
    "change_pct": 3.7463976945244957,
    "vol_k": 210
-  },
-  {
-   "code": "8227",
-   "name": "巨有科技",
-   "exchange": "TPEx",
-   "ann_date": "2026-09-17",
-   "period_start": "2026-09-18",
-   "period_end": "2026-09-24",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 306.5,
-   "change_pct": -1.129032258064516,
-   "vol_k": 936
-  },
-  {
-   "code": "8358",
-   "name": "金居",
-   "exchange": "TPEx",
-   "ann_date": "2026-09-17",
-   "period_start": "2026-09-18",
-   "period_end": "2026-09-24",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 511.0,
-   "change_pct": 2.8169014084507045,
-   "vol_k": 2966
   },
   {
    "code": "2305",
@@ -257,6 +215,48 @@
   }
  ],
  "upcoming": [
+  {
+   "code": "3374",
+   "name": "精材",
+   "exchange": "TPEx",
+   "ann_date": "2026-09-24",
+   "period_start": "2026-09-29",
+   "period_end": "2026-10-05",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 449.0,
+   "change_pct": -4.872881355932203,
+   "vol_k": 14226
+  },
+  {
+   "code": "4542",
+   "name": "科嶠",
+   "exchange": "TPEx",
+   "ann_date": "2026-09-24",
+   "period_start": "2026-09-29",
+   "period_end": "2026-10-05",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 2,
+   "close": 328.0,
+   "change_pct": -1.0558069381598794,
+   "vol_k": 2544
+  },
+  {
+   "code": "4979",
+   "name": "華星光",
+   "exchange": "TPEx",
+   "ann_date": "2026-09-24",
+   "period_start": "2026-09-29",
+   "period_end": "2026-10-05",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 4,
+   "close": 563.0,
+   "change_pct": -4.576271186440678,
+   "vol_k": 8532
+  },
   {
    "code": "3443",
    "name": "創意",
@@ -481,6 +481,13 @@
    "monthly_avg": 38.86,
    "date": "20260924"
   },
+  "3374": {
+   "close": 449.0,
+   "change": -23.0,
+   "change_pct": -4.872881355932203,
+   "vol_k": 14226,
+   "date": "20260924"
+  },
   "3441": {
    "close": 181.0,
    "change": 3.5,
@@ -504,11 +511,11 @@
    "monthly_avg": 540.97,
    "date": "20260924"
   },
-  "3467": {
-   "close": 81.5,
-   "change": -5.0,
-   "change_pct": -5.780346820809249,
-   "vol_k": 613,
+  "4542": {
+   "close": 328.0,
+   "change": -3.5,
+   "change_pct": -1.0558069381598794,
+   "vol_k": 2544,
    "date": "20260924"
   },
   "4956": {
@@ -517,6 +524,13 @@
    "change_pct": 2.1814006888633752,
    "vol_k": 22783,
    "monthly_avg": 37.39,
+   "date": "20260924"
+  },
+  "4979": {
+   "close": 563.0,
+   "change": -27.0,
+   "change_pct": -4.576271186440678,
+   "vol_k": 8532,
    "date": "20260924"
   },
   "5314": {
@@ -599,20 +613,6 @@
    "change_pct": 0.41841004184100417,
    "vol_k": 949,
    "monthly_avg": 448.81,
-   "date": "20260924"
-  },
-  "8227": {
-   "close": 306.5,
-   "change": -3.5,
-   "change_pct": -1.129032258064516,
-   "vol_k": 936,
-   "date": "20260924"
-  },
-  "8358": {
-   "close": 511.0,
-   "change": 14.0,
-   "change_pct": 2.8169014084507045,
-   "vol_k": 2966,
    "date": "20260924"
   }
  },
