@@ -47,3 +47,4 @@
 {"at_tpe": "2026-09-30T17:12:41", "at_utc": "2026-09-30T09:12:41Z", "openapi": {"forward": 0, "max_ann": "2026-09-29", "rows": 9}, "rwd": {"forward": 0, "max_ann": "2026-09-29", "rows": 9}, "tpe_date": "2026-09-30"}
 {"at_tpe": "2026-09-30T23:49:42", "at_utc": "2026-09-30T15:49:42Z", "openapi": {"forward": 0, "max_ann": "2026-09-29", "rows": 9}, "rwd": {"forward": 2, "max_ann": "2026-09-29", "rows": 11}, "tpe_date": "2026-09-30"}
 {"at_tpe": "2026-10-01T00:02:40", "at_utc": "2026-09-30T16:02:40Z", "openapi": {"forward": 0, "max_ann": "2026-09-29", "rows": 9}, "rwd": {"forward": 0, "max_ann": "2026-09-30", "rows": 10}, "tpe_date": "2026-10-01"}
+{"at_tpe": "2026-10-01T01:52:43", "at_utc": "2026-09-30T17:52:43Z", "openapi": {"forward": 0, "max_ann": "2026-09-29", "rows": 9}, "rwd": {"forward": 0, "max_ann": "2026-09-30", "rows": 10}, "tpe_date": "2026-10-01"}
