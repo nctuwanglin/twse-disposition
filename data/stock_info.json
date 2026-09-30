@@ -1200,5 +1200,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電腦及週邊設備"
+  },
+  "3016": {
+    "name": "嘉晶",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "8084": {
+    "name": "巨虹",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子通路"
   }
 }
