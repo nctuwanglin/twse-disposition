@@ -1212,5 +1212,23 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電子通路"
+  },
+  "2030": {
+    "name": "彰源",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "鋼鐵工業"
+  },
+  "4174": {
+    "name": "浩鼎",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "6456": {
+    "name": "GIS-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
