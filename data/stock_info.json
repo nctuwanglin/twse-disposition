@@ -1230,5 +1230,17 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "6708": {
+    "name": "天擎",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6957": {
+    "name": "裕慶-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他"
   }
 }
