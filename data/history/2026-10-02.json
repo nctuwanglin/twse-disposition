@@ -284,22 +284,7 @@
    "vol_k": 437
   }
  ],
- "upcoming": [
-  {
-   "code": "4174",
-   "name": "浩鼎",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-02",
-   "period_start": "2026-10-05",
-   "period_end": "2026-10-12",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 42.0,
-   "change_pct": -2.552204176334107,
-   "vol_k": 5893
-  }
- ],
+ "upcoming": [],
  "notetrans": [
   {
    "code": "2305",
@@ -569,13 +554,6 @@
    "vol_k": 6416,
    "date": "20261002"
   },
-  "4174": {
-   "close": 42.0,
-   "change": -1.1,
-   "change_pct": -2.552204176334107,
-   "vol_k": 5893,
-   "date": "20261002"
-  },
   "4542": {
    "close": 336.5,
    "change": 8.5,
@@ -673,7 +651,7 @@
   }
  },
  "prev_trading": "2026-10-01",
- "announcement_asof": "2026-10-02",
+ "announcement_asof": "2026-10-01",
  "last_trade_date": "2026-10-02",
  "sources": {
   "taiex": {
