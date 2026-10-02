@@ -55,3 +55,4 @@
 {"at_tpe": "2026-10-02T00:39:16", "at_utc": "2026-10-01T16:39:16Z", "openapi": {"forward": 0, "max_ann": "2026-09-30", "rows": 10}, "rwd": {"forward": 0, "max_ann": "2026-10-01", "rows": 8}, "tpe_date": "2026-10-02"}
 {"at_tpe": "2026-10-02T02:18:05", "at_utc": "2026-10-01T18:18:05Z", "openapi": {"forward": 0, "max_ann": "2026-09-30", "rows": 10}, "rwd": {"forward": 0, "max_ann": "2026-10-01", "rows": 8}, "tpe_date": "2026-10-02"}
 {"at_tpe": "2026-10-02T02:26:28", "at_utc": "2026-10-01T18:26:28Z", "openapi": {"forward": 0, "max_ann": "2026-09-30", "rows": 10}, "rwd": {"forward": 0, "max_ann": "2026-10-01", "rows": 8}, "tpe_date": "2026-10-02"}
+{"at_tpe": "2026-10-02T10:22:37", "at_utc": "2026-10-02T02:22:37Z", "openapi": {"forward": 0, "max_ann": "2026-10-01", "rows": 8}, "rwd": {"forward": 0, "max_ann": "2026-10-01", "rows": 8}, "tpe_date": "2026-10-02"}
