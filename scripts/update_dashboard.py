@@ -44,6 +44,7 @@ TWSE_STOCK_DAY   = "https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?respons
 TWSE_STOCK_AVG   = "https://www.twse.com.tw/exchangeReport/STOCK_DAY_AVG_ALL?response=json"
 TWSE_STOCK_HIST  = "https://www.twse.com.tw/exchangeReport/STOCK_DAY"  # 個股月資料
 TPEX_DISPOSAL    = "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
+TPEX_DISPOSAL_BACKUP = "https://www.tpex.org.tw/openapi/v1/tpex_disposal_information"
 TPEX_WARNING     = "https://www.tpex.org.tw/www/zh-tw/bulletin/warning"
 TPEX_REFERER_D   = "https://www.tpex.org.tw/zh-tw/announce/market/disposal.html"
 TPEX_REFERER_W   = "https://www.tpex.org.tw/zh-tw/announce/market/warning.html"
@@ -110,7 +111,7 @@ SVG_CHEV = (
 # 404/403 這種是真的沒有或被擋，重試只是浪費時間。
 HTTP_ATTEMPTS = 3
 HTTP_BACKOFF_SECONDS = (1, 3)
-_RETRYABLE_STATUS = {408, 429, 500, 502, 503, 504}
+_RETRYABLE_STATUS = {408, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524}
 
 
 def _is_retryable(exc):
@@ -428,8 +429,53 @@ def fetch_and_normalize_tpex(referer):
                           default={"tables": [{"fields":[],"data":[]}]},
                           source="tpex_disposal")
     if not source_ok("tpex_disposal"):
-        return []
+        reason = SOURCE_STATUS["tpex_disposal"]["error"]
+        try:
+            raw_backup = fetch_json(TPEX_DISPOSAL_BACKUP)
+            fields = {"Date": "公布日期", "SecuritiesCompanyCode": "證券代號",
+                      "CompanyName": "證券名稱", "DispositionPeriod": "處置起訖時間",
+                      "DisposalCondition": "處置內容"}
+            _validate_rows(raw_backup, "tpex_disposal", tuple(fields))
+            rows = [{dst: row[src] for src, dst in fields.items()} for row in raw_backup]
+            result = _normalize_tpex_disposal_rows(rows)
+            _validate_tpex_backup(result)
+            record_source("tpex_disposal", ok=True, rows=len(result),
+                          as_of=max(r["ann_date"] for r in result))
+            SOURCE_STATUS["tpex_disposal"].update(
+                endpoint=TPEX_DISPOSAL_BACKUP, fallback_reason=reason)
+            print(f"  TPEx 使用官方 OpenAPI 備援：{len(result)} 筆；主來源失敗：{reason}")
+            return result
+        except Exception as exc:
+            record_source("tpex_disposal", ok=False,
+                          error=f"主來源：{reason}；備援：{type(exc).__name__}: {exc}")
+            print(f"  WARNING: TPEx 備援拒絕採用：{exc}", file=sys.stderr)
+            return []
     rows = _tpex_table_rows(raw, "tpex_disposal", ("證券代號", "公布日期", "處置起訖時間"))
+    result = _normalize_tpex_disposal_rows(rows)
+    record_source("tpex_disposal", ok=True, rows=len(result))
+    SOURCE_STATUS["tpex_disposal"]["endpoint"] = TPEX_DISPOSAL
+    return result
+
+
+def _validate_tpex_backup(rows):
+    """OpenAPI 缺少查詢區間/產製日：保守拒絕無法證明新鮮度的結果。"""
+    target = LAST_TRADE_DATE
+    if not target or not rows or max(r["ann_date"] for r in rows) != target:
+        raise ValueError("備援無有效股票或最新公告日不等於目標資料日")
+    previous = json.loads((REPO_ROOT / "dispo.json").read_text(encoding="utf-8"))
+    if date.fromisoformat(previous["date"]) > target:
+        raise ValueError("備援目標日早於既有資料日")
+    # 逐事件核對，不只比檔數；不把快取合併進新資料。
+    def key(row):
+        return tuple(str(row[k]) for k in ("code", "ann_date", "period_start", "period_end"))
+    available = {key(row) for row in rows}
+    for row in previous["active"] + previous["upcoming"]:
+        if row["exchange"] == "TPEx" and date.fromisoformat(row["period_end"]) >= target:
+            if key(row) not in available:
+                raise ValueError(f"備援遺漏既有有效處置事件：{row['code']}")
+
+
+def _normalize_tpex_disposal_rows(rows):
     result = []
     for d in rows:
         code = clean_name(d.get("證券代號", ""))
@@ -456,7 +502,6 @@ def fetch_and_normalize_tpex(referer):
             "auction": get_auction_type(measures, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
-    record_source("tpex_disposal", ok=True, rows=len(result))
     return result
 
 
