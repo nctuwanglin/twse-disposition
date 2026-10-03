@@ -26,6 +26,10 @@ import sys
 import time
 import urllib.request
 import urllib.error
+import contextlib
+import shutil
+import tempfile
+import artifact_bundle
 from datetime import date, timedelta
 from pathlib import Path
 from collections import defaultdict
@@ -1653,8 +1657,13 @@ def write_build_manifest(today, *, mode, announcement_asof=None):
     R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
     generator 取本腳本自身的雜湊——改了 renderer 會自動變動，不必手動 bump 版號。
     """
+    if (REPO_ROOT / 'dispo.json').exists():
+        html = HTML_PATH.read_text(encoding='utf-8')
+        html = re.sub(r'<div id="update-health"(?: data-market-hash="[^"]*")?',
+                      '<div id="update-health" data-market-hash="' + _sha256_file(REPO_ROOT / 'dispo.json') + '"', html)
+        HTML_PATH.write_text(html, encoding='utf-8')
     artifacts = {rel: _sha256_file(REPO_ROOT / rel)
-                 for rel in ("index.html", "dispo.json")
+                 for rel in ("index.html", "dispo.json", "assets/health.js")
                  if (REPO_ROOT / rel).exists()}
     manifest = {
         "schema": 1,
@@ -2568,8 +2577,8 @@ USAGE = """用法：
   （無選項）        正常執行：抓取最新資料、重繪頁面、寫入快照與狀態
   --render-only [快照]
                     離線重繪：從已驗證的快照（預設 dispo.json）重新產生
-                    index.html，完全不連外部 API，也不會寫快照／狀態檔。
-                    改 renderer 或 CSS 後在本機預覽用。
+                    .preview/資料日/index.html 與配套快照，完全不連外部 API。
+                    不覆寫正式 index.html、dispo.json 或狀態檔；預覽不得部署。
   --allow-drop      確認過檔數驟降屬實時，放行驟降守則（僅此一項）
 """
 
@@ -2774,6 +2783,8 @@ def bundle_from_snapshot(path=None):
                  f"請先正常執行一次產生新版快照再用 --render-only")
 
     today = date.fromisoformat(snap["date"])
+    SOURCE_STATUS.clear()
+    SOURCE_STATUS.update(snap.get("sources") or {})
     LAST_TRADE_DATE = (date.fromisoformat(snap["last_trade_date"])
                        if snap.get("last_trade_date") else today)
 
@@ -2792,7 +2803,9 @@ def bundle_from_snapshot(path=None):
 
     print(f"離線重繪（--render-only），快照 {snap_path.name}，資料日 {today}")
     return {
-        "live": False, "today": today, "state": _load_state(),
+        "live": False, "today": today, "state": {},
+        "comparison_baseline": snap.get("comparison_baseline"),
+        "snapshot": snap,
         "stock_quotes": {c: dict(q) for c, q in (snap.get("quotes") or {}).items()},
         "taiex": snap.get("taiex"),
         "all_rows": [_row_from_entry(e) for e in
@@ -2809,7 +2822,56 @@ def bundle_from_snapshot(path=None):
     }
 
 
-def render_and_publish(bundle, *, allow_drop=False):
+@contextlib.contextmanager
+def _output_root(root):
+    global REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH
+    previous = REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH
+    REPO_ROOT = Path(root)
+    HTML_PATH = REPO_ROOT / "index.html"
+    STOCK_INFO_PATH = REPO_ROOT / "data/stock_info.json"
+    PERF_STATS_PATH = REPO_ROOT / "data/perf_stats.json"
+    LAST_COUNTS_PATH = REPO_ROOT / "data/last_counts.json"
+    try:
+        yield
+    finally:
+        REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH = previous
+
+
+def render_and_publish(bundle, *, allow_drop=False, _locked=False):
+    """Generate and validate in staging; preview never replaces published files."""
+    root = REPO_ROOT
+    if not _locked:
+        with artifact_bundle.locked(root):
+            if not bundle['live'] and (root / artifact_bundle.JOURNAL).exists():
+                raise RuntimeError('正式產物有待復原交易；離線預覽不會修改正式檔案，請先執行正式復原')
+            if bundle['live']:
+                artifact_bundle.recover(root)
+            return render_and_publish(bundle, allow_drop=allow_drop, _locked=True)
+    with tempfile.TemporaryDirectory(prefix='.dashboard-stage-', dir=root) as tmp:
+        stage = Path(tmp)
+        shutil.copy2(HTML_PATH, stage / 'index.html')
+        (stage / 'assets').mkdir()
+        shutil.copy2(Path(__file__).resolve().parents[1] / 'assets/health.js', stage / 'assets/health.js')
+        if (root / 'data').exists():
+            shutil.copytree(root / 'data', stage / 'data')
+        else:
+            (stage / 'data').mkdir()
+        if not bundle['live']:
+            (stage / 'dispo.json').write_text(json.dumps(bundle['snapshot'], ensure_ascii=False, indent=1) + '\n')
+        with _output_root(stage):
+            _render_bundle(bundle, allow_drop=allow_drop)
+        artifact_bundle.validate(stage, allow_preview=not bundle['live'])
+        if bundle['live']:
+            artifact_bundle.publish(stage, root)
+            return root
+        output = root / '.preview' / bundle['today'].isoformat()
+        output.mkdir(parents=True, exist_ok=True)
+        artifact_bundle.publish(stage, output)
+        print(f'離線預覽：{output / "index.html"}（正式產物未修改）')
+        return output
+
+
+def _render_bundle(bundle, *, allow_drop=False):
     """把 bundle 渲染成頁面；live 執行才寫快照與狀態檔。"""
     live           = bundle["live"]
     today          = bundle["today"]
@@ -2861,7 +2923,9 @@ def render_and_publish(bundle, *, allow_drop=False):
                      f"疑似資料源不完整，中止更新（確認屬實可用 --allow-drop）")
 
     # KPI 昨日對比基準：同日重跑沿用原本的 prev_day，跨日則以上次執行為基準
-    if state.get("date") == today.isoformat():
+    if not live:
+        baseline = bundle.get("comparison_baseline")
+    elif state.get("date") == today.isoformat():
         baseline = state.get("prev_day")
     elif state:
         baseline = {k: state.get(k) for k in
@@ -2967,7 +3031,24 @@ def render_and_publish(bundle, *, allow_drop=False):
     tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
     html = update_inline_counts(html, total_active, latest_count, tab3_nt,
                                 tab2_upcoming=upcoming_count)
+    html_contract = {
+        'date': today.isoformat(), 'sources': dict(sorted(SOURCE_STATUS.items())),
+        'announcement_asof': ann_asof.isoformat() if ann_asof else None,
+        'counts': {'active': total_active, 'twse': twse_count, 'tpex': tpex_count,
+                   'second': second_count, 'notetrans': tab3_nt}}
 
+    html = re.sub(r'<div id="update-health".*?</div>\s*', '', html, flags=re.S)
+    preview = 'false' if live else 'true'
+    health_text = '正在查詢更新健康狀態…' if live else '離線預覽，非即時健康檢查；正式網站未變更。'
+    health = (f'<div id="update-health" data-preview="{preview}" role="status" '
+              'style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8">'
+              f'<span data-health-output>{health_text}</span> '
+              '<a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" '
+              'target="_blank" rel="noopener">更新執行紀錄</a></div>')
+    html = html.replace('<!-- AUTO:CONTEXT_END -->', health + '\n<!-- AUTO:CONTEXT_END -->')
+    if 'src="assets/health.js"' not in html:
+        html = html.replace('</head>', '<script src="assets/health.js" defer></script>\n</head>')
+    html = artifact_bundle.stamp_html(html, html_contract)
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
 
@@ -2979,7 +3060,7 @@ def render_and_publish(bundle, *, allow_drop=False):
     if not live:
         # 離線重繪不得改寫快照與狀態檔（那是 live 抓取的產物），但仍要更新
         # manifest —— 頁面已經重繪過了，部署驗證要比對的是新頁面的雜湊。
-        write_build_manifest(today, mode="render-only")
+        write_build_manifest(today, mode="render-only", announcement_asof=ann_asof)
         print("離線重繪完成（未寫入快照與狀態檔）")
         return
     snap = build_snapshot(
@@ -2993,6 +3074,7 @@ def render_and_publish(bundle, *, allow_drop=False):
     )
     snap["release_stats"] = perf_summary
     snap["trading_days"] = [d.isoformat() for d in (bundle["trading_days"] or [])]
+    snap["comparison_baseline"] = baseline
     write_snapshot(snap)
 
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
@@ -3015,11 +3097,19 @@ def render_and_publish(bundle, *, allow_drop=False):
     print("更新完成！")
 
 
-def main(argv=None):
+def main(argv=None, *, _locked=False):
     args = _parse_args(list(argv if argv is not None else sys.argv))
+    if not _locked:
+        with artifact_bundle.locked(REPO_ROOT):
+            return main(argv, _locked=True)
+    if args['render_only'] and (REPO_ROOT / artifact_bundle.JOURNAL).exists():
+        raise RuntimeError('正式產物有待復原交易；離線預覽不會修改正式檔案，請先執行正式復原')
+    if not args['render_only']:
+        artifact_bundle.recover(REPO_ROOT)
+        SOURCE_STATUS.clear()
     bundle = (bundle_from_snapshot(args["snapshot"]) if args["render_only"]
               else gather_live())
-    render_and_publish(bundle, allow_drop=args["allow_drop"])
+    render_and_publish(bundle, allow_drop=args["allow_drop"], _locked=True)
 
 
 if __name__ == "__main__":

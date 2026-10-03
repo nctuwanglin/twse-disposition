@@ -2,3 +2,9 @@
 .env
 __pycache__/
 *.pyc
+.preview/
+.dashboard.lock
+.dashboard-stage-*/
+.dashboard-backup-*/
+.dashboard-transaction.json*
+.run/

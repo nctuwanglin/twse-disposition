@@ -58,8 +58,8 @@ class PipelineTests(unittest.TestCase):
             snap = json.loads((root / 'dispo.json').read_text())
             if round_trip:
                 with contextlib.redirect_stdout(io.StringIO()):
-                    u.render_and_publish(u.bundle_from_snapshot())
-                html = (root / 'index.html').read_text()
+                    preview = u.render_and_publish(u.bundle_from_snapshot())
+                html = (preview / 'index.html').read_text()
             manifest = json.loads((root / 'build-manifest.json').read_text())
             for rel, digest in manifest['artifacts'].items():
                 self.assertEqual(digest, hashlib.sha256((root / rel).read_bytes()).hexdigest())

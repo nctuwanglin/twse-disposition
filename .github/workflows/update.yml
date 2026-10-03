@@ -25,8 +25,8 @@ concurrency:
 
 jobs:
   update-dashboard:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    # 含 Verify 的輪詢階梯（最長約 7.5 分）與抓取，正常 1-2 分鐘完成
     timeout-minutes: 20
     permissions:
       contents: write
@@ -36,140 +36,82 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Capture checkout base SHA
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # 唯讀探測：把兩個公告來源在「這個時刻」的內容印進 run log，用以定案
-      # R01 修法（證交所公告幾點才取得到、openapi 與 RWD 是否有差）。
-      # 不寫檔、不 commit、continue-on-error —— 絕不影響更新流程本身。
-      - name: Probe announcement sources (diagnostic)
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Optional diagnostic: default stdout only; never stage probe output.
+      - name: Probe announcement sources (diagnostic stdout only)
         continue-on-error: true
+        timeout-minutes: 2
         run: python scripts/probe_announcement_sources.py
 
       - name: Run parser tests
         run: python -m unittest discover -s tests -q
 
+      - name: Run health tests
+        run: node tests/test_health.cjs
+
       - name: Run update script
-        # R03：--force 已移除（它會一次解除所有資料品質防線）。改版後要重新
-        # 渲染不再需要任何旗標——每班都會重抓並重繪，內容有變就會寫出。
-        # 經 env 傳入布林值再由 shell 判斷，避免把 inputs 直接內插進 run:
         env:
           ALLOW_DROP: ${{ inputs.allow_drop }}
         run: |
           if [ "$ALLOW_DROP" = "true" ]; then
-            python scripts/update_dashboard.py --allow-drop
+            python scripts/run_update.py --allow-drop
           else
-            python scripts/update_dashboard.py
+            python scripts/run_update.py
           fi
 
-      - name: Check for changes
-        id: diff
-        run: |
-          # 儀表板產物與「探測紀錄」要分開判斷：上面的探測步驟每次都會往
-          # data/probe_log.jsonl 追加一行（含執行時刻，必然有差異），若混在一起
-          # 判斷，等於每班都有變更，R01 的「內容沒變就不 commit」就失效了。
-          # 先 stage 再比對，untracked 的每日快照（data/history/新檔）才會被偵測到
-          git add index.html dispo.json build-manifest.json \
-                  data/history data/last_counts.json data/perf_stats.json data/stock_info.json
-          if git diff --cached --quiet; then
-            echo "dashboard=false" >> $GITHUB_OUTPUT
-          else
-            echo "dashboard=true" >> $GITHUB_OUTPUT
-          fi
-          git add data/probe_log.jsonl 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "any=false" >> $GITHUB_OUTPUT
-          else
-            echo "any=true" >> $GITHUB_OUTPUT
-          fi
+      - name: Validate generated bundle before staging
+        run: PYTHONPATH=scripts python -c 'import artifact_bundle; artifact_bundle.validate(".")'
 
-      - name: Commit and push
-        if: steps.diff.outputs.any == 'true'
-        env:
-          DASHBOARD_CHANGED: ${{ steps.diff.outputs.dashboard }}
+      - name: Commit market artifacts and status separately
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           DATE=$(TZ=Asia/Taipei date "+%Y/%m/%d %H:%M")
-          if [ "$DASHBOARD_CHANGED" = "true" ]; then
-            git commit -m "auto: 盤後更新處置股資料 ${DATE}"
-          else
-            # 儀表板內容沒變，只有探測紀錄——訊息要誠實反映，不要看起來像有更新
-            git commit -m "chore: 公告來源探測紀錄 ${DATE}（儀表板內容無變化）"
+          git add index.html dispo.json build-manifest.json assets/health.js \
+                  data/history data/last_counts.json data/perf_stats.json data/stock_info.json
+          if ! git diff --cached --quiet; then
+            git commit -m "auto: 更新處置股儀表板產物 ${DATE}"
           fi
-          # probe.yml 也會推 main（每天數次），checkout 之後到這裡之間遠端可能
-          # 已經前進；直接 push 會被拒而讓整班亮紅燈。先 rebase 再重試。
-          for i in 1 2 3; do
-            if git push; then exit 0; fi
-            echo "push 被拒（遠端已前進），rebase 後重試 $i/3"
-            git pull --rebase --autostash
-          done
-          echo "❌ 連續 3 次 push 失敗"
-          exit 1
+          git add update-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 更新執行狀態 heartbeat ${DATE}（非市場資料更新）"
+          fi
 
-      # Pages 部署間歇性出現 "Deployment failed, try again later."（2026/07/03、07/06 各一次），
-      # workflow 綠燈但線上是舊資料。
-      #
-      # R04：舊版以「index.html 的 Updated 日期字串」為基準，同一天內改了 CSS、
-      # 補抓到新公告、或 HTML 上線了但 dispo.json 還是舊的，日期都一樣，於是一律
-      # 判定「線上已是最新」——2026-09-16 實際踩到：CI 回報成功，線上仍是舊內容。
-      # 現在改以 build-manifest.json 的內容雜湊為準，且不只信 manifest 自己說的，
-      # 而是真的把線上的 index.html / dispo.json 抓下來重算 sha256 逐一比對。
-      # 不符時的補救階梯維持不變：等待 → Pages API 重建 → 空 commit → 仍失敗才亮紅燈。
-      - name: Verify live deployment
+      - name: Push without rebasing or forcing
+        env:
+          EXPECTED_BASE: ${{ steps.base.outputs.sha }}
+        run: python scripts/push_update.py --expected-base "$EXPECTED_BASE"
+
+      # Explicit build request: GITHUB_TOKEN pushes may not trigger Pages.
+      # Request failure is diagnostic; public-byte verification remains mandatory.
+      - name: Request Pages build
+        continue-on-error: true
+        timeout-minutes: 1
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          set -u
-          URL="https://nctuwanglin.github.io/twse-disposition/"
-          EXPECT_HTML=$(jq -r '.artifacts["index.html"]' build-manifest.json)
-          EXPECT_JSON=$(jq -r '.artifacts["dispo.json"]' build-manifest.json)
-          EXPECT_GEN=$(jq -r '.generator' build-manifest.json)
-          echo "預期內容雜湊: index.html=${EXPECT_HTML:0:12} dispo.json=${EXPECT_JSON:0:12} generator=$EXPECT_GEN"
+          REPOSITORY: ${{ github.repository }}
+        run: gh api --method POST "repos/${REPOSITORY}/pages/builds"
 
-          check_live() {
-            local m live_html live_json m_html m_json
-            m=$(curl -fsS --max-time 20 "${URL}build-manifest.json?nocache=$(date +%s)" 2>/dev/null) || return 1
-            live_html=$(curl -fsS --max-time 30 "${URL}index.html?nocache=$(date +%s)" 2>/dev/null | sha256sum | cut -d" " -f1) || return 1
-            live_json=$(curl -fsS --max-time 30 "${URL}dispo.json?nocache=$(date +%s)" 2>/dev/null | sha256sum | cut -d" " -f1) || return 1
-            m_html=$(echo "$m" | jq -r '.artifacts["index.html"]')
-            m_json=$(echo "$m" | jq -r '.artifacts["dispo.json"]')
-            # 四項都要對：線上 manifest 要是這次產的，且線上實際檔案要與 manifest 相符
-            # （只比 manifest 會漏掉「manifest 上線了但 HTML 還是舊的」這種部分部署）
-            [ "$m_html" = "$EXPECT_HTML" ] && [ "$m_json" = "$EXPECT_JSON" ] \
-              && [ "$live_html" = "$EXPECT_HTML" ] && [ "$live_json" = "$EXPECT_JSON" ]
-          }
+      - name: Verify live deployment
+        run: python scripts/verify_deployment.py --url https://nctuwanglin.github.io/twse-disposition/
 
-          describe_live() {
-            curl -fsS --max-time 20 "${URL}build-manifest.json?nocache=$(date +%s)" 2>/dev/null \
-              | jq -rc '{gen: .generator, date: .data_date, html: .artifacts["index.html"][0:12]}' \
-              || echo "無法取得線上 manifest"
-          }
-
-          poll() {  # poll <次數> <間隔秒>
-            for i in $(seq 1 "$1"); do
-              sleep "$2"
-              if check_live; then echo "  第 $i 次檢查: 內容雜湊相符"; return 0; fi
-              echo "  第 $i 次檢查: 尚未相符 $(describe_live)"
-            done
-            return 1
-          }
-
-          if poll 10 15; then echo "✅ 線上內容與本次產物一致"; exit 0; fi
-
-          echo "⚠️ 線上未更新，透過 Pages API 觸發重建..."
-          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
-          if poll 8 15; then echo "✅ 重建後已更新"; exit 0; fi
-
-          echo "⚠️ 重建仍未生效，推空 commit 觸發全新部署..."
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "chore: 觸發 Pages 重新部署（自動補救）"
-          git pull --rebase --autostash || true
-          git push || echo "（空 commit push 失敗，仍繼續輪詢線上狀態）"
-          if poll 12 15; then echo "✅ 空 commit 部署後已更新"; exit 0; fi
-
-          echo "❌ 部署驗證失敗：線上為 $(describe_live)，預期 index.html=$EXPECT_HTML"
-          exit 1
+      - name: Upload update status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-status-${{ github.run_id }}-${{ github.run_attempt }}
+          path: update-status.json
+          if-no-files-found: warn
