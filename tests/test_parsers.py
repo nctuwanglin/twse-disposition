@@ -336,32 +336,29 @@ class TestPrevTradingDay(unittest.TestCase):
     處置迄日當天仍受管制，次一交易日才恢復正常交易。
     """
 
-    def test_uses_last_processed_trading_day(self):
-        # 週二，上次執行是週一 → 前一交易日 = 週一
+    def test_baseline_alone_is_not_a_calendar(self):
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "2026-08-10"}),
-            date(2026, 8, 10))
+            None)
 
-    def test_skips_holiday_gap_via_baseline(self):
-        # 中間隔了颱風停市／連假：以實際有資料的日子為準，不是單純減一天
+    def test_baseline_cannot_prove_a_holiday_gap(self):
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "2026-08-06"}),
-            date(2026, 8, 6))
+            None)
 
-    def test_falls_back_to_previous_weekday(self):
-        # 沒有 baseline（首次執行）→ 退回前一平日；週一應回到上週五
-        self.assertEqual(prev_trading_day(date(2026, 8, 10), None), date(2026, 8, 7))
+    def test_missing_calendar_does_not_guess_weekday(self):
+        self.assertIsNone(prev_trading_day(date(2026, 8, 10), None))
 
     def test_ignores_stale_baseline_not_before_today(self):
         # 同日重跑時 baseline 可能等於今天，不可當成前一交易日
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "2026-08-11"}),
-            date(2026, 8, 10))
+            None)
 
     def test_ignores_malformed_baseline(self):
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "not-a-date"}),
-            date(2026, 8, 10))
+            None)
 
     # ── R11（2026-09）：trading_days 地面真相優先於 baseline ──
 
@@ -381,23 +378,21 @@ class TestPrevTradingDay(unittest.TestCase):
             prev_trading_day(date(2026, 8, 6), {"date": "2026-08-04"}, trading_days),
             date(2026, 8, 4))
 
-    def test_falls_back_to_baseline_when_trading_days_empty(self):
-        # 當月第一個交易日：trading_days 拿不到更早一筆，退回 baseline
+    def test_empty_calendar_reports_unknown(self):
         self.assertEqual(
             prev_trading_day(date(2026, 9, 1), {"date": "2026-08-31"}, []),
-            date(2026, 8, 31))
+            None)
 
-    def test_falls_back_to_baseline_when_today_is_earliest_in_trading_days(self):
+    def test_incomplete_calendar_reports_unknown(self):
         trading_days = [date(2026, 9, 1), date(2026, 9, 2)]
         self.assertEqual(
             prev_trading_day(date(2026, 9, 1), {"date": "2026-08-31"}, trading_days),
-            date(2026, 8, 31))
+            None)
 
-    def test_trading_days_none_behaves_like_before(self):
-        # 未提供 trading_days（例如呼叫端沒傳）時，行為與舊版完全相同
+    def test_none_calendar_reports_unknown(self):
         self.assertEqual(
             prev_trading_day(date(2026, 8, 11), {"date": "2026-08-06"}, None),
-            date(2026, 8, 6))
+            None)
 
 
 class TestCanonicalActiveByCode(unittest.TestCase):
