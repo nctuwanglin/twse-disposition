@@ -1,0 +1,69 @@
+{
+  "data_date": "2026-10-02",
+  "degraded_sources": [
+    "tpex_warning"
+  ],
+  "last_attempt": {
+    "at": "2026-10-03T07:35:38Z",
+    "outcome": "partial",
+    "run_id": "37106777249"
+  },
+  "last_market_change_at": "2026-10-03T07:35:38Z",
+  "last_successful_check_at": "2026-10-03T07:35:38Z",
+  "market_hash": "e8765971d3f571d371ad0ae6f853ad313deb89dc12486277fe35fbacf1b46930",
+  "pipeline_since_run_id": "37106777249",
+  "pipeline_version": 2,
+  "schema": 1,
+  "sources": {
+    "taiex": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "tpex_disposal": {
+      "as_of": "2026-10-02",
+      "endpoint": "https://www.tpex.org.tw/openapi/v1/tpex_disposal_information",
+      "error": null,
+      "fallback_reason": "HTTPError: HTTP Error 520: <none>",
+      "ok": true,
+      "rows": 12
+    },
+    "tpex_quotes": {
+      "as_of": "20261002",
+      "error": null,
+      "ok": true,
+      "rows": 990
+    },
+    "tpex_warning": {
+      "as_of": null,
+      "error": "HTTPError: HTTP Error 520: <none>",
+      "ok": false,
+      "rows": null
+    },
+    "trading_calendar": {
+      "as_of": "2026-10-02",
+      "error": null,
+      "ok": true,
+      "rows": 43
+    },
+    "twse_notetrans": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": null
+    },
+    "twse_punish": {
+      "as_of": null,
+      "error": null,
+      "ok": true,
+      "rows": 8
+    },
+    "twse_quotes": {
+      "as_of": "20261002",
+      "error": null,
+      "ok": true,
+      "rows": 1380
+    }
+  }
+}
