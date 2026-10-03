@@ -26,6 +26,10 @@ import sys
 import time
 import urllib.request
 import urllib.error
+import contextlib
+import shutil
+import tempfile
+import artifact_bundle
 from datetime import date, timedelta
 from pathlib import Path
 from collections import defaultdict
@@ -340,7 +344,24 @@ def get_disposition_count(measures_text):
 # ──────────────────────────────────────────────
 # 資料抓取與正規化
 # ──────────────────────────────────────────────
+def _invalid_source(source, message):
+    record_source(source, ok=False, error=f"格式驗證失敗：{message}")
+    raise ValueError(f"{source}: {message}")
+
+
+def _validate_rows(raw_rows, source, required):
+    if not isinstance(raw_rows, list):
+        _invalid_source(source, "預期資料列陣列")
+    for i, row in enumerate(raw_rows):
+        if not isinstance(row, dict) or any(
+                k not in row or not isinstance(row[k], str) or not row[k].strip()
+                for k in required):
+            _invalid_source(source, f"第 {i + 1} 列缺少有效欄位 {required}")
+    return raw_rows
+
+
 def normalize_twse_rows(raw_rows):
+    _validate_rows(raw_rows, "twse_punish", ("Code", "Date", "DispositionPeriod"))
     result = []
     for row in raw_rows:
         code = row.get("Code", "").strip()
@@ -349,8 +370,10 @@ def normalize_twse_rows(raw_rows):
         try:
             ann_date = roc_to_date(row["Date"])
             period_start, period_end = parse_period(row["DispositionPeriod"])
-        except Exception:
-            continue
+            if period_start > period_end:
+                raise ValueError("處置起日晚於迄日")
+        except (ValueError, TypeError, KeyError) as exc:
+            _invalid_source("twse_punish", f"{code} 日期無效：{exc}")
         detail   = row.get("Detail", "")
         measures = row.get("DispositionMeasures", "")
         period_end = apply_new_rule_period(ann_date, period_start, period_end)
@@ -364,6 +387,7 @@ def normalize_twse_rows(raw_rows):
             "auction": get_auction_type(detail, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
+    record_source("twse_punish", ok=True, rows=len(result))
     return result
 
 
@@ -371,29 +395,43 @@ def _tpex_rows_to_dicts(fields, rows):
     """
     TPEx 表格 API 的 {fields, data} 轉成 list[dict]。
 
-    TPEx 當某清單「本日無資料」時，不是回傳空 data:[]，而是回傳一筆只有單一
-    元素的佔位列（如 ['本日無公布注意交易累計資訊']），欄位數遠少於 fields。
-    原本直接用 row[i] 逐欄取值會撞上 IndexError，讓整支腳本崩潰、當天完全
-    不寫入任何資料（2026-09-14 起連續多個交易日因此停更，直到 09-15 才發現）。
-    這裡改成欄位數不足的列一律略過（視同該筆無效／無資料），不中止整個流程。
+    只接受已知「本日無資料」占位列；未知短列是格式錯誤，不冒充零筆。
     """
+    if not isinstance(fields, list) or not isinstance(rows, list):
+        raise ValueError("TPEx fields/data 必須為陣列")
+    empty_labels = {"本日無公布注意交易累計資訊", "本日無處置有價證券", "本日無資料"}
     out = []
     for row in rows:
-        if len(row) < len(fields):
+        if isinstance(row, list) and len(row) == 1 and row[0] in empty_labels:
             continue
+        if not isinstance(row, list) or not fields or len(row) < len(fields):
+            raise ValueError("TPEx 未知短列或缺少欄位")
+        if any(value is None or not isinstance(value, (str, int, float)) for value in row[:len(fields)]):
+            raise ValueError("TPEx 欄位不是有效純量")
         out.append({f: str(row[i]) for i, f in enumerate(fields)})
     return out
+
+
+def _tpex_table_rows(raw, source, required):
+    try:
+        table = raw["tables"][0]
+        if not set(required).issubset(table["fields"]):
+            raise ValueError("必要欄位缺漏")
+        rows = _tpex_rows_to_dicts(table["fields"], table["data"])
+        return _validate_rows(rows, source, required)
+    except (ValueError, TypeError, KeyError, IndexError) as exc:
+        _invalid_source(source, str(exc))
 
 
 def fetch_and_normalize_tpex(referer):
     raw = safe_fetch_json(TPEX_DISPOSAL, {"Referer": referer},
                           default={"tables": [{"fields":[],"data":[]}]},
                           source="tpex_disposal")
-    table  = raw["tables"][0]
-    fields = table["fields"]
-    rows   = table["data"]
+    if not source_ok("tpex_disposal"):
+        return []
+    rows = _tpex_table_rows(raw, "tpex_disposal", ("證券代號", "公布日期", "處置起訖時間"))
     result = []
-    for d in _tpex_rows_to_dicts(fields, rows):
+    for d in rows:
         code = clean_name(d.get("證券代號", ""))
         if not code or not is_regular_stock(code):
             continue
@@ -403,8 +441,10 @@ def fetch_and_normalize_tpex(referer):
         try:
             ann_date = roc_to_date(pub_date_str.replace("/", ""))
             period_start, period_end = parse_period(period_str)
-        except Exception:
-            continue
+            if period_start > period_end:
+                raise ValueError("處置起日晚於迄日")
+        except (ValueError, TypeError) as exc:
+            _invalid_source("tpex_disposal", f"{code} 日期無效：{exc}")
         period_end = apply_new_rule_period(ann_date, period_start, period_end)
         result.append({
             "code": code,
@@ -416,6 +456,7 @@ def fetch_and_normalize_tpex(referer):
             "auction": get_auction_type(measures, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
+    record_source("tpex_disposal", ok=True, rows=len(result))
     return result
 
 
@@ -443,9 +484,9 @@ def fetch_taiex():
         return None
 
 
-def fetch_recent_trading_days():
+def fetch_recent_trading_days(today):
     """
-    回傳本月至今的實際交易日清單（由 FMTQIK 加權指數歷史推導），由舊到新排序。
+    回傳資料日本月及前兩月的實際交易日（由 FMTQIK 推導），由舊到新排序。
 
     這是判斷「真正的前一個交易日」的地面真相來源——比「上次腳本成功執行的
     日期」（data/last_counts.json 的 baseline）更可靠。baseline 混淆了「市場
@@ -455,16 +496,30 @@ def fetch_recent_trading_days():
     FMTQIK 本身只在真實交易日發布資料，天然正確跳過週末與國定假日，且不受
     我們自己排程是否執行影響。
 
-    當月第一個交易日時，這個月的資料還沒有更早一筆可查，呼叫端需自行 fallback
-    （見 prev_trading_day）。
+    任一月份不可驗證就回傳空清單，不以執行日期或平日推測休市。
     """
-    data = safe_fetch_json(TWSE_MI_INDEX, default={})
-    days = []
-    for row in data.get("data", []):
+    months = [today.replace(day=1)]
+    for _ in range(2):
+        months.append((months[-1] - timedelta(days=1)).replace(day=1))
+    days = set()
+    for month in months:
+        data = safe_fetch_json(f"{TWSE_MI_INDEX}&date={month:%Y%m%d}", source="trading_calendar")
         try:
-            days.append(roc_to_date(str(row[0]).replace("/", "")))
-        except (ValueError, IndexError, TypeError):
-            continue
+            if not isinstance(data, dict) or data.get("stat") != "OK" or not data.get("data"):
+                raise ValueError(f"{month:%Y-%m} 日曆資料不可用")
+            for row in data["data"]:
+                d = roc_to_date(str(row[0]).replace("/", ""))
+                if d.replace(day=1) != month:
+                    raise ValueError("日曆回應月份不符")
+                if d <= today:
+                    days.add(d)
+        except (ValueError, IndexError, TypeError) as exc:
+            record_source("trading_calendar", ok=False, error=str(exc))
+            return []
+    if today not in days:
+        record_source("trading_calendar", ok=False, error=f"交易日曆尚未涵蓋報價日 {today}")
+        return []
+    record_source("trading_calendar", ok=True, as_of=max(days), rows=len(days))
     return sorted(days)
 
 
@@ -626,35 +681,15 @@ def streak_is_alive(latest_end, today):
 
 def prev_trading_day(today, baseline=None, trading_days=None):
     """
-    今天的前一個交易日，決定「今日出關」：處置迄日當天仍受管制，次一交易日
-    才恢復正常交易。優先順序（2026-09 review R11 修正）：
-
-    1. trading_days（fetch_recent_trading_days() 取得的真實交易日清單）——
-       地面真相，來自 FMTQIK 加權指數本身只在真實交易日發布的特性，不受我們
-       自己排程是否執行影響，正確跳過週末與國定假日。
-    2. baseline（data/last_counts.json 的上次成功執行資料日）——僅在
-       trading_days 給不出答案時（通常是當月第一個交易日，該月資料還沒有
-       更早一筆）當退路。⚠ baseline 混淆了「市場休市」與「我們自己排程漏跑」：
-       若排程曾連續多天沒跑成功，baseline 會停在事故前最後一天，被誤當成
-       前一交易日（2026-09-11～09-15 的 TPEx 崩潰事故即是實例）。
-    3. 都沒有 → 退回前一平日（原本邏輯，僅作最後手段）。
+    只用已驗證交易日；baseline 保留呼叫相容性，但不是市場日曆。
+    查不到時回傳 None，呼叫端須明示未確認，不猜測平日或使用上次執行日。
     """
     if trading_days:
         earlier = [d for d in trading_days if d < today]
         if earlier:
             return max(earlier)
 
-    if baseline and baseline.get("date"):
-        try:
-            d = date.fromisoformat(baseline["date"])
-            if d < today:
-                return d
-        except (ValueError, TypeError):
-            pass
-    d = today - timedelta(days=1)
-    while d.weekday() >= 5:
-        d -= timedelta(days=1)
-    return d
+    return None
 
 
 def fmt_weekday(d):
@@ -739,9 +774,6 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
     live_streak    = cur_streak if streak_alive else 0
     cumulative_hit = analysis["current_cumulative"] >= 6
 
-    next_imm  = next_weekday(cur_streak_end) if cur_streak_end else next_weekday(latest_end)
-    risk_date = next_weekday(today) if next_imm <= today else next_imm
-
     # ── 達標摘要 ──
     parts = []
     for e in analysis["entries"]:
@@ -792,14 +824,14 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
             f'<span class="text-red-300">30日內已累計達{analysis["current_cumulative"]}次 ≥ 門檻，'
-            f'隨時可能收到盤後處置公告</span>'
+            f'是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak >= 5:
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
-            f'<span class="text-red-300">已達連續{live_streak}日 ≥ 門檻，隨時可能收到盤後處置公告</span>'
+            f'<span class="text-red-300">已達連續{live_streak}日 ≥ 門檻，是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak >= 3:
@@ -807,8 +839,7 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
             f'<span class="text-red-300">已達連續{live_streak}日門檻，'
-            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> 盤後可能收到處置公告'
-            f'（第一次處置：2分撮合 5 個營業日）</span>'
+            f'是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak == 2:
@@ -816,20 +847,16 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-amber-400 shrink-0">⚠</span>'
             f'<span class="text-amber-200">'
-            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> '
-            f'若再達注意標準 → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
-            f' → <span class="text-red-300">第一次處置（2分撮合 5 個營業日）</span></span>'
+            f'後續交易日若再達注意標準，可能達到 <span class="font-semibold text-white">連續3日門檻</span>；'
+            f'<span class="text-red-300">是否處置與措施待官方公告確認</span></span>'
             f'</div>'
         )
     elif live_streak == 1:
-        risk_date2 = next_weekday(risk_date)
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-yellow-500 shrink-0">●</span>'
             f'<span class="text-slate-300">'
-            f'需 <span class="mono">{fmt_weekday(risk_date)}</span> +'
-            f' <span class="mono">{fmt_weekday(risk_date2)}</span> 連續達標，'
-            f'才觸發連續3日門檻</span>'
+            f'仍需後續連續兩個交易日達標，才可能達到連續3日門檻；以官方公告為準</span>'
             f'</div>'
         )
     elif cur_streak_end is not None:
@@ -877,6 +904,12 @@ def parse_criteria(raw):
 def fetch_twse_notetrans():
     """注意累計次數異常（TWSE，接近處置門檻）。只回傳 4 碼股票。"""
     data = safe_fetch_json(TWSE_NOTETRANS, default=[], source="twse_notetrans")
+    if not source_ok("twse_notetrans"):
+        return []
+    try:
+        _validate_rows(data, "twse_notetrans", ("Code", "RecentlyMetAttentionSecuritiesCriteria"))
+    except ValueError:
+        return []
     return [
         {"code": r.get("Code",""), "name": clean_name(r.get("Name","")),
          "exchange": "TWSE",
@@ -891,11 +924,15 @@ def fetch_tpex_warning():
     raw = safe_fetch_json(TPEX_WARNING, {"Referer": TPEX_REFERER_W},
                           default={"tables": [{"fields":[],"data":[]}]},
                           source="tpex_warning")
-    table  = raw["tables"][0]
-    fields = table["fields"]
-    rows   = table["data"]
+    if not source_ok("tpex_warning"):
+        return []
+    try:
+        rows = _tpex_table_rows(raw, "tpex_warning",
+                               ("證券代號", "證券名稱", "近期達本公司「公布注意交易資訊」標準之情形"))
+    except ValueError:
+        return []
     result = []
-    for d in _tpex_rows_to_dicts(fields, rows):
+    for d in rows:
         code = clean_name(d.get("證券代號", ""))
         name = clean_name(d.get("證券名稱", ""))
         if not code or not is_regular_stock(code):
@@ -1007,7 +1044,7 @@ def calculate_attention_thresholds(history, pct6=32.0, pct30=100.0):
         }
 
     # 量：60 日均量（不含今日，作為第三/六款量條件參考）
-    past = history[-min(60, len(history)):-1]
+    past = history[:-1][-60:]
     if len(past) >= 10:
         avg_vol = sum(r["vol_k"] for r in past) / len(past)
         result["vol_avg"] = avg_vol
@@ -1030,7 +1067,7 @@ def render_attention_conditions(thresholds, trade_date):
     lines.append(
         f'<div class="text-[10px] text-slate-500 uppercase tracking-wider mt-2.5 mb-1 mono '
         f'border-t border-slate-700/50 pt-2">'
-        f'注意股觸發條件 {fmt_weekday(trade_date)}（任一即可）</div>'
+        f'注意股單一條件試算 {fmt_weekday(trade_date)}（不含全部條件）</div>'
     )
 
     c1 = thresholds.get("clause1")
@@ -1187,7 +1224,7 @@ def _perf_complete(e):
     return bool(e) and e.get("during_pct") is not None and e.get("after5_pct") is not None
 
 
-def update_perf_stats(released_groups, today):
+def update_perf_stats(released_groups, today, disposition_rows=()):
     """
     對出關股計算：處置期間報酬（處置前一交易日收盤 → 處置末日收盤）與出關後
     5 個交易日報酬，累積於 data/perf_stats.json。
@@ -1207,6 +1244,33 @@ def update_perf_stats(released_groups, today):
     except Exception:
         stats = {}
 
+    # 需要檢查出關後是否另有處置。保留事件原值，只把受干擾樣本排除於 after5 統計。
+    def cached_event(e):
+        try:
+            return {"code": e["code"],
+                    "period_start": date.fromisoformat(e["period_start"]),
+                    "period_end": date.fromisoformat(e["period_end"])}
+        except (KeyError, TypeError, ValueError):
+            return None
+
+    known_events = list(disposition_rows)
+    for e in stats.values():
+        parsed = cached_event(e)
+        if parsed:
+            known_events.append(parsed)
+            for evidence in e.get("after5_overlap_events", []):
+                parsed_evidence = cached_event(evidence)
+                if parsed_evidence:
+                    known_events.append(parsed_evidence)
+
+    def possible_overlap(e):
+        ps = date.fromisoformat(e["period_start"])
+        pe = date.fromisoformat(e["period_end"])
+        return any(r["code"] == e["code"] and
+                   (r["period_start"], r["period_end"]) != (ps, pe) and
+                   r["period_end"] > pe and r["period_start"] <= pe + timedelta(days=15)
+                   for r in known_events)
+
     # ── 建待補隊列：快取未完成 ∪ 本次 released_groups ──
     pending = {}          # key -> {code,name,exchange,period_start,period_end}(date 物件)
     for pe, grp in released_groups.items():
@@ -1218,7 +1282,10 @@ def update_perf_stats(released_groups, today):
                     "period_start": s_["period_start"], "period_end": s_["period_end"],
                 }
     for key, e in stats.items():
-        if _perf_complete(e) or key in pending:
+        if not cached_event(e):
+            continue
+        needs_overlap_date = possible_overlap(e) and not e.get("after5_date")
+        if (_perf_complete(e) and not needs_overlap_date) or key in pending:
             continue
         try:
             pending[key] = {
@@ -1230,10 +1297,8 @@ def update_perf_stats(released_groups, today):
         except (KeyError, ValueError):
             continue          # 快取條目殘缺，略過而不是讓整批中止
 
-    if not pending:
-        return stats
-
-    print(f"  出關股績效（{len(pending)} 檔待算/補算）...")
+    if pending:
+        print(f"  出關股績效（{len(pending)} 檔待算/補算）...")
     changed = False
     for key, ev in sorted(pending.items()):
         ps, pe_ = ev["period_start"], ev["period_end"]
@@ -1241,8 +1306,7 @@ def update_perf_stats(released_groups, today):
                  else fetch_tpex_stock_history)
         # 抓齊「進場基準前 10 天」到今天，跨月事件才拿得到 period_start-1 的收盤
         hist = fetch(ev["code"], today, since=ps - timedelta(days=10))
-        if not hist:
-            continue
+        # 即使第一次完全抓不到，也必須寫入缺值事件，否則滾出顯示窗就永久漏補。
 
         i_entry = _idx_on_or_before(hist, ps - timedelta(days=1))
         i_exit  = _idx_on_or_before(hist, pe_)
@@ -1263,15 +1327,18 @@ def update_perf_stats(released_groups, today):
         # 出關後第 5 個交易日：需資料連續（與出場相隔不超過 15 個日曆日），
         # 否則 index+5 可能跨過資料缺口而取到更遠的收盤
         after5 = None
+        after5_date = None
         if exit_c is not None:
             i_a5 = i_exit + 5
             if i_a5 < len(hist):
                 gap = (hist[i_a5]["date"] - hist[i_exit]["date"]).days
                 if gap <= 15:
                     after5 = (hist[i_a5]["close"] / exit_c - 1) * 100
+                    after5_date = hist[i_a5]["date"]
 
         prev = stats.get(key) or {}
         merged = {
+            **prev,
             "code": ev["code"], "name": ev["name"] or prev.get("name", ""),
             "exchange": ev["exchange"],
             "period_start": ps.isoformat(),
@@ -1282,6 +1349,8 @@ def update_perf_stats(released_groups, today):
             "during_pct":  prev.get("during_pct")  if prev.get("during_pct")  is not None else during,
             "after5_pct":  prev.get("after5_pct")  if prev.get("after5_pct")  is not None else after5,
         }
+        if prev.get("after5_date") or after5_date:
+            merged["after5_date"] = prev.get("after5_date") or after5_date.isoformat()
         missing = [k for k in ("during_pct", "after5_pct") if merged[k] is None]
         if missing:
             merged["missing"] = missing
@@ -1289,6 +1358,30 @@ def update_perf_stats(released_groups, today):
             merged.pop("missing", None)
         if merged != prev:
             stats[key] = merged
+            changed = True
+
+    # 每班重新檢查，包含已完成但後來才取得另一筆處置公告的快取。
+    for e in stats.values():
+        if not cached_event(e):
+            continue
+        ps, pe = date.fromisoformat(e["period_start"]), date.fromisoformat(e["period_end"])
+        end = date.fromisoformat(e["after5_date"]) if e.get("after5_date") else pe + timedelta(days=15)
+        peers = {(r["period_start"], r["period_end"]) for r in known_events
+                 if r["code"] == e["code"] and
+                 (r["period_start"], r["period_end"]) != (ps, pe) and
+                 r["period_end"] > pe and r["period_start"] <= pe + timedelta(days=15)}
+        overlap = any(start <= end for start, _ in peers)
+        # 保存公告證據，避免上游滾動窗口移除公告後把樣本錯誤重新納入。
+        evidence = [{"code": e["code"], "period_start": start.isoformat(), "period_end": finish.isoformat()}
+                    for start, finish in sorted(peers)]
+        if e.get("after5_overlap") and not evidence and not e.get("after5_overlap_events"):
+            overlap = True  # 舊版只存布林時，證據缺失不能視為排除理由消失。
+        if evidence and evidence != e.get("after5_overlap_events"):
+            e["after5_overlap_events"] = evidence
+            changed = True
+        # 無 after5_date 的舊資料僅在有可能重疊時保守排除，待補算後精確判定。
+        if e.get("after5_overlap") != overlap:
+            e["after5_overlap"] = overlap
             changed = True
 
     if changed:
@@ -1311,9 +1404,9 @@ def _agg(xs):
 def perf_stats_summary(stats):
     """回傳 {'during': agg, 'after5': agg}（樣本不足回傳空欄位）。"""
     during = _agg([e["during_pct"] for e in stats.values()
-                   if e.get("during_pct") is not None])
+                   if isinstance(e, dict) and e.get("during_pct") is not None])
     after5 = _agg([e["after5_pct"] for e in stats.values()
-                   if e.get("after5_pct") is not None])
+                   if isinstance(e, dict) and e.get("after5_pct") is not None and not e.get("after5_overlap")])
     return {"during": during, "after5": after5}
 
 
@@ -1350,6 +1443,7 @@ def render_perf_stats_card(summary, sample_since="2026-06"):
           基準：處置期間＝處置末日 vs 處置<span class="text-slate-400">前一日</span>收盤；
           出關後5日＝出關後第5個交易日 vs <span class="text-slate-400">處置末日</span>收盤。
           未調整除權息與交易成本；同一檔多次處置分別計為獨立事件。
+          出關後統計排除已知重疊處置或重疊待確認樣本；處置期間統計仍保留各事件。
           樣本小，僅描述已發生的分布，不足以推論處置造成漲跌。
         </div>
         {render_history_coverage_note()}
@@ -1360,7 +1454,7 @@ def render_perf_stats_card(summary, sample_since="2026-06"):
 # ──────────────────────────────────────────────
 # 批次分組
 # ──────────────────────────────────────────────
-def group_into_batches(all_rows, today):
+def group_into_batches(all_rows, today, trading_days=None):
     """
     返回 (active_groups, upcoming_groups)。
     每個 group 的 key 是 period_start。
@@ -1374,8 +1468,11 @@ def group_into_batches(all_rows, today):
 
     active   = [r for r in dedup.values() if r["period_start"] <= today <= r["period_end"]]
     upcoming = [r for r in dedup.values() if r["period_start"] > today]
+    sessions = sorted({d for d in (trading_days or []) if d <= today})
+    # 展示窗口不是再處置判定窗口；日曆不足時 UI 明示使用日曆日備援。
+    cutoff = sessions[-30] if len(sessions) >= 30 else today - timedelta(days=30)
     released = [r for r in dedup.values()
-                if r["period_end"] < today and r["period_end"] >= today - timedelta(days=30)]
+                if r["period_end"] < today and r["period_end"] >= cutoff]
 
     def build(rows):
         groups = defaultdict(list)
@@ -1406,6 +1503,23 @@ def group_into_batches(all_rows, today):
         released_groups[pe] = {"period_end": pe, "stocks": twse + tpex}
 
     return build(active), build(upcoming), released_groups
+
+
+def released_securities(expired_groups, active_groups):
+    """事件期滿不一定解除管制；只保留目前無有效處置者最近一次期滿。"""
+    active_codes = set(_canonical_active_by_code(active_groups))
+    latest = {}
+    for group in expired_groups.values():
+        for stock in group["stocks"]:
+            code = stock["code"]
+            if code not in active_codes and (code not in latest or
+                    stock["period_end"] > latest[code]["period_end"]):
+                latest[code] = stock
+    groups = {}
+    for stock in latest.values():
+        pe = stock["period_end"]
+        groups.setdefault(pe, {"period_end": pe, "stocks": []})["stocks"].append(stock)
+    return groups
 
 
 # ──────────────────────────────────────────────
@@ -1535,8 +1649,13 @@ def write_build_manifest(today, *, mode, announcement_asof=None):
     R01 的「內容沒變就不 commit」會退化成每天兩個空 commit。
     generator 取本腳本自身的雜湊——改了 renderer 會自動變動，不必手動 bump 版號。
     """
+    if (REPO_ROOT / 'dispo.json').exists():
+        html = HTML_PATH.read_text(encoding='utf-8')
+        html = re.sub(r'<div id="update-health"(?: data-market-hash="[^"]*")?',
+                      '<div id="update-health" data-market-hash="' + _sha256_file(REPO_ROOT / 'dispo.json') + '"', html)
+        HTML_PATH.write_text(html, encoding='utf-8')
     artifacts = {rel: _sha256_file(REPO_ROOT / rel)
-                 for rel in ("index.html", "dispo.json")
+                 for rel in ("index.html", "dispo.json", "assets/health.js")
                  if (REPO_ROOT / rel).exists()}
     manifest = {
         "schema": 1,
@@ -1666,7 +1785,7 @@ def get_stock_meta(code, stock_info):
 def _quote_span(quote):
     """收盤/漲跌%/量 的小型 mono 標籤（站內慣例：綠漲紅跌）。"""
     if not quote or quote.get("close") is None:
-        return ""
+        return ' <span class="data-gap">報價未取得</span>'
     close = quote["close"]
     chg   = quote.get("change") or 0
     pct   = quote.get("change_pct")
@@ -1725,7 +1844,7 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
         end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">~ {end_label}</div>'
     elif "period_end" in stock and is_yellow:
         end_label = fmt_short(stock["period_end"])
-        end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">{end_label} 解禁</div>'
+        end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">{end_label} 期滿</div>'
 
     # R16：data-code/data-name 讓前端搜尋只比對代碼/股名，不再誤中價格、
     # 成交量等欄位文字；data-group="released" 讓 Tab3 的「注意累計」徽章
@@ -1782,6 +1901,7 @@ SOURCE_LABELS = {
     "tpex_disposal":  "上櫃處置公告",
     "twse_notetrans": "上市注意累計",
     "tpex_warning":   "上櫃注意累計",
+    "trading_calendar": "交易日曆",
 }
 
 
@@ -2056,7 +2176,7 @@ def render_release_schedule(active_groups, today):
     return f"""    <div class="card mb-3">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">📅 出關排程</div>
-        <div class="text-[11px] text-slate-400 mt-1">日期為處置<span class="text-slate-300">最後一日</span>，次一交易日恢復正常交易 · 依現行有效管制（重疊處置取較長者）· 出關後 30 日內再犯直接升級二次處置</div>
+        <div class="text-[11px] text-slate-400 mt-1">日期為處置<span class="text-slate-300">最後一日</span>，次一交易日解除本次處置 · 依現行有效管制（重疊處置取較長者）· 再處置以官方公告為準</div>
         <div class="text-[10px] text-slate-500 mt-0.5">※ 本時間軸為全市場總覽，不受下方搜尋/產業篩選影響</div>
       </div>
       <div>{"".join(rows)}</div>
@@ -2075,8 +2195,9 @@ def render_tab2_upcoming_batches(upcoming_groups, stock_info, today, stock_quote
     （按生效日由近到遠排序），沒有任何 upcoming 時顯示明確的空狀態，不再
     靜默借用 active 的內容頂替。
     """
+    notice = '<p class="scope-note">正式公告：僅列已公告、尚未生效的處置批次，不含雷達推估。生效日與措施以官方公告為準。</p>'
     if not upcoming_groups:
-        return """    <div class="empty-state-server">
+        return notice + """    <div class="empty-state-server">
       <div class="empty-state-icon">📭</div>
       <div class="empty-state-title">目前沒有已公告待生效處置</div>
       <div class="empty-state-hint">已公告的批次都已生效，或尚未有新公告</div>
@@ -2089,7 +2210,7 @@ def render_tab2_upcoming_batches(upcoming_groups, stock_info, today, stock_quote
                            stock_quotes=stock_quotes, status_pill=status_pill)
         for i, batch in enumerate(sorted_batches)
     ]
-    return "\n".join(blocks)
+    return notice + "\n".join(blocks)
 
 
 # ──────────────────────────────────────────────
@@ -2150,6 +2271,8 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         analysis = analyze_criteria(r.get("raw_criteria",""))
         quote    = sq.get(r["code"])
         need, _, live_streak, c1, cumulative_hit = _notetrans_urgency(r, today, thr)
+        # Count parsing and price-history availability are independent.
+        c1 = (thr.get(r['code']) or {}).get('clause1')
 
         # R09：嚴重度顏色改用 need==0（真正達到門檻，不論是連續或累計觸發），
         # 不再單看連續次數——舊版用 max_c>=3 判斷，即使那段連續早就斷了、
@@ -2162,8 +2285,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             ticker_cl = "text-yellow-300 font-bold"
 
         # 危險度狀態（吸收原雷達的「差 N 日」判斷）
-        if need == 0:
-            status = '<span class="pill pill-red">已達處置條件・待公告</span>'
+        if not analysis:
+            status = '<span class="pill pill-gray">累計條件未確認</span>'
+        elif need == 0:
+            status = '<span class="pill pill-red">次數達門檻・待官方確認</span>'
         elif need == 1:
             status = '<span class="pill pill-amber">差 1 日</span>'
         else:
@@ -2177,7 +2302,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         # 進度條旁的文字說明：連續已中斷、累計觸發、或正常倒數三種情境要
         # 分開講清楚，不能統一寫「連續 X/3」——舊版連續斷了進度條卻仍畫著
         # 舊次數，這裡改成明確標示「已中斷」或「累計已達門檻」
-        if cumulative_hit and live_streak < 3:
+        if not analysis:
+            prog_note = '資料不足，無法判定進度'
+            prog = ''
+        elif cumulative_hit and live_streak < 3:
             prog_note = "累計已達門檻"
         elif live_streak == 0:
             prog_note = "此波連續已中斷" if (analysis or {}).get("current_streak", 0) else "尚無連續紀錄"
@@ -2191,25 +2319,29 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         # （史料不足）就不displaying 具體價位，避免給錯誤的明日門檻。
         next_thr = c1.get("next_session_threshold") if c1 else None
         if c1 and not c1["triggered"] and next_thr is not None:
-            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">明日收盤 ≥ '
+            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">下一交易日收盤 ≥ '
                     f'<span class="mono text-slate-300">{next_thr:.2f}</span>'
-                    f'<span class="text-slate-600">（單一價格條件試算，明日窗口基準價）</span>'
+                    f'<span class="text-slate-600">（單一價格條件試算，下一交易日窗口基準價）</span>'
                     f'</span></div>')
         elif c1 and not c1["triggered"]:
             tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">今日收盤需 ≥ '
                     f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
-                    f'（差 {c1["diff_pct"]:.1f}%，明日門檻窗口滾動後另計）</span></div>')
+                    f'（差 {c1["diff_pct"]:.1f}%，下一交易日門檻窗口滾動後另計）</span></div>')
         elif c1:
             tomo = ('<div class="mt-0.5"><span class="text-red-300 text-[11px]">'
-                    '最新收盤已達第一款門檻</span></div>')
+                    '最新收盤已達單一價格門檻（非確定觸發）</span></div>')
         else:
-            tomo = ""
+            tomo = '<div class="data-gap">價格門檻未取得，無法試算</div>'
 
         # 展開明細：達標摘要 + 完整門檻條件（TWSE/TPEx 皆有 thr）
         t_data      = thr.get(r["code"])
         cond_date   = t_data["latest_date"] if t_data else today
         cond_html   = render_attention_conditions(t_data, cond_date) if t_data else ""
         detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
+        if not analysis and cond_html:
+            detail_html = ('<details class="risk-detail" style="grid-column:1/-1">'
+                           '<summary class="text-[11px] text-slate-500">價格門檻試算（累計條件未確認）</summary>'
+                           + cond_html + '</details>')
 
         rows.append(
             # R16：data-code/data-name 讓前端搜尋只比對代碼/股名（見
@@ -2235,7 +2367,8 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
 
 
 def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
-                stock_quotes=None, nt_thresholds=None, perf_html="", prev_trading=None):
+                stock_quotes=None, nt_thresholds=None, perf_html="", prev_trading=None,
+                release_window="近 30 日曆日（交易日曆未確認）"):
     sections = []
     sq  = stock_quotes  or {}
     thr = nt_thresholds or {}
@@ -2248,10 +2381,13 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
     nt_down = [n for n in ("twse_notetrans", "tpex_warning") if not source_ok(n)]
     if all_notetrans:
         nt_rows = render_notetrans_rows(all_notetrans, stock_info, today, sq, thr)
-        sections.append(f"""    <div class="card mb-3">
+        down_names = '、'.join(SOURCE_LABELS.get(n, n) for n in nt_down)
+        warning = (f'<p class="source-warning" role="status">⚠ {down_names}來源暫時無法取得；下方僅顯示可取得資料，不代表完整清單。</p>' if nt_down else '')
+        sections.append(f"""    <div class="card mb-3" data-section="radar">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">⚡ 注意累計中 — 依觸發距離排序</div>
-        <div class="text-[11px] text-slate-400 mt-1">連續 3 次（或 30 日累計 6 次）達注意標準即進處置，越上面越接近觸發。門檻為第一款絕對條件（必要非充分）。</div>
+        <div class="text-[11px] text-slate-400 mt-1">雷達推估，非正式處置公告。依已取得的注意次數與單一價格條件排序；差 N 日指尚需連續達標的次數，不是確定處置倒數。是否處置及措施以官方公告為準。</div>
+        {warning}
       </div>
       <div>{nt_rows}</div>
     </div>""")
@@ -2286,23 +2422,23 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             tpex_s = [s for s in stocks if s["exchange"] == "TPEx"]
 
             rows_html  = exchange_section("TWSE 上市", twse_s, stock_info, today,
-                                          "pill-yellow", label_pill)
+                                          "pill-yellow", label_pill, stock_quotes=sq)
             rows_html += exchange_section("TPEx 上櫃", tpex_s, stock_info, today,
                                           "pill-yellow", label_pill,
-                                          border=bool(twse_s))
+                                          border=bool(twse_s), stock_quotes=sq)
 
             release_blocks.append(f"""      <details class="mb-0" open>
         <summary class="px-3 py-2 flex items-center gap-2 border-b border-slate-800 cursor-pointer">
           <span class="pill {pill_cls}">{label_pill}</span>
-          <span class="text-[11px] text-slate-400">{count} 檔 · 30 日內再犯即升級二次處置</span>
+          <span class="text-[11px] text-slate-400">{count} 檔 · 目前無有效處置</span>
         </summary>
         <div>{rows_html}</div>
       </details>""")
 
         sections.append(f"""    <div class="card">
       <div class="p-3 border-b border-slate-800">
-        <div class="text-sm font-semibold">近期出關 — 30 日內再犯升級風險</div>
-        <div class="text-[11px] text-slate-400 mt-1">出關後 30 個交易日內再觸發，直接升級為二次處置（撮合頻率與期間同第一次，但<span class="text-amber-300">所有委託</span>均須預收款券）</div>
+        <div class="text-sm font-semibold">近期出關 — 目前無有效處置</div>
+        <div class="text-[11px] text-slate-400 mt-1">展示處置期滿於{release_window}的股票。再處置觀察的是最近 30 個營業日內的<span class="text-amber-300">發布處置紀錄</span>，不是從出關日起算；是否再次處置及措施以官方公告為準。</div>
       </div>
 {"".join(release_blocks)}
     </div>""")
@@ -2325,7 +2461,7 @@ def _delta_span(d):
 
 
 def render_stats(total_active, latest_count, second_count,
-                 twse_count, tpex_count, latest_ann_date, deltas=None):
+                 twse_count, tpex_count, latest_ann_date, deltas=None, baseline_date=None):
     ann_str = fmt_short(latest_ann_date) if latest_ann_date else "—"
     dl = deltas or {}
     return f"""  <div class="grid grid-cols-3 gap-3 mb-6">
@@ -2335,7 +2471,7 @@ def render_stats(total_active, latest_count, second_count,
         <span class="num-display text-3xl text-red-400">{total_active}</span>
         <span class="text-xs text-slate-400">檔</span>{_delta_span(dl.get("total_active"))}
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">上市 {twse_count} · 上櫃 {tpex_count}</div>
+      <div class="text-[10px] text-slate-500 mt-1">上市 {twse_count} · 上櫃 {tpex_count}{f' · 比較 {baseline_date}' if baseline_date else ''}</div>
     </div>
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">最近一批</div>
@@ -2351,7 +2487,7 @@ def render_stats(total_active, latest_count, second_count,
         <span class="num-display text-3xl text-yellow-400">{second_count}</span>
         <span class="text-xs text-slate-400">檔</span>{_delta_span(dl.get("second"))}
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">含升級/延長</div>
+      <div class="text-[10px] text-slate-500 mt-1">含升級/延長{f' · 比較 {baseline_date}' if baseline_date else ''}</div>
     </div>
   </div>"""
 
@@ -2359,7 +2495,7 @@ def render_stats(total_active, latest_count, second_count,
 def render_date_block(today):
     return (
         f'      <div class="mono text-sm font-bold text-slate-200">{today.strftime("%Y.%m.%d")}</div>\n'
-        f'      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">自動更新 盤後 21:00</div>'
+        f'      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">資料日・非執行時間</div>'
     )
 
 
@@ -2448,8 +2584,8 @@ USAGE = """用法：
   （無選項）        正常執行：抓取最新資料、重繪頁面、寫入快照與狀態
   --render-only [快照]
                     離線重繪：從已驗證的快照（預設 dispo.json）重新產生
-                    index.html，完全不連外部 API，也不會寫快照／狀態檔。
-                    改 renderer 或 CSS 後在本機預覽用。
+                    .preview/資料日/index.html 與配套快照，完全不連外部 API。
+                    不覆寫正式 index.html、dispo.json 或狀態檔；預覽不得部署。
   --allow-drop      確認過檔數驟降屬實時，放行驟降守則（僅此一項）
 """
 
@@ -2504,8 +2640,15 @@ def gather_live():
     print("  TPEx 個股報價...")
     tpex_quotes = fetch_tpex_quotes()
     # 日期一致性（B6 教訓）：兩市場報價日不一致時棄用 TPEx，避免混入舊價
-    twse_qdate = next((q["date"] for q in stock_quotes.values() if q.get("date")), "")
-    tpex_qdate = next((q["date"] for q in tpex_quotes.values() if q.get("date")), "")
+    twse_dates = {q.get("date", "") for q in stock_quotes.values()}
+    tpex_dates = {q.get("date", "") for q in tpex_quotes.values()}
+    if len(twse_dates) > 1 or "" in twse_dates:
+        sys.exit("ERROR: TWSE 報價日期不一致或缺漏，中止更新")
+    if len(tpex_dates) > 1 or "" in tpex_dates:
+        record_source("tpex_quotes", ok=False, error="報價日期不一致或缺漏")
+        tpex_quotes, tpex_dates = {}, set()
+    twse_qdate = next(iter(twse_dates), "")
+    tpex_qdate = next(iter(tpex_dates), "")
     if twse_qdate and tpex_qdate and twse_qdate != tpex_qdate:
         print(f"  WARNING: 報價日不一致 TWSE {twse_qdate} vs TPEx {tpex_qdate}，"
               f"棄用 TPEx 報價", file=sys.stderr)
@@ -2539,13 +2682,15 @@ def gather_live():
     # 現在改成每班都完整抓取並重繪。內容真的沒變時產出的 bytes 也相同
     # （快照與頁面都是決定性的、不含執行時間戳），workflow 既有的
     # `git diff --cached --quiet` 會自然判定無變更而不 commit，不需要額外機制。
-    if state.get("date") and today.isoformat() <= state["date"]:
+    if state.get("date") and today.isoformat() < state["date"]:
+        sys.exit(f"ERROR: 資料日倒退 {state['date']} → {today}，保留既有產物")
+    if state.get("date") and today.isoformat() == state["date"]:
         print(f"  資料日 {today} 與上次相同（{state['date']}）；仍照常抓取公告，"
               f"內容有變才會寫出變更")
 
     # 抓處置股資料
     print("  TWSE 處置股...")
-    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=[], source="twse_punish")
+    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=None, source="twse_punish")
     twse_rows = normalize_twse_rows(twse_raw)
     print(f"  TPEx 處置股...")
     tpex_rows = fetch_and_normalize_tpex(TPEX_REFERER_D)
@@ -2578,7 +2723,7 @@ def gather_live():
     # 抓大盤 & 注意累計
     print("  大盤指數...")
     taiex = fetch_taiex()
-    trading_days = fetch_recent_trading_days()
+    trading_days = fetch_recent_trading_days(today)
     print("  TWSE 注意累計...")
     notetrans_twse = fetch_twse_notetrans()
     print("  TPEx 注意累計...")
@@ -2645,6 +2790,8 @@ def bundle_from_snapshot(path=None):
                  f"請先正常執行一次產生新版快照再用 --render-only")
 
     today = date.fromisoformat(snap["date"])
+    SOURCE_STATUS.clear()
+    SOURCE_STATUS.update(snap.get("sources") or {})
     LAST_TRADE_DATE = (date.fromisoformat(snap["last_trade_date"])
                        if snap.get("last_trade_date") else today)
 
@@ -2663,7 +2810,9 @@ def bundle_from_snapshot(path=None):
 
     print(f"離線重繪（--render-only），快照 {snap_path.name}，資料日 {today}")
     return {
-        "live": False, "today": today, "state": _load_state(),
+        "live": False, "today": today, "state": {},
+        "comparison_baseline": snap.get("comparison_baseline"),
+        "snapshot": snap,
         "stock_quotes": {c: dict(q) for c, q in (snap.get("quotes") or {}).items()},
         "taiex": snap.get("taiex"),
         "all_rows": [_row_from_entry(e) for e in
@@ -2672,14 +2821,64 @@ def bundle_from_snapshot(path=None):
                      if snap.get("announcement_asof") else None),
         "notetrans_twse": [e for e in notetrans if e.get("exchange") == "TWSE"],
         "notetrans_tpex": [e for e in notetrans if e.get("exchange") != "TWSE"],
-        "nt_thresholds": nt_thresholds, "trading_days": None,
+        "nt_thresholds": nt_thresholds,
+        "trading_days": [date.fromisoformat(d) for d in snap.get("trading_days", [])],
         "prev_trading": (date.fromisoformat(snap["prev_trading"])
                          if snap.get("prev_trading") else None),
         "release_stats": snap.get("release_stats"),
     }
 
 
-def render_and_publish(bundle, *, allow_drop=False):
+@contextlib.contextmanager
+def _output_root(root):
+    global REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH
+    previous = REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH
+    REPO_ROOT = Path(root)
+    HTML_PATH = REPO_ROOT / "index.html"
+    STOCK_INFO_PATH = REPO_ROOT / "data/stock_info.json"
+    PERF_STATS_PATH = REPO_ROOT / "data/perf_stats.json"
+    LAST_COUNTS_PATH = REPO_ROOT / "data/last_counts.json"
+    try:
+        yield
+    finally:
+        REPO_ROOT, HTML_PATH, STOCK_INFO_PATH, PERF_STATS_PATH, LAST_COUNTS_PATH = previous
+
+
+def render_and_publish(bundle, *, allow_drop=False, _locked=False):
+    """Generate and validate in staging; preview never replaces published files."""
+    root = REPO_ROOT
+    if not _locked:
+        with artifact_bundle.locked(root):
+            if not bundle['live'] and (root / artifact_bundle.JOURNAL).exists():
+                raise RuntimeError('正式產物有待復原交易；離線預覽不會修改正式檔案，請先執行正式復原')
+            if bundle['live']:
+                artifact_bundle.recover(root)
+            return render_and_publish(bundle, allow_drop=allow_drop, _locked=True)
+    with tempfile.TemporaryDirectory(prefix='.dashboard-stage-', dir=root) as tmp:
+        stage = Path(tmp)
+        shutil.copy2(HTML_PATH, stage / 'index.html')
+        (stage / 'assets').mkdir()
+        shutil.copy2(Path(__file__).resolve().parents[1] / 'assets/health.js', stage / 'assets/health.js')
+        if (root / 'data').exists():
+            shutil.copytree(root / 'data', stage / 'data')
+        else:
+            (stage / 'data').mkdir()
+        if not bundle['live']:
+            (stage / 'dispo.json').write_text(json.dumps(bundle['snapshot'], ensure_ascii=False, indent=1) + '\n')
+        with _output_root(stage):
+            _render_bundle(bundle, allow_drop=allow_drop)
+        artifact_bundle.validate(stage, allow_preview=not bundle['live'])
+        if bundle['live']:
+            artifact_bundle.publish(stage, root)
+            return root
+        output = root / '.preview' / bundle['today'].isoformat()
+        output.mkdir(parents=True, exist_ok=True)
+        artifact_bundle.publish(stage, output)
+        print(f'離線預覽：{output / "index.html"}（正式產物未修改）')
+        return output
+
+
+def _render_bundle(bundle, *, allow_drop=False):
     """把 bundle 渲染成頁面；live 執行才寫快照與狀態檔。"""
     live           = bundle["live"]
     today          = bundle["today"]
@@ -2692,7 +2891,9 @@ def render_and_publish(bundle, *, allow_drop=False):
     ann_asof       = bundle["ann_asof"]
 
     # 分組
-    active_groups, upcoming_groups, released_groups = group_into_batches(all_rows, today)
+    active_groups, upcoming_groups, released_groups = group_into_batches(
+        all_rows, today, trading_days=bundle["trading_days"])
+    released_display = released_securities(released_groups, active_groups)
 
     if not active_groups:
         # R07：處置中歸零是合法狀態（全部批次已出關、尚無新批次生效），
@@ -2729,7 +2930,9 @@ def render_and_publish(bundle, *, allow_drop=False):
                      f"疑似資料源不完整，中止更新（確認屬實可用 --allow-drop）")
 
     # KPI 昨日對比基準：同日重跑沿用原本的 prev_day，跨日則以上次執行為基準
-    if state.get("date") == today.isoformat():
+    if not live:
+        baseline = bundle.get("comparison_baseline")
+    elif state.get("date") == today.isoformat():
         baseline = state.get("prev_day")
     elif state:
         baseline = {k: state.get(k) for k in
@@ -2748,8 +2951,8 @@ def render_and_publish(bundle, *, allow_drop=False):
     #   兩者互斥導致此數字恆為 0；處置迄日當天仍受管制，不算已出關。）
     prev_trading = (prev_trading_day(today, baseline, bundle["trading_days"])
                     if live else bundle["prev_trading"])
-    today_released = sum(len(g["stocks"]) for pe, g in released_groups.items()
-                         if pe == prev_trading)
+    today_released = (sum(len(g["stocks"]) for pe, g in released_display.items()
+                          if pe == prev_trading) if prev_trading else "未確認")
 
     # 最新批次（active + upcoming 中 period_start 最大）——僅供「最近一批」
     # 統計卡使用（最近公告的批次，不論是否已生效）。R07：兩者皆空（合法零
@@ -2785,7 +2988,8 @@ def render_and_publish(bundle, *, allow_drop=False):
 
     # 出關股績效（#12）。離線重繪沿用快照裡算好的統計，不重抓個股歷史。
     if live:
-        perf_summary = perf_stats_summary(update_perf_stats(released_groups, today))
+        perf_summary = perf_stats_summary(update_perf_stats(released_groups, today,
+                                                            disposition_rows=all_rows))
     else:
         perf_summary = bundle["release_stats"] or {}
     perf_html = render_perf_stats_card(perf_summary)
@@ -2798,14 +3002,18 @@ def render_and_publish(bundle, *, allow_drop=False):
         announcement_asof=ann_asof,
     )
     stats_html = render_stats(total_active, latest_count, second_count,
-                              twse_count, tpex_count, latest_ann, deltas=deltas)
+                              twse_count, tpex_count, latest_ann, deltas=deltas,
+                              baseline_date=baseline.get("date") if baseline else None)
     tab1_html  = render_tab1_batches(active_groups, stock_info, today,
                                      stock_quotes=stock_quotes)
     tab2_html  = render_tab2_upcoming_batches(upcoming_groups, stock_info, today,
                                               stock_quotes=stock_quotes)
-    tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, today,
+    release_window = ("近 30 個交易日" if len(bundle["trading_days"] or []) >= 30
+                      else "近 30 日曆日（交易日曆未確認）")
+    tab3_html  = render_tab3(notetrans_twse, notetrans_tpex, released_display, stock_info, today,
                              stock_quotes=stock_quotes, nt_thresholds=nt_thresholds,
-                             perf_html=perf_html, prev_trading=prev_trading)
+                             perf_html=perf_html, prev_trading=prev_trading,
+                             release_window=release_window)
     date_html  = render_date_block(today)
 
     # 讀 HTML
@@ -2830,7 +3038,24 @@ def render_and_publish(bundle, *, allow_drop=False):
     tab3_nt = len(notetrans_twse) + len(notetrans_tpex)
     html = update_inline_counts(html, total_active, latest_count, tab3_nt,
                                 tab2_upcoming=upcoming_count)
+    html_contract = {
+        'date': today.isoformat(), 'sources': dict(sorted(SOURCE_STATUS.items())),
+        'announcement_asof': ann_asof.isoformat() if ann_asof else None,
+        'counts': {'active': total_active, 'twse': twse_count, 'tpex': tpex_count,
+                   'second': second_count, 'notetrans': tab3_nt}}
 
+    html = re.sub(r'<div id="update-health".*?</div>\s*', '', html, flags=re.S)
+    preview = 'false' if live else 'true'
+    health_text = '正在查詢更新健康狀態…' if live else '離線預覽，非即時健康檢查；正式網站未變更。'
+    health = (f'<div id="update-health" data-preview="{preview}" role="status" '
+              'style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8">'
+              f'<span data-health-output>{health_text}</span> '
+              '<a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" '
+              'target="_blank" rel="noopener">更新執行紀錄</a></div>')
+    html = html.replace('<!-- AUTO:CONTEXT_END -->', health + '\n<!-- AUTO:CONTEXT_END -->')
+    if 'src="assets/health.js"' not in html:
+        html = html.replace('</head>', '<script src="assets/health.js" defer></script>\n</head>')
+    html = artifact_bundle.stamp_html(html, html_contract)
     HTML_PATH.write_text(html, encoding="utf-8")
     print(f"  ✓ 寫入 {HTML_PATH}")
 
@@ -2842,7 +3067,7 @@ def render_and_publish(bundle, *, allow_drop=False):
     if not live:
         # 離線重繪不得改寫快照與狀態檔（那是 live 抓取的產物），但仍要更新
         # manifest —— 頁面已經重繪過了，部署驗證要比對的是新頁面的雜湊。
-        write_build_manifest(today, mode="render-only")
+        write_build_manifest(today, mode="render-only", announcement_asof=ann_asof)
         print("離線重繪完成（未寫入快照與狀態檔）")
         return
     snap = build_snapshot(
@@ -2855,6 +3080,8 @@ def render_and_publish(bundle, *, allow_drop=False):
         announcement_asof=ann_asof,
     )
     snap["release_stats"] = perf_summary
+    snap["trading_days"] = [d.isoformat() for d in (bundle["trading_days"] or [])]
+    snap["comparison_baseline"] = baseline
     write_snapshot(snap)
 
     # 記錄本次檔數：驟降比對 + 下次的昨日對比基準（隨 commit 入庫）
@@ -2877,11 +3104,19 @@ def render_and_publish(bundle, *, allow_drop=False):
     print("更新完成！")
 
 
-def main(argv=None):
+def main(argv=None, *, _locked=False):
     args = _parse_args(list(argv if argv is not None else sys.argv))
+    if not _locked:
+        with artifact_bundle.locked(REPO_ROOT):
+            return main(argv, _locked=True)
+    if args['render_only'] and (REPO_ROOT / artifact_bundle.JOURNAL).exists():
+        raise RuntimeError('正式產物有待復原交易；離線預覽不會修改正式檔案，請先執行正式復原')
+    if not args['render_only']:
+        artifact_bundle.recover(REPO_ROOT)
+        SOURCE_STATUS.clear()
     bundle = (bundle_from_snapshot(args["snapshot"]) if args["render_only"]
               else gather_live())
-    render_and_publish(bundle, allow_drop=args["allow_drop"])
+    render_and_publish(bundle, allow_drop=args["allow_drop"], _locked=True)
 
 
 if __name__ == "__main__":
