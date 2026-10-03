@@ -210,7 +210,12 @@
 
   .severity-bar { width: 3px; border-radius: 3px 0 0 3px; }
 
-  .table-row { display: grid; grid-template-columns: 80px 1fr 110px; gap: 12px; padding: 14px 12px; border-bottom: 1px solid var(--line); }
+  .table-row { display: grid; grid-template-columns: 80px minmax(0, 1fr) 160px; gap: 12px; padding: 14px 12px; border-bottom: 1px solid var(--line); }
+  .table-row > * { min-width: 0; overflow-wrap: anywhere; }
+  .end-date-desktop .pill { white-space: normal; }
+  .data-gap { color: #fcd34d; font-size: 11px; line-height: 1.6; }
+  .scope-note { color: #93c5fd; font-size: 12px; line-height: 1.7; margin: 0 0 12px; }
+  .source-warning { color: #fcd34d; font-size: 12px; line-height: 1.7; margin: 8px 0 0; }
   .table-row:last-child { border-bottom: none; }
 
   .num-display {
@@ -220,7 +225,7 @@
   }
 
   @media (max-width: 640px) {
-    .table-row { grid-template-columns: 70px 1fr; }
+    .table-row { grid-template-columns: 70px minmax(0, 1fr); }
     /* R14 review：舊版在此把 .end-date-desktop 整欄 display:none，撮合方式、
        處置迄日、注意股狀態/進度條/明日觸發價這些關鍵管制資訊在手機版完全
        消失（對應的 .end-date-mobile 替代節點從未被 renderer 產生，是死
@@ -238,7 +243,7 @@
   /* 出關排程（Tab1 時間軸）：桌機單行四欄，手機拆成兩行避免欄位互相擠壓換行錯位 */
   .sched-row {
     display: grid;
-    grid-template-columns: 56px 46px 44px 1fr;
+    grid-template-columns: 84px 80px 44px minmax(0, 1fr);
     grid-template-areas: "date tag count names";
     align-items: baseline;
     column-gap: 12px;
@@ -250,10 +255,10 @@
   .sched-date  { grid-area: date;  font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--ink); white-space: nowrap; }
   .sched-tag   { grid-area: tag; }
   .sched-count { grid-area: count; font-family: 'JetBrains Mono', monospace; color: var(--amber); white-space: nowrap; }
-  .sched-names { grid-area: names; color: var(--ink-dim); }
+  .sched-names { grid-area: names; color: var(--ink-dim); min-width: 0; overflow-wrap: anywhere; }
   @media (max-width: 480px) {
     .sched-row {
-      grid-template-columns: auto auto 1fr;
+      grid-template-columns: 84px 80px minmax(0, 1fr);
       grid-template-areas:
         "date tag count"
         "names names names";
@@ -795,8 +800,8 @@
     <!-- Empty state -->
     <div class="empty-state" id="empty-1" style="display:none;">
       <div class="empty-state-icon">🔍</div>
-      <div class="empty-state-title">所選關注產業在「處置中」無符合個股</div>
-      <div class="empty-state-hint">試試其他族群，或點擊「全部」</div>
+      <div class="empty-state-title">沒有符合搜尋與產業條件的處置中股票</div>
+      <div class="empty-state-hint">清除搜尋文字，或將產業改為「全部」</div>
     </div>
   </section>  <section class="tab-panel mb-8" data-panel="2">
     <div class="section-head py-3 mb-3 flex items-center justify-between border-b border-amber-900/40">
@@ -823,8 +828,8 @@
 
     <div class="empty-state" id="empty-2" style="display:none;">
       <div class="empty-state-icon">🔍</div>
-      <div class="empty-state-title">所選關注產業無新公告</div>
-      <div class="empty-state-hint">本批以PCB/CCL、被動元件、衛星、IC設計為主</div>
+      <div class="empty-state-title">沒有符合搜尋與產業條件的待生效公告</div>
+      <div class="empty-state-hint">清除搜尋文字，或將產業改為「全部」</div>
     </div>
   </section>
 
@@ -888,8 +893,8 @@
     <!-- Empty state for filter -->
     <div class="empty-state" id="empty-3" style="display:none;">
       <div class="empty-state-icon">🔍</div>
-      <div class="empty-state-title">所選關注產業無高風險候選股</div>
-      <div class="empty-state-hint">完整 83 檔注意股需查證交所/櫃買中心官網</div>
+      <div class="empty-state-title">注意累計與近期出關均無符合的股票</div>
+      <div class="empty-state-hint">清除搜尋文字，或將產業改為「全部」；本頁不是全市場注意股清單</div>
     </div>
   </section>
 
@@ -981,6 +986,7 @@
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  const filterOpenState = new WeakMap();
   function applyFilter() {
     // Single-select: find the one active chip
     const activeChip = document.querySelector('.chip[data-active="true"]');
@@ -992,6 +998,7 @@
     // row.textContent——後者連收盤價、成交量、說明文字都算進去，搜尋
     // "100" 這種數字很容易誤中「100張」之類的量而不是股票本身。
     const q = (document.getElementById('stockSearch')?.value || '').trim().toLowerCase();
+    const filtering = !showAll || !!q;
     document.querySelectorAll('.table-row').forEach(row => {
       const rowTags = (row.dataset.tags || '').split(/\s+/).filter(Boolean);
       const tagOk = showAll || rowTags.includes(activeTag);
@@ -1006,7 +1013,17 @@
       const rows = g.querySelectorAll('.table-row');
       if (rows.length === 0) return; // skip non-stock cards (e.g. criteria card)
       const anyVisible = Array.from(rows).some(r => r.style.display !== 'none');
-      g.style.display = anyVisible ? '' : 'none';
+      // Keep source warnings visible even when the corresponding rows are filtered out.
+      g.style.display = anyVisible || g.querySelector('.source-warning') ? '' : 'none';
+      if (g.tagName === 'DETAILS') {
+        if (filtering) {
+          if (!filterOpenState.has(g)) filterOpenState.set(g, g.open);
+          if (anyVisible) g.open = true;
+        } else if (filterOpenState.has(g)) {
+          g.open = filterOpenState.get(g);
+          filterOpenState.delete(g);
+        }
+      }
     });
 
     // Per-tab: count unique visible tickers, show empty state if 0; update tab count badge
@@ -1026,10 +1043,12 @@
       });
       const count = uniqueTickers.size;
       const empty = panel.querySelector('.empty-state');
-      if (empty) empty.style.display = count === 0 ? 'block' : 'none';
+      const allRows = Array.from(panel.querySelectorAll('.table-row'));
+      const anyMatch = allRows.some(r => r.style.display !== 'none');
+      if (empty) empty.style.display = filtering && allRows.length > 0 && !anyMatch ? 'block' : 'none';
       const badge = document.querySelector(`.tab-count[data-count="${n}"]`);
       if (badge) {
-        badge.textContent = count + ' 檔';
+        badge.textContent = count + (n === 3 ? ' 注意累計' : ' 檔');
       }
     });
 

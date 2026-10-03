@@ -774,9 +774,6 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
     live_streak    = cur_streak if streak_alive else 0
     cumulative_hit = analysis["current_cumulative"] >= 6
 
-    next_imm  = next_weekday(cur_streak_end) if cur_streak_end else next_weekday(latest_end)
-    risk_date = next_weekday(today) if next_imm <= today else next_imm
-
     # ── 達標摘要 ──
     parts = []
     for e in analysis["entries"]:
@@ -827,14 +824,14 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
             f'<span class="text-red-300">30日內已累計達{analysis["current_cumulative"]}次 ≥ 門檻，'
-            f'隨時可能收到盤後處置公告</span>'
+            f'是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak >= 5:
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
-            f'<span class="text-red-300">已達連續{live_streak}日 ≥ 門檻，隨時可能收到盤後處置公告</span>'
+            f'<span class="text-red-300">已達連續{live_streak}日 ≥ 門檻，是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak >= 3:
@@ -842,8 +839,7 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-red-400 shrink-0 font-bold">！</span>'
             f'<span class="text-red-300">已達連續{live_streak}日門檻，'
-            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> 盤後可能收到處置公告'
-            f'（第一次處置：2分撮合 5 個營業日）</span>'
+            f'是否處置與措施待官方公告確認</span>'
             f'</div>'
         )
     elif live_streak == 2:
@@ -851,20 +847,16 @@ def render_risk_detail(analysis, today, quote=None, extra_html=""):
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-amber-400 shrink-0">⚠</span>'
             f'<span class="text-amber-200">'
-            f'<span class="mono font-bold">{fmt_weekday(risk_date)}</span> '
-            f'若再達注意標準 → 觸發 <span class="font-semibold text-white">連續3日門檻</span>'
-            f' → <span class="text-red-300">第一次處置（2分撮合 5 個營業日）</span></span>'
+            f'後續交易日若再達注意標準，可能達到 <span class="font-semibold text-white">連續3日門檻</span>；'
+            f'<span class="text-red-300">是否處置與措施待官方公告確認</span></span>'
             f'</div>'
         )
     elif live_streak == 1:
-        risk_date2 = next_weekday(risk_date)
         warn_html = (
             f'<div class="flex items-start gap-1.5">'
             f'<span class="text-yellow-500 shrink-0">●</span>'
             f'<span class="text-slate-300">'
-            f'需 <span class="mono">{fmt_weekday(risk_date)}</span> +'
-            f' <span class="mono">{fmt_weekday(risk_date2)}</span> 連續達標，'
-            f'才觸發連續3日門檻</span>'
+            f'仍需後續連續兩個交易日達標，才可能達到連續3日門檻；以官方公告為準</span>'
             f'</div>'
         )
     elif cur_streak_end is not None:
@@ -1075,7 +1067,7 @@ def render_attention_conditions(thresholds, trade_date):
     lines.append(
         f'<div class="text-[10px] text-slate-500 uppercase tracking-wider mt-2.5 mb-1 mono '
         f'border-t border-slate-700/50 pt-2">'
-        f'注意股觸發條件 {fmt_weekday(trade_date)}（任一即可）</div>'
+        f'注意股單一條件試算 {fmt_weekday(trade_date)}（不含全部條件）</div>'
     )
 
     c1 = thresholds.get("clause1")
@@ -1793,7 +1785,7 @@ def get_stock_meta(code, stock_info):
 def _quote_span(quote):
     """收盤/漲跌%/量 的小型 mono 標籤（站內慣例：綠漲紅跌）。"""
     if not quote or quote.get("close") is None:
-        return ""
+        return ' <span class="data-gap">報價未取得</span>'
     close = quote["close"]
     chg   = quote.get("change") or 0
     pct   = quote.get("change_pct")
@@ -1852,7 +1844,7 @@ def render_stock_row(stock, stock_info, today, pill_class_override=None, pill_la
         end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">~ {end_label}</div>'
     elif "period_end" in stock and is_yellow:
         end_label = fmt_short(stock["period_end"])
-        end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">{end_label} 解禁</div>'
+        end_html = f'<div class="text-[10px] text-slate-500 mt-1 mono">{end_label} 期滿</div>'
 
     # R16：data-code/data-name 讓前端搜尋只比對代碼/股名，不再誤中價格、
     # 成交量等欄位文字；data-group="released" 讓 Tab3 的「注意累計」徽章
@@ -2203,8 +2195,9 @@ def render_tab2_upcoming_batches(upcoming_groups, stock_info, today, stock_quote
     （按生效日由近到遠排序），沒有任何 upcoming 時顯示明確的空狀態，不再
     靜默借用 active 的內容頂替。
     """
+    notice = '<p class="scope-note">正式公告：僅列已公告、尚未生效的處置批次，不含雷達推估。生效日與措施以官方公告為準。</p>'
     if not upcoming_groups:
-        return """    <div class="empty-state-server">
+        return notice + """    <div class="empty-state-server">
       <div class="empty-state-icon">📭</div>
       <div class="empty-state-title">目前沒有已公告待生效處置</div>
       <div class="empty-state-hint">已公告的批次都已生效，或尚未有新公告</div>
@@ -2217,7 +2210,7 @@ def render_tab2_upcoming_batches(upcoming_groups, stock_info, today, stock_quote
                            stock_quotes=stock_quotes, status_pill=status_pill)
         for i, batch in enumerate(sorted_batches)
     ]
-    return "\n".join(blocks)
+    return notice + "\n".join(blocks)
 
 
 # ──────────────────────────────────────────────
@@ -2278,6 +2271,8 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         analysis = analyze_criteria(r.get("raw_criteria",""))
         quote    = sq.get(r["code"])
         need, _, live_streak, c1, cumulative_hit = _notetrans_urgency(r, today, thr)
+        # Count parsing and price-history availability are independent.
+        c1 = (thr.get(r['code']) or {}).get('clause1')
 
         # R09：嚴重度顏色改用 need==0（真正達到門檻，不論是連續或累計觸發），
         # 不再單看連續次數——舊版用 max_c>=3 判斷，即使那段連續早就斷了、
@@ -2290,8 +2285,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
             ticker_cl = "text-yellow-300 font-bold"
 
         # 危險度狀態（吸收原雷達的「差 N 日」判斷）
-        if need == 0:
-            status = '<span class="pill pill-red">已達處置條件・待公告</span>'
+        if not analysis:
+            status = '<span class="pill pill-gray">累計條件未確認</span>'
+        elif need == 0:
+            status = '<span class="pill pill-red">次數達門檻・待官方確認</span>'
         elif need == 1:
             status = '<span class="pill pill-amber">差 1 日</span>'
         else:
@@ -2305,7 +2302,10 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         # 進度條旁的文字說明：連續已中斷、累計觸發、或正常倒數三種情境要
         # 分開講清楚，不能統一寫「連續 X/3」——舊版連續斷了進度條卻仍畫著
         # 舊次數，這裡改成明確標示「已中斷」或「累計已達門檻」
-        if cumulative_hit and live_streak < 3:
+        if not analysis:
+            prog_note = '資料不足，無法判定進度'
+            prog = ''
+        elif cumulative_hit and live_streak < 3:
             prog_note = "累計已達門檻"
         elif live_streak == 0:
             prog_note = "此波連續已中斷" if (analysis or {}).get("current_streak", 0) else "尚無連續紀錄"
@@ -2319,25 +2319,29 @@ def render_notetrans_rows(notetrans_list, stock_info, today, stock_quotes=None, 
         # （史料不足）就不displaying 具體價位，避免給錯誤的明日門檻。
         next_thr = c1.get("next_session_threshold") if c1 else None
         if c1 and not c1["triggered"] and next_thr is not None:
-            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">明日收盤 ≥ '
+            tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">下一交易日收盤 ≥ '
                     f'<span class="mono text-slate-300">{next_thr:.2f}</span>'
-                    f'<span class="text-slate-600">（單一價格條件試算，明日窗口基準價）</span>'
+                    f'<span class="text-slate-600">（單一價格條件試算，下一交易日窗口基準價）</span>'
                     f'</span></div>')
         elif c1 and not c1["triggered"]:
             tomo = (f'<div class="mt-0.5"><span class="text-slate-500 text-[11px]">今日收盤需 ≥ '
                     f'<span class="mono text-slate-300">{c1["threshold"]:.2f}</span>'
-                    f'（差 {c1["diff_pct"]:.1f}%，明日門檻窗口滾動後另計）</span></div>')
+                    f'（差 {c1["diff_pct"]:.1f}%，下一交易日門檻窗口滾動後另計）</span></div>')
         elif c1:
             tomo = ('<div class="mt-0.5"><span class="text-red-300 text-[11px]">'
-                    '最新收盤已達第一款門檻</span></div>')
+                    '最新收盤已達單一價格門檻（非確定觸發）</span></div>')
         else:
-            tomo = ""
+            tomo = '<div class="data-gap">價格門檻未取得，無法試算</div>'
 
         # 展開明細：達標摘要 + 完整門檻條件（TWSE/TPEx 皆有 thr）
         t_data      = thr.get(r["code"])
         cond_date   = t_data["latest_date"] if t_data else today
         cond_html   = render_attention_conditions(t_data, cond_date) if t_data else ""
         detail_html = render_risk_detail(analysis, today, quote=quote, extra_html=cond_html)
+        if not analysis and cond_html:
+            detail_html = ('<details class="risk-detail" style="grid-column:1/-1">'
+                           '<summary class="text-[11px] text-slate-500">價格門檻試算（累計條件未確認）</summary>'
+                           + cond_html + '</details>')
 
         rows.append(
             # R16：data-code/data-name 讓前端搜尋只比對代碼/股名（見
@@ -2377,10 +2381,13 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
     nt_down = [n for n in ("twse_notetrans", "tpex_warning") if not source_ok(n)]
     if all_notetrans:
         nt_rows = render_notetrans_rows(all_notetrans, stock_info, today, sq, thr)
-        sections.append(f"""    <div class="card mb-3">
+        down_names = '、'.join(SOURCE_LABELS.get(n, n) for n in nt_down)
+        warning = (f'<p class="source-warning" role="status">⚠ {down_names}來源暫時無法取得；下方僅顯示可取得資料，不代表完整清單。</p>' if nt_down else '')
+        sections.append(f"""    <div class="card mb-3" data-section="radar">
       <div class="p-3 border-b border-slate-800">
         <div class="text-sm font-semibold">⚡ 注意累計中 — 依觸發距離排序</div>
-        <div class="text-[11px] text-slate-400 mt-1">連續 3 次（或 30 日累計 6 次）達注意標準即進處置，越上面越接近觸發。門檻為第一款絕對條件（必要非充分）。</div>
+        <div class="text-[11px] text-slate-400 mt-1">雷達推估，非正式處置公告。依已取得的注意次數與單一價格條件排序；差 N 日指尚需連續達標的次數，不是確定處置倒數。是否處置及措施以官方公告為準。</div>
+        {warning}
       </div>
       <div>{nt_rows}</div>
     </div>""")
@@ -2415,10 +2422,10 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             tpex_s = [s for s in stocks if s["exchange"] == "TPEx"]
 
             rows_html  = exchange_section("TWSE 上市", twse_s, stock_info, today,
-                                          "pill-yellow", label_pill)
+                                          "pill-yellow", label_pill, stock_quotes=sq)
             rows_html += exchange_section("TPEx 上櫃", tpex_s, stock_info, today,
                                           "pill-yellow", label_pill,
-                                          border=bool(twse_s))
+                                          border=bool(twse_s), stock_quotes=sq)
 
             release_blocks.append(f"""      <details class="mb-0" open>
         <summary class="px-3 py-2 flex items-center gap-2 border-b border-slate-800 cursor-pointer">
@@ -2488,7 +2495,7 @@ def render_stats(total_active, latest_count, second_count,
 def render_date_block(today):
     return (
         f'      <div class="mono text-sm font-bold text-slate-200">{today.strftime("%Y.%m.%d")}</div>\n'
-        f'      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">自動更新 盤後 21:00</div>'
+        f'      <div class="mono text-[10px] text-slate-500" style="margin-top: 1px;">資料日・非執行時間</div>'
     )
 
 
