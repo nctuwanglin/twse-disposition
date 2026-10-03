@@ -1242,5 +1242,23 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "其他"
+  },
+  "6533": {
+    "name": "晶心科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "6672": {
+    "name": "騰輝電子-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "8201": {
+    "name": "無敵",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他電子"
   }
 }
