@@ -1260,5 +1260,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "其他電子"
+  },
+  "5013": {
+    "name": "強新",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "鋼鐵工業"
   }
 }
