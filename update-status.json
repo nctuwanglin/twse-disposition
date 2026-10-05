@@ -2,12 +2,12 @@
   "data_date": "2026-10-05",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-10-05T18:46:55Z",
+    "at": "2026-10-05T20:45:29Z",
     "outcome": "success",
-    "run_id": "37358433541"
+    "run_id": "37370602935"
   },
   "last_market_change_at": "2026-10-05T18:46:55Z",
-  "last_successful_check_at": "2026-10-05T18:46:55Z",
+  "last_successful_check_at": "2026-10-05T20:45:29Z",
   "market_hash": "7d287f4e01cca439330653f830ba7d7f002d3fa717996f66ce5c9f7a74ea80c9",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
