@@ -1266,5 +1266,29 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "鋼鐵工業"
+  },
+  "3094": {
+    "name": "聯傑",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3518": {
+    "name": "柏騰",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "4760": {
+    "name": "勤凱科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "5205": {
+    "name": "中茂",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "綠能環保"
   }
 }
