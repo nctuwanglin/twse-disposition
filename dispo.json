@@ -545,25 +545,7 @@
    "name": "德宏",
    "exchange": "TPEx",
    "criteria": "115年08月26日至115年10月07日等二十九個營業日已",
-   "raw_criteria": "115年08月26日至115年10月07日等二十九個營業日已有十一次",
-   "thresholds": {
-    "current_close": 193.0,
-    "latest_date": "2026-10-07",
-    "history_days": 25,
-    "clause1": {
-     "ref_date": "2026-09-29",
-     "ref_close": 180.5,
-     "cum_pct": 6.9252077562326875,
-     "pct": 30.0,
-     "threshold": 234.65,
-     "diff_pct": 21.580310880829018,
-     "triggered": false,
-     "next_session_ref_date": "2026-09-30",
-     "next_session_threshold": 233.35
-    },
-    "vol_avg": 4830.666666666667,
-    "vol_days": 24
-   }
+   "raw_criteria": "115年08月26日至115年10月07日等二十九個營業日已有十一次"
   },
   {
    "code": "6488",
