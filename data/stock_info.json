@@ -1290,5 +1290,23 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "綠能環保"
+  },
+  "1709": {
+    "name": "和益",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "化學工業"
+  },
+  "2340": {
+    "name": "台亞",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3701": {
+    "name": "大眾控",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電腦及週邊設備"
   }
 }
