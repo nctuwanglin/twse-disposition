@@ -1,9 +1,9 @@
 {
-  "announcement_asof": "2026-10-07",
+  "announcement_asof": "2026-10-08",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "7ae59976c1727872506565a88f73c8e035f5883235cabe5b2679675e3982a9be",
-    "index.html": "554598b7e95a56d06d4acbbf92cb13fdb62a2b118a8a9111b82f4fd971aceb0d"
+    "dispo.json": "6429139f796dbf950e1304f979e01b57386edbcb5fc8c103a3eb8f28222607b6",
+    "index.html": "f36a35bc0af1fc5c328dde5e5aa34174efcbfa7a5f2ab2f5b2c3fb43c128b852"
   },
   "data_date": "2026-10-08",
   "generator": "0a55d786c93f",
@@ -51,7 +51,7 @@
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 16
+      "rows": 17
     },
     "twse_quotes": {
       "as_of": "20261008",

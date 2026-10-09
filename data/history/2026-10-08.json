@@ -10,11 +10,11 @@
   "日期": "1151008"
  },
  "counts": {
-  "active": 28,
-  "twse": 16,
+  "active": 27,
+  "twse": 15,
   "tpex": 12,
   "second": 2,
-  "notetrans": 8
+  "notetrans": 6
  },
  "active": [
   {
@@ -228,20 +228,6 @@
    "vol_k": 10954
   },
   {
-   "code": "2030",
-   "name": "彰源",
-   "exchange": "TWSE",
-   "ann_date": "2026-10-01",
-   "period_start": "2026-10-02",
-   "period_end": "2026-10-08",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 35.55,
-   "change_pct": -3.265306122448979,
-   "vol_k": 4837
-  },
-  {
    "code": "2033",
    "name": "佳大",
    "exchange": "TWSE",
@@ -438,78 +424,57 @@
    "vol_k": 1086
   }
  ],
- "upcoming": [],
- "notetrans": [
-  {
-   "code": "2033",
-   "name": "佳大",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (10/6–10/7)",
-   "raw_criteria": "115年10月6日至115年10月7日連續二次",
-   "thresholds": {
-    "current_close": 52.2,
-    "latest_date": "2026-10-08",
-    "history_days": 26,
-    "clause1": {
-     "ref_date": "2026-09-30",
-     "ref_close": 42.35,
-     "cum_pct": 23.25855962219599,
-     "pct": 32.0,
-     "threshold": 55.902,
-     "diff_pct": 7.091954022988502,
-     "triggered": false,
-     "next_session_ref_date": "2026-10-01",
-     "next_session_threshold": 61.446
-    },
-    "vol_avg": 2450.16,
-    "vol_days": 25
-   }
-  },
+ "upcoming": [
   {
    "code": "6672",
    "name": "騰輝電子-KY",
    "exchange": "TWSE",
-   "criteria": "連續二次 (10/6–10/7)",
-   "raw_criteria": "115年10月6日至115年10月7日連續二次",
-   "thresholds": {
-    "current_close": 555.0,
-    "latest_date": "2026-10-08",
-    "history_days": 26,
-    "clause1": {
-     "ref_date": "2026-09-30",
-     "ref_close": 369.0,
-     "cum_pct": 50.40650406504065,
-     "pct": 32.0,
-     "threshold": 487.08000000000004,
-     "diff_pct": -12.237837837837832,
-     "triggered": true
-    },
-    "vol_avg": 7084.12,
-    "vol_days": 25
-   }
+   "ann_date": "2026-10-08",
+   "period_start": "2026-10-12",
+   "period_end": "2026-10-16",
+   "auction": "2分撮合",
+   "disp_count": 2,
+   "career_count": 1,
+   "close": 555.0,
+   "change_pct": 9.900990099009901,
+   "vol_k": 3824
   },
   {
    "code": "8021",
    "name": "尖點",
    "exchange": "TWSE",
-   "criteria": "連續四次 (10/2–10/7)",
-   "raw_criteria": "115年10月2日至115年10月7日連續四次",
+   "ann_date": "2026-10-08",
+   "period_start": "2026-10-12",
+   "period_end": "2026-10-16",
+   "auction": "2分撮合",
+   "disp_count": 2,
+   "career_count": 5,
+   "close": 557.0,
+   "change_pct": 0.1798561151079137,
+   "vol_k": 8750
+  }
+ ],
+ "notetrans": [
+  {
+   "code": "2492",
+   "name": "華新科",
+   "exchange": "TWSE",
+   "criteria": "連續二次 (10/7–10/8)",
+   "raw_criteria": "115年10月7日至115年10月8日連續二次",
    "thresholds": {
-    "current_close": 557.0,
+    "current_close": 420.0,
     "latest_date": "2026-10-08",
     "history_days": 26,
     "clause1": {
      "ref_date": "2026-09-30",
-     "ref_close": 486.0,
-     "cum_pct": 14.609053497942387,
+     "ref_close": 299.5,
+     "cum_pct": 40.23372287145242,
      "pct": 32.0,
-     "threshold": 641.52,
-     "diff_pct": 15.174147217235184,
-     "triggered": false,
-     "next_session_ref_date": "2026-10-01",
-     "next_session_threshold": 663.96
+     "threshold": 395.34000000000003,
+     "diff_pct": -5.871428571428564,
+     "triggered": true
     },
-    "vol_avg": 6499.72,
+    "vol_avg": 33851.12,
     "vol_days": 25
    }
   },
@@ -643,14 +608,6 @@
    "monthly_avg": 60.08,
    "date": "20261008"
   },
-  "2030": {
-   "close": 35.55,
-   "change": -1.2,
-   "change_pct": -3.265306122448979,
-   "vol_k": 4837,
-   "monthly_avg": 37.08,
-   "date": "20261008"
-  },
   "2033": {
    "close": 52.2,
    "change": -1.0,
@@ -672,6 +629,14 @@
    "change_pct": 9.97229916897507,
    "vol_k": 1622,
    "monthly_avg": 162.33,
+   "date": "20261008"
+  },
+  "2492": {
+   "close": 420.0,
+   "change": -8.0,
+   "change_pct": -1.8691588785046727,
+   "vol_k": 64684,
+   "monthly_avg": 382.75,
    "date": "20261008"
   },
   "3016": {
@@ -871,7 +836,7 @@
   }
  },
  "prev_trading": "2026-10-07",
- "announcement_asof": "2026-10-07",
+ "announcement_asof": "2026-10-08",
  "last_trade_date": "2026-10-08",
  "sources": {
   "taiex": {
@@ -914,7 +879,7 @@
   "twse_punish": {
    "ok": true,
    "as_of": null,
-   "rows": 16,
+   "rows": 17,
    "error": null
   },
   "twse_quotes": {
