@@ -1320,5 +1320,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "光電"
+  },
+  "3265": {
+    "name": "台星科",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3597": {
+    "name": "映興",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
