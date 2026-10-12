@@ -533,20 +533,20 @@
    "criteria": "連續二次 (10/8–10/12)",
    "raw_criteria": "115年10月08日至115年10月12日連續二次",
    "thresholds": {
-    "current_close": 57.5,
-    "latest_date": "2026-10-12",
-    "history_days": 27,
+    "current_close": 39.2,
+    "latest_date": "2026-09-30",
+    "history_days": 20,
     "clause1": {
-     "ref_date": "2026-10-01",
-     "ref_close": 43.1,
-     "cum_pct": 33.4106728538283,
+     "ref_date": "2026-09-18",
+     "ref_close": 27.2,
+     "cum_pct": 44.11764705882354,
      "pct": 30.0,
-     "threshold": 56.03,
-     "diff_pct": -2.556521739130433,
+     "threshold": 35.36,
+     "diff_pct": -9.795918367346946,
      "triggered": true
     },
-    "vol_avg": 1422.1538461538462,
-    "vol_days": 26
+    "vol_avg": 1049.2631578947369,
+    "vol_days": 19
    }
   },
   {
