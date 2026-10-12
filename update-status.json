@@ -1,14 +1,14 @@
 {
-  "data_date": "2026-10-08",
+  "data_date": "2026-10-12",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-10-09T18:23:46Z",
+    "at": "2026-10-12T19:15:49Z",
     "outcome": "success",
-    "run_id": "37972888164"
+    "run_id": "38296407496"
   },
-  "last_market_change_at": "2026-10-09T16:29:11Z",
-  "last_successful_check_at": "2026-10-09T18:23:46Z",
-  "market_hash": "6429139f796dbf950e1304f979e01b57386edbcb5fc8c103a3eb8f28222607b6",
+  "last_market_change_at": "2026-10-12T19:15:49Z",
+  "last_successful_check_at": "2026-10-12T19:15:49Z",
+  "market_hash": "fceefd4fad4053ee11d92d782f45454c673b728e681e40c6c5c09451e3dc6d4d",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -27,10 +27,10 @@
       "rows": 14
     },
     "tpex_quotes": {
-      "as_of": "20261008",
+      "as_of": "20261012",
       "error": null,
       "ok": true,
-      "rows": 990
+      "rows": 989
     },
     "tpex_warning": {
       "as_of": null,
@@ -39,10 +39,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-08",
+      "as_of": "2026-10-12",
       "error": null,
       "ok": true,
-      "rows": 47
+      "rows": 48
     },
     "twse_notetrans": {
       "as_of": null,
@@ -57,10 +57,10 @@
       "rows": 17
     },
     "twse_quotes": {
-      "as_of": "20261008",
+      "as_of": "20261012",
       "error": null,
       "ok": true,
-      "rows": 1380
+      "rows": 1381
     }
   }
 }
