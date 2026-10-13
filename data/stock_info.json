@@ -1332,5 +1332,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "3564": {
+    "name": "其陽",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
   }
 }
