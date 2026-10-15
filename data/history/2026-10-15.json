@@ -10,9 +10,9 @@
   "日期": "1151015"
  },
  "counts": {
-  "active": 21,
+  "active": 18,
   "twse": 9,
-  "tpex": 12,
+  "tpex": 9,
   "second": 3,
   "notetrans": 7
  },
@@ -58,48 +58,6 @@
    "close": 48.1,
    "change_pct": -9.9250936329588,
    "vol_k": 1496
-  },
-  {
-   "code": "4174",
-   "name": "浩鼎",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-07",
-   "period_start": "2026-10-08",
-   "period_end": "2026-10-15",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 59.9,
-   "change_pct": 0.33500837520938026,
-   "vol_k": 860
-  },
-  {
-   "code": "4760",
-   "name": "勤凱",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-07",
-   "period_start": "2026-10-08",
-   "period_end": "2026-10-15",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 368.5,
-   "change_pct": -7.644110275689223,
-   "vol_k": 941
-  },
-  {
-   "code": "5205",
-   "name": "中茂",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-07",
-   "period_start": "2026-10-08",
-   "period_end": "2026-10-15",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 31.25,
-   "change_pct": -9.94236311239193,
-   "vol_k": 3
   },
   {
    "code": "5205",
@@ -184,20 +142,6 @@
    "close": 13.45,
    "change_pct": -7.560137457044674,
    "vol_k": 377
-  },
-  {
-   "code": "8358",
-   "name": "金居",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-07",
-   "period_start": "2026-10-08",
-   "period_end": "2026-10-15",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 3,
-   "close": 461.5,
-   "change_pct": -8.067729083665338,
-   "vol_k": 3282
   },
   {
    "code": "1709",
@@ -672,20 +616,6 @@
    "monthly_avg": 59.71,
    "date": "20261015"
   },
-  "4174": {
-   "close": 59.9,
-   "change": 0.2,
-   "change_pct": 0.33500837520938026,
-   "vol_k": 860,
-   "date": "20261015"
-  },
-  "4760": {
-   "close": 368.5,
-   "change": -30.5,
-   "change_pct": -7.644110275689223,
-   "vol_k": 941,
-   "date": "20261015"
-  },
   "4979": {
    "close": 542.0,
    "change": -46.0,
@@ -774,13 +704,6 @@
    "vol_k": 7464,
    "date": "20261015"
   },
-  "8358": {
-   "close": 461.5,
-   "change": -40.5,
-   "change_pct": -8.067729083665338,
-   "vol_k": 3282,
-   "date": "20261015"
-  },
   "9103": {
    "close": 6.03,
    "change": -0.29,
@@ -803,7 +726,7 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 14,
+   "rows": 10,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },
