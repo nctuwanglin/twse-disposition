@@ -1338,5 +1338,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "通信網路"
+  },
+  "2424": {
+    "name": "隴華",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "3287": {
+    "name": "廣寰科",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電腦及週邊設備"
   }
 }
