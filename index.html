@@ -545,7 +545,7 @@
   }
 </style>
 <script src="assets/health.js" defer></script>
-<script id="dashboard-contract" type="application/json">{"announcement_asof": "2026-10-16", "counts": {"active": 17, "notetrans": 5, "second": 3, "tpex": 10, "twse": 7}, "date": "2026-10-16", "sources": {"taiex": {"as_of": null, "error": null, "ok": true, "rows": null}, "tpex_disposal": {"as_of": null, "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal", "error": null, "ok": true, "rows": 15}, "tpex_quotes": {"as_of": "20261016", "error": null, "ok": true, "rows": 981}, "tpex_warning": {"as_of": null, "error": null, "ok": true, "rows": null}, "trading_calendar": {"as_of": "2026-10-16", "error": null, "ok": true, "rows": 52}, "twse_notetrans": {"as_of": null, "error": null, "ok": true, "rows": null}, "twse_punish": {"as_of": null, "error": null, "ok": true, "rows": 7}, "twse_quotes": {"as_of": "20261016", "error": null, "ok": true, "rows": 1380}}}</script>
+<script id="dashboard-contract" type="application/json">{"announcement_asof": "2026-10-15", "counts": {"active": 17, "notetrans": 5, "second": 3, "tpex": 10, "twse": 7}, "date": "2026-10-16", "sources": {"taiex": {"as_of": null, "error": null, "ok": true, "rows": null}, "tpex_disposal": {"as_of": null, "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal", "error": null, "ok": true, "rows": 10}, "tpex_quotes": {"as_of": "20261016", "error": null, "ok": true, "rows": 981}, "tpex_warning": {"as_of": null, "error": null, "ok": true, "rows": null}, "trading_calendar": {"as_of": "2026-10-16", "error": null, "ok": true, "rows": 52}, "twse_notetrans": {"as_of": null, "error": null, "ok": true, "rows": null}, "twse_punish": {"as_of": null, "error": null, "ok": true, "rows": 7}, "twse_quotes": {"as_of": "20261016", "error": null, "ok": true, "rows": 1380}}}</script>
 </head>
 <body class="grid-bg min-h-screen">
 
@@ -582,16 +582,16 @@
           <div><span class="text-slate-400">大盤 10/16</span> <span class="text-green-400 font-bold mono">47,111</span> <span class="text-green-400">+141.39 (+0.30%)</span></div>
           <div><span class="text-slate-400">處置中</span> <span class="text-red-400 font-bold mono">17 檔</span></div>
           <div><span class="text-slate-400">今日出關</span> <span class="text-yellow-400 font-bold mono">0 檔</span></div>
-          <div><span class="text-slate-400">即將加入</span> <span class="text-amber-400 font-bold mono">5 檔</span><span class="text-slate-500 ml-1">(10/19 起)</span></div>
+          
         </div>
         <div class="text-[11px] text-slate-500">
           注意累計 TWSE 3 檔・TPEx 2 檔：<span class="text-slate-400">2059川湖, 3055蔚華科, 6278台表科, 6217中探針, 6716應廣</span>
         </div>
-        <div class="text-[11px] text-slate-500 mt-1">資料日｜<span class="text-slate-400">報價</span> <span class="mono text-slate-300">10/16</span>　<span class="text-slate-400">最新公告</span> <span class="mono text-slate-300">10/16</span></div>
+        <div class="text-[11px] text-slate-500 mt-1">資料日｜<span class="text-slate-400">報價</span> <span class="mono text-slate-300">10/16</span>　<span class="text-slate-400">最新公告</span> <span class="mono text-slate-300">10/15</span></div>
       </div>
     </div>
   </div>
-<div id="update-health" data-market-hash="743d5848e0870332fd1d51f721db55cc1b2a66fa7582a357301900f4bf6e4e5e" data-preview="false" role="status" style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8"><span data-health-output>正在查詢更新健康狀態…</span> <a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" target="_blank" rel="noopener">更新執行紀錄</a></div>
+<div id="update-health" data-market-hash="a76e84946781a925d30ff105785986a6578af8d5f1c659a6945480116c2ba1ed" data-preview="false" role="status" style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8"><span data-health-output>正在查詢更新健康狀態…</span> <a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" target="_blank" rel="noopener">更新執行紀錄</a></div>
 <!-- AUTO:CONTEXT_END -->
 
   <!-- SUMMARY STATS -->
@@ -608,10 +608,10 @@
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">最近一批</div>
       <div class="flex items-baseline gap-2 mt-1">
-        <span class="num-display text-3xl text-amber-400">5</span>
+        <span class="num-display text-3xl text-amber-400">2</span>
         <span class="text-xs text-slate-400">檔</span>
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">10/16 公告</div>
+      <div class="text-[10px] text-slate-500 mt-1">10/15 公告</div>
     </div>
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">二次處置</div>
@@ -642,7 +642,7 @@
       <button class="tab" data-tab="2" onclick="switchTab(2)" role="tab">
         <span class="tab-num">02 / NEW</span>
         <span class="tab-label">即將被處置</span>
-        <span class="tab-count" data-count="2">5 檔</span>
+        <span class="tab-count" data-count="2">0 檔</span>
       </button>
       <button class="tab" data-tab="3" onclick="switchTab(3)" role="tab">
         <span class="tab-num">03 / WATCHLIST</span>
@@ -792,24 +792,17 @@
         </div>
       </div>
       <div class="text-right">
-        <div class="mono text-2xl font-bold text-amber-400">5</div>
+        <div class="mono text-2xl font-bold text-amber-400">2</div>
         <div class="text-[10px] text-slate-500">not yet effective</div>
       </div>
     </div>
 
     <!-- AUTO:TAB2_CONTENT_START -->
-<p class="scope-note">正式公告：僅列已公告、尚未生效的處置批次，不含雷達推估。生效日與措施以官方公告為準。</p>    <details class="card mb-3" open>
-      <summary class="p-3 flex items-center justify-between border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="pill pill-blue">即將生效</span>
-          <span class="text-sm font-semibold">處置期 10/19 – 10/23</span>
-          <span class="text-[10px] text-slate-500 mono">5 檔</span>
-          <span class="text-[10px] text-slate-500 mono">公告 10/16</span>
-        </div>
-        <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-      </summary>
-      <div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TPEx 上櫃</div><div><div class="table-row" data-code="2221" data-name="大甲"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2221</span></div><div><div class="text-sm font-semibold">大甲 <span class="pill pill-gray ml-1" title="本站歷史庫收錄到 2 段處置期（自 2026-06-22 起收錄），非官方累犯次數">收錄2段</span></div><div class="sector">其他 <span class="mono text-red-400" style="font-size:11px">122 ▼3.6%</span> <span class="text-slate-600">9,997張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/23</div></div></div><div class="table-row" data-code="3230" data-name="錦明" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3230</span></div><div><div class="text-sm font-semibold">錦明 <span class="pill pill-gray ml-1" title="本站歷史庫收錄到 2 段處置期（自 2026-06-22 起收錄），非官方累犯次數">收錄2段</span></div><div class="sector">光電 <span class="mono text-red-400" style="font-size:11px">23.7 ▼9.9%</span> <span class="text-slate-600">565張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/23</div></div></div><div class="table-row" data-code="3287" data-name="廣寰科"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3287</span></div><div><div class="text-sm font-semibold">廣寰科</div><div class="sector">電腦及週邊設備 <span class="mono text-green-400" style="font-size:11px">59.6 ▲1.5%</span> <span class="text-slate-600">5,755張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/23</div></div></div><div class="table-row" data-code="3597" data-name="映興"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">3597</span></div><div><div class="text-sm font-semibold">映興</div><div class="sector">電子零組件 <span class="mono text-green-400" style="font-size:11px">51.2 ▲6.4%</span> <span class="text-slate-600">1,505張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/23</div></div></div><div class="table-row" data-code="4979" data-name="華星光"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">4979</span></div><div><div class="text-sm font-semibold">華星光 <span class="pill pill-gray ml-1" title="本站歷史庫收錄到 5 段處置期（自 2026-06-22 起收錄），非官方累犯次數">收錄5段</span></div><div class="sector">通信網路 <span class="mono text-red-400" style="font-size:11px">520 ▼4.1%</span> <span class="text-slate-600">9,395張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/23</div></div></div></div></div>
-    </details>
+<p class="scope-note">正式公告：僅列已公告、尚未生效的處置批次，不含雷達推估。生效日與措施以官方公告為準。</p>    <div class="empty-state-server">
+      <div class="empty-state-icon">📭</div>
+      <div class="empty-state-title">目前沒有已公告待生效處置</div>
+      <div class="empty-state-hint">已公告的批次都已生效，或尚未有新公告</div>
+    </div>
 <!-- AUTO:TAB2_CONTENT_END -->
 
     <div class="empty-state" id="empty-2" style="display:none;">
@@ -874,7 +867,7 @@
           出關後統計排除已知重疊處置或重疊待確認樣本；處置期間統計仍保留各事件。
           樣本小，僅描述已發生的分布，不足以推論處置造成漲跌。
         </div>
-        <div class="text-[10px] text-slate-500 mt-1 leading-4">歷史庫自 2026-06-22 起收錄 78 個交易日快照，其中 15 個交易日為事後回填、不含當時報價。「收錄 N 段」是本站觀測到的處置期數，<span class="text-slate-400">不是官方累犯次數</span>，也不代表完整歷史。</div>
+        <div class="text-[10px] text-slate-500 mt-1 leading-4">歷史庫自 2026-06-22 起收錄 79 個交易日快照，其中 15 個交易日為事後回填、不含當時報價。「收錄 N 段」是本站觀測到的處置期數，<span class="text-slate-400">不是官方累犯次數</span>，也不代表完整歷史。</div>
       </div>
     </div>
 <!-- AUTO:TAB3_CONTENT_END -->

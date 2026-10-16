@@ -256,78 +256,7 @@
    "vol_k": 1533
   }
  ],
- "upcoming": [
-  {
-   "code": "2221",
-   "name": "大甲",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-16",
-   "period_start": "2026-10-19",
-   "period_end": "2026-10-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 122.0,
-   "change_pct": -3.557312252964427,
-   "vol_k": 9997
-  },
-  {
-   "code": "3230",
-   "name": "錦明",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-16",
-   "period_start": "2026-10-19",
-   "period_end": "2026-10-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 23.7,
-   "change_pct": -9.885931558935361,
-   "vol_k": 565
-  },
-  {
-   "code": "3287",
-   "name": "廣寰科",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-16",
-   "period_start": "2026-10-19",
-   "period_end": "2026-10-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 59.6,
-   "change_pct": 1.5332197614991483,
-   "vol_k": 5755
-  },
-  {
-   "code": "3597",
-   "name": "映興",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-16",
-   "period_start": "2026-10-19",
-   "period_end": "2026-10-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 51.2,
-   "change_pct": 6.4449064449064455,
-   "vol_k": 1505
-  },
-  {
-   "code": "4979",
-   "name": "華星光",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-16",
-   "period_start": "2026-10-19",
-   "period_end": "2026-10-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 5,
-   "close": 520.0,
-   "change_pct": -4.059040590405904,
-   "vol_k": 9395
-  }
- ],
+ "upcoming": [],
  "notetrans": [
   {
    "code": "2059",
@@ -510,13 +439,6 @@
    "monthly_avg": 11196.36,
    "date": "20261016"
   },
-  "2221": {
-   "close": 122.0,
-   "change": -4.5,
-   "change_pct": -3.557312252964427,
-   "vol_k": 9997,
-   "date": "20261016"
-  },
   "2424": {
    "close": 15.6,
    "change": 1.4,
@@ -549,25 +471,11 @@
    "monthly_avg": 194.09,
    "date": "20261016"
   },
-  "3230": {
-   "close": 23.7,
-   "change": -2.6,
-   "change_pct": -9.885931558935361,
-   "vol_k": 565,
-   "date": "20261016"
-  },
   "3265": {
    "close": 269.0,
    "change": -9.0,
    "change_pct": -3.237410071942446,
    "vol_k": 2754,
-   "date": "20261016"
-  },
-  "3287": {
-   "close": 59.6,
-   "change": 0.9,
-   "change_pct": 1.5332197614991483,
-   "vol_k": 5755,
    "date": "20261016"
   },
   "3441": {
@@ -582,13 +490,6 @@
    "change": 3.1,
    "change_pct": 6.4449064449064455,
    "vol_k": 1505,
-   "date": "20261016"
-  },
-  "4979": {
-   "close": 520.0,
-   "change": -22.0,
-   "change_pct": -4.059040590405904,
-   "vol_k": 9395,
    "date": "20261016"
   },
   "5205": {
@@ -696,7 +597,7 @@
   }
  },
  "prev_trading": "2026-10-15",
- "announcement_asof": "2026-10-16",
+ "announcement_asof": "2026-10-15",
  "last_trade_date": "2026-10-16",
  "sources": {
   "taiex": {
@@ -708,7 +609,7 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 15,
+   "rows": 10,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },
