@@ -1350,5 +1350,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電腦及週邊設備"
+  },
+  "6278": {
+    "name": "台表科",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "光電"
   }
 }
