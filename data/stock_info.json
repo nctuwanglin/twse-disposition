@@ -1356,5 +1356,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "光電"
+  },
+  "3354": {
+    "name": "律勝",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
