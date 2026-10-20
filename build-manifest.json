@@ -1,11 +1,11 @@
 {
-  "announcement_asof": "2026-10-19",
+  "announcement_asof": "2026-10-20",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "1fb2da774ad39bd74139b08cadd76c633e7b883fda3be61cd1eddf47ac831700",
-    "index.html": "582035c13e51857fcd33126315a2c5dce1e4238f7e6ae3f21ee3c6d736a8bae0"
+    "dispo.json": "9ff6edc8d20c0bcaf3f98f9667c7e0d89b3ba8f1fb766c94050038c9e8916b52",
+    "index.html": "fa710948fb947c402e893a43f81faf7e6367d40b315ca5965ebc8fa4e284d682"
   },
-  "data_date": "2026-10-19",
+  "data_date": "2026-10-20",
   "generator": "0a55d786c93f",
   "mode": "live",
   "schema": 1,
@@ -21,13 +21,13 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 11
+      "rows": 12
     },
     "tpex_quotes": {
-      "as_of": "20261019",
+      "as_of": "20261020",
       "error": null,
       "ok": true,
-      "rows": 960
+      "rows": 988
     },
     "tpex_warning": {
       "as_of": null,
@@ -36,10 +36,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-19",
+      "as_of": "2026-10-20",
       "error": null,
       "ok": true,
-      "rows": 53
+      "rows": 54
     },
     "twse_notetrans": {
       "as_of": null,
@@ -51,13 +51,13 @@
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 6
+      "rows": 5
     },
     "twse_quotes": {
-      "as_of": "20261019",
+      "as_of": "20261020",
       "error": null,
       "ok": true,
-      "rows": 1381
+      "rows": 1383
     }
   }
 }
