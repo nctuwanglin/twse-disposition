@@ -10,9 +10,9 @@
   "日期": "1151020"
  },
  "counts": {
-  "active": 15,
+  "active": 12,
   "twse": 5,
-  "tpex": 10,
+  "tpex": 7,
   "second": 3,
   "notetrans": 4
  },
@@ -46,20 +46,6 @@
    "vol_k": 2897
   },
   {
-   "code": "3265",
-   "name": "台星科",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-13",
-   "period_start": "2026-10-14",
-   "period_end": "2026-10-20",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 248.0,
-   "change_pct": -1.1952191235059761,
-   "vol_k": 1694
-  },
-  {
    "code": "3287",
    "name": "廣寰科",
    "exchange": "TPEx",
@@ -72,20 +58,6 @@
    "close": 70.3,
    "change_pct": 7.328244274809161,
    "vol_k": 2443
-  },
-  {
-   "code": "3597",
-   "name": "映興",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-13",
-   "period_start": "2026-10-14",
-   "period_end": "2026-10-20",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 49.3,
-   "change_pct": 6.941431670281998,
-   "vol_k": 787
   },
   {
    "code": "3597",
@@ -116,20 +88,6 @@
    "vol_k": 1376
   },
   {
-   "code": "5205",
-   "name": "中茂",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-13",
-   "period_start": "2026-10-14",
-   "period_end": "2026-10-20",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 23.2,
-   "change_pct": -8.481262327416173,
-   "vol_k": 15
-  },
-  {
    "code": "6716",
    "name": "應廣",
    "exchange": "TPEx",
@@ -142,20 +100,6 @@
    "close": 95.7,
    "change_pct": 5.512679162072767,
    "vol_k": 799
-  },
-  {
-   "code": "7772",
-   "name": "耀穎",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-13",
-   "period_start": "2026-10-14",
-   "period_end": "2026-10-20",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 3,
-   "close": 116.5,
-   "change_pct": -7.171314741035857,
-   "vol_k": 40
   },
   {
    "code": "8111",
@@ -440,13 +384,6 @@
    "vol_k": 2897,
    "date": "20261020"
   },
-  "3265": {
-   "close": 248.0,
-   "change": -3.0,
-   "change_pct": -1.1952191235059761,
-   "vol_k": 1694,
-   "date": "20261020"
-  },
   "3287": {
    "close": 70.3,
    "change": 4.8,
@@ -475,25 +412,11 @@
    "vol_k": 1376,
    "date": "20261020"
   },
-  "5205": {
-   "close": 23.2,
-   "change": -2.15,
-   "change_pct": -8.481262327416173,
-   "vol_k": 15,
-   "date": "20261020"
-  },
   "6716": {
    "close": 95.7,
    "change": 5.0,
    "change_pct": 5.512679162072767,
    "vol_k": 799,
-   "date": "20261020"
-  },
-  "7772": {
-   "close": 116.5,
-   "change": -9.0,
-   "change_pct": -7.171314741035857,
-   "vol_k": 40,
    "date": "20261020"
   },
   "8111": {
@@ -532,7 +455,7 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 12,
+   "rows": 8,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },
