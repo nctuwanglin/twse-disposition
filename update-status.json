@@ -2,13 +2,13 @@
   "data_date": "2026-10-20",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-10-20T14:27:18Z",
+    "at": "2026-10-20T17:14:46Z",
     "outcome": "success",
-    "run_id": "39439247646"
+    "run_id": "39464249483"
   },
-  "last_market_change_at": "2026-10-20T14:27:18Z",
-  "last_successful_check_at": "2026-10-20T14:27:18Z",
-  "market_hash": "9ff6edc8d20c0bcaf3f98f9667c7e0d89b3ba8f1fb766c94050038c9e8916b52",
+  "last_market_change_at": "2026-10-20T17:14:46Z",
+  "last_successful_check_at": "2026-10-20T17:14:46Z",
+  "market_hash": "9427e0f00ad8e6ae2dd68a2eb895da18fa360d51d4dc6d5bec5965ad68583fd0",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -24,7 +24,7 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 12
+      "rows": 8
     },
     "tpex_quotes": {
       "as_of": "20261020",
