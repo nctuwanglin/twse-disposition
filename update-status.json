@@ -4,12 +4,12 @@
     "twse_notetrans"
   ],
   "last_attempt": {
-    "at": "2026-10-21T14:35:42Z",
+    "at": "2026-10-21T17:16:47Z",
     "outcome": "partial",
-    "run_id": "39618080190"
+    "run_id": "39642303590"
   },
   "last_market_change_at": "2026-10-21T14:35:42Z",
-  "last_successful_check_at": "2026-10-21T14:35:42Z",
+  "last_successful_check_at": "2026-10-21T17:16:47Z",
   "market_hash": "44695475a0c3395ff4f2e922db622248c617d516b5b2be4eb26d63830fe97230",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
