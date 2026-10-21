@@ -1362,5 +1362,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "8437": {
+    "name": "大地-KY",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他"
   }
 }
