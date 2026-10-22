@@ -10,9 +10,9 @@
   "日期": "1151022"
  },
  "counts": {
-  "active": 11,
+  "active": 10,
   "twse": 3,
-  "tpex": 8,
+  "tpex": 7,
   "second": 2,
   "notetrans": 5
  },
@@ -128,20 +128,6 @@
    "close": 93.0,
    "change_pct": -4.713114754098361,
    "vol_k": 375
-  },
-  {
-   "code": "8111",
-   "name": "立碁",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-15",
-   "period_start": "2026-10-16",
-   "period_end": "2026-10-22",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 77.4,
-   "change_pct": -6.295399515738498,
-   "vol_k": 2154
   },
   {
    "code": "2424",
@@ -542,13 +528,6 @@
    "vol_k": 7467,
    "date": "20261022"
   },
-  "8111": {
-   "close": 77.4,
-   "change": -5.2,
-   "change_pct": -6.295399515738498,
-   "vol_k": 2154,
-   "date": "20261022"
-  },
   "8358": {
    "close": 438.5,
    "change": -43.5,
@@ -577,7 +556,7 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 13,
+   "rows": 12,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },

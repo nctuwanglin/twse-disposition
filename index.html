@@ -545,7 +545,7 @@
   }
 </style>
 <script src="assets/health.js" defer></script>
-<script id="dashboard-contract" type="application/json">{"announcement_asof": "2026-10-22", "counts": {"active": 11, "notetrans": 5, "second": 2, "tpex": 8, "twse": 3}, "date": "2026-10-22", "sources": {"taiex": {"as_of": null, "error": null, "ok": true, "rows": null}, "tpex_disposal": {"as_of": null, "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal", "error": null, "ok": true, "rows": 13}, "tpex_quotes": {"as_of": "20261022", "error": null, "ok": true, "rows": 980}, "tpex_warning": {"as_of": null, "error": null, "ok": true, "rows": null}, "trading_calendar": {"as_of": "2026-10-22", "error": null, "ok": true, "rows": 56}, "twse_notetrans": {"as_of": null, "error": null, "ok": true, "rows": null}, "twse_punish": {"as_of": null, "error": null, "ok": true, "rows": 4}, "twse_quotes": {"as_of": "20261022", "error": null, "ok": true, "rows": 1383}}}</script>
+<script id="dashboard-contract" type="application/json">{"announcement_asof": "2026-10-22", "counts": {"active": 10, "notetrans": 5, "second": 2, "tpex": 7, "twse": 3}, "date": "2026-10-22", "sources": {"taiex": {"as_of": null, "error": null, "ok": true, "rows": null}, "tpex_disposal": {"as_of": null, "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal", "error": null, "ok": true, "rows": 12}, "tpex_quotes": {"as_of": "20261022", "error": null, "ok": true, "rows": 980}, "tpex_warning": {"as_of": null, "error": null, "ok": true, "rows": null}, "trading_calendar": {"as_of": "2026-10-22", "error": null, "ok": true, "rows": 56}, "twse_notetrans": {"as_of": null, "error": null, "ok": true, "rows": null}, "twse_punish": {"as_of": null, "error": null, "ok": true, "rows": 4}, "twse_quotes": {"as_of": "20261022", "error": null, "ok": true, "rows": 1383}}}</script>
 </head>
 <body class="grid-bg min-h-screen">
 
@@ -580,7 +580,7 @@
         <div class="text-sm font-semibold mb-2 text-amber-200">市場概況</div>
         <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs mb-2">
           <div><span class="text-slate-400">大盤 10/22</span> <span class="text-red-400 font-bold mono">46,041</span> <span class="text-red-400">-846.34 (-1.81%)</span></div>
-          <div><span class="text-slate-400">處置中</span> <span class="text-red-400 font-bold mono">11 檔</span></div>
+          <div><span class="text-slate-400">處置中</span> <span class="text-red-400 font-bold mono">10 檔</span></div>
           <div><span class="text-slate-400">今日出關</span> <span class="text-yellow-400 font-bold mono">0 檔</span></div>
           <div><span class="text-slate-400">即將加入</span> <span class="text-amber-400 font-bold mono">4 檔</span><span class="text-slate-500 ml-1">(10/23 起)</span></div>
         </div>
@@ -591,7 +591,7 @@
       </div>
     </div>
   </div>
-<div id="update-health" data-market-hash="59f3a20e450cf290cc3e0f2642fb0d1d76ede57ddef739aa383e83f13b4a3005" data-preview="false" role="status" style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8"><span data-health-output>正在查詢更新健康狀態…</span> <a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" target="_blank" rel="noopener">更新執行紀錄</a></div>
+<div id="update-health" data-market-hash="730642902d1d66fdd99c3ff6300cf27a890390e6bca043b2d5cab6d7899430b3" data-preview="false" role="status" style="margin:12px auto;padding:12px;max-width:1200px;font-size:12px;line-height:1.8"><span data-health-output>正在查詢更新健康狀態…</span> <a href="https://github.com/nctuwanglin/twse-disposition/actions/workflows/update.yml" target="_blank" rel="noopener">更新執行紀錄</a></div>
 <!-- AUTO:CONTEXT_END -->
 
   <!-- SUMMARY STATS -->
@@ -600,10 +600,10 @@
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">處置中</div>
       <div class="flex items-baseline gap-2 mt-1">
-        <span class="num-display text-3xl text-red-400">11</span>
-        <span class="text-xs text-slate-400">檔</span>
+        <span class="num-display text-3xl text-red-400">10</span>
+        <span class="text-xs text-slate-400">檔</span><span class="text-sm text-green-400 mono ml-1">(-1)</span>
       </div>
-      <div class="text-[10px] text-slate-500 mt-1">上市 3 · 上櫃 8 · 比較 2026-10-21</div>
+      <div class="text-[10px] text-slate-500 mt-1">上市 3 · 上櫃 7 · 比較 2026-10-21</div>
     </div>
     <div class="stat-block">
       <div class="text-[10px] text-slate-500 uppercase tracking-wider mono">最近一批</div>
@@ -637,7 +637,7 @@
       <button class="tab" data-tab="1" data-active="true" onclick="switchTab(1)" role="tab">
         <span class="tab-num">01 / ENFORCING</span>
         <span class="tab-label">處置中</span>
-        <span class="tab-count" data-count="1">11 檔</span>
+        <span class="tab-count" data-count="1">10 檔</span>
       </button>
       <button class="tab" data-tab="2" onclick="switchTab(2)" role="tab">
         <span class="tab-num">02 / NEW</span>
@@ -701,7 +701,7 @@
         </div>
       </div>
       <div class="text-right">
-        <div class="mono text-2xl font-bold text-red-400">11</div>
+        <div class="mono text-2xl font-bold text-red-400">10</div>
         <div class="text-[10px] text-slate-500">unique stocks</div>
       </div>
     </div>
@@ -713,7 +713,7 @@
         <div class="text-[11px] text-slate-400 mt-1">日期為處置<span class="text-slate-300">最後一日</span>，次一交易日解除本次處置 · 依現行有效管制（重疊處置取較長者）· 再處置以官方公告為準</div>
         <div class="text-[10px] text-slate-500 mt-0.5">※ 本時間軸為全市場總覽，不受下方搜尋/產業篩選影響</div>
       </div>
-      <div><div class="sched-row"><span class="sched-date">10/22（四）</span><span class="sched-tag"><span class="pill pill-red">最後一天</span></span><span class="sched-count">1檔</span><span class="sched-names">立碁(8111)</span></div><div class="sched-row"><span class="sched-date">10/23（五）</span><span class="sched-tag"><span class="mono text-slate-500">D+1</span></span><span class="sched-count">5檔</span><span class="sched-names">大甲(2221)、蔚華科(3055)、錦明(3230)、映興(3597)、華星光(4979)</span></div><div class="sched-row"><span class="sched-date">10/27（二）</span><span class="sched-tag"><span class="mono text-slate-500">D+5</span></span><span class="sched-count">2檔</span><span class="sched-names">大量(3167)、應廣(6716)</span></div><div class="sched-row"><span class="sched-date">10/28（三）</span><span class="sched-tag"><span class="mono text-slate-500">D+6</span></span><span class="sched-count">2檔</span><span class="sched-names">隴華(2424)、律勝(3354)</span></div><div class="sched-row"><span class="sched-date">10/29（四）</span><span class="sched-tag"><span class="mono text-slate-500">D+7</span></span><span class="sched-count">1檔</span><span class="sched-names">廣寰科(3287)</span></div></div>
+      <div><div class="sched-row"><span class="sched-date">10/23（五）</span><span class="sched-tag"><span class="mono text-slate-500">D+1</span></span><span class="sched-count">5檔</span><span class="sched-names">大甲(2221)、蔚華科(3055)、錦明(3230)、映興(3597)、華星光(4979)</span></div><div class="sched-row"><span class="sched-date">10/27（二）</span><span class="sched-tag"><span class="mono text-slate-500">D+5</span></span><span class="sched-count">2檔</span><span class="sched-names">大量(3167)、應廣(6716)</span></div><div class="sched-row"><span class="sched-date">10/28（三）</span><span class="sched-tag"><span class="mono text-slate-500">D+6</span></span><span class="sched-count">2檔</span><span class="sched-names">隴華(2424)、律勝(3354)</span></div><div class="sched-row"><span class="sched-date">10/29（四）</span><span class="sched-tag"><span class="mono text-slate-500">D+7</span></span><span class="sched-count">1檔</span><span class="sched-names">廣寰科(3287)</span></div></div>
     </div>
     <details class="card mb-3" open>
       <summary class="p-3 flex items-center justify-between border-b border-slate-800">
@@ -768,12 +768,12 @@
         <div class="flex items-center gap-2">
           <span class="pill pill-red">最後一天 ⏰</span>
           <span class="text-sm font-semibold">處置期 10/16 – 10/22</span>
-          <span class="text-[10px] text-slate-500 mono">2 檔</span>
+          <span class="text-[10px] text-slate-500 mono">1 檔</span>
           <span class="text-[10px] text-slate-500 mono">公告 10/15</span>
         </div>
         <svg class="chev w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </summary>
-      <div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row" data-code="2424" data-name="隴華"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2424</span></div><div><div class="text-sm font-semibold">隴華 <span class="pill pill-gray ml-1" title="本站歷史庫收錄到 2 段處置期（自 2026-06-22 起收錄），非官方累犯次數">收錄2段</span></div><div class="sector">通信網路 <span class="mono text-red-400" style="font-size:11px">13.45 ▼9.7%</span> <span class="text-slate-600">130張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/22</div></div></div></div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono border-t border-slate-800">TPEx 上櫃</div><div><div class="table-row" data-code="8111" data-name="立碁" data-tags="optical"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">8111</span></div><div><div class="text-sm font-semibold">立碁</div><div class="sector">光電 <span class="mono text-red-400" style="font-size:11px">77.4 ▼6.3%</span> <span class="text-slate-600">2,154張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/22</div></div></div></div></div>
+      <div><div class="text-[10px] tracking-widest text-slate-500 uppercase px-3 pt-3 pb-1 mono">TWSE 上市</div><div><div class="table-row" data-code="2424" data-name="隴華"><div class="flex items-center gap-2"><span class="severity-bar bg-amber-500" style="height:32px;"></span><span class="ticker text-amber-300 font-bold">2424</span></div><div><div class="text-sm font-semibold">隴華 <span class="pill pill-gray ml-1" title="本站歷史庫收錄到 2 段處置期（自 2026-06-22 起收錄），非官方累犯次數">收錄2段</span></div><div class="sector">通信網路 <span class="mono text-red-400" style="font-size:11px">13.45 ▼9.7%</span> <span class="text-slate-600">130張</span></div></div><div class="end-date-desktop text-right"><span class="pill pill-amber">2分撮合</span><div class="text-[10px] text-slate-500 mt-1 mono">~ 10/22</div></div></div></div></div>
     </details>
 <!-- AUTO:TAB1_BATCHES_END -->
     <!-- Empty state -->
@@ -874,7 +874,7 @@
           出關後統計排除已知重疊處置或重疊待確認樣本；處置期間統計仍保留各事件。
           樣本小，僅描述已發生的分布，不足以推論處置造成漲跌。
         </div>
-        <div class="text-[10px] text-slate-500 mt-1 leading-4">歷史庫自 2026-06-22 起收錄 82 個交易日快照，其中 15 個交易日為事後回填、不含當時報價。「收錄 N 段」是本站觀測到的處置期數，<span class="text-slate-400">不是官方累犯次數</span>，也不代表完整歷史。</div>
+        <div class="text-[10px] text-slate-500 mt-1 leading-4">歷史庫自 2026-06-22 起收錄 83 個交易日快照，其中 15 個交易日為事後回填、不含當時報價。「收錄 N 段」是本站觀測到的處置期數，<span class="text-slate-400">不是官方累犯次數</span>，也不代表完整歷史。</div>
       </div>
     </div>
 <!-- AUTO:TAB3_CONTENT_END -->

@@ -2,8 +2,8 @@
   "announcement_asof": "2026-10-22",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "59f3a20e450cf290cc3e0f2642fb0d1d76ede57ddef739aa383e83f13b4a3005",
-    "index.html": "9d55f34d56f0360cfbca50259c939b0ee31bb137030c91e3d25233d0795f3013"
+    "dispo.json": "730642902d1d66fdd99c3ff6300cf27a890390e6bca043b2d5cab6d7899430b3",
+    "index.html": "a426633db3af8c2038b802eb5028d566976c9f5adff3d29c4b24c2593deed28a"
   },
   "data_date": "2026-10-22",
   "generator": "0a55d786c93f",
@@ -21,7 +21,7 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 13
+      "rows": 12
     },
     "tpex_quotes": {
       "as_of": "20261022",
