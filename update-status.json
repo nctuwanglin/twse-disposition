@@ -1,16 +1,14 @@
 {
-  "data_date": "2026-10-21",
-  "degraded_sources": [
-    "twse_notetrans"
-  ],
+  "data_date": "2026-10-22",
+  "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-10-21T17:16:47Z",
-    "outcome": "partial",
-    "run_id": "39642303590"
+    "at": "2026-10-22T14:37:32Z",
+    "outcome": "success",
+    "run_id": "39797150973"
   },
-  "last_market_change_at": "2026-10-21T14:35:42Z",
-  "last_successful_check_at": "2026-10-21T17:16:47Z",
-  "market_hash": "44695475a0c3395ff4f2e922db622248c617d516b5b2be4eb26d63830fe97230",
+  "last_market_change_at": "2026-10-22T14:37:32Z",
+  "last_successful_check_at": "2026-10-22T14:37:32Z",
+  "market_hash": "59f3a20e450cf290cc3e0f2642fb0d1d76ede57ddef739aa383e83f13b4a3005",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -26,13 +24,13 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 9
+      "rows": 13
     },
     "tpex_quotes": {
-      "as_of": "20261021",
+      "as_of": "20261022",
       "error": null,
       "ok": true,
-      "rows": 988
+      "rows": 980
     },
     "tpex_warning": {
       "as_of": null,
@@ -41,15 +39,15 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-21",
+      "as_of": "2026-10-22",
       "error": null,
       "ok": true,
-      "rows": 55
+      "rows": 56
     },
     "twse_notetrans": {
       "as_of": null,
-      "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')",
-      "ok": false,
+      "error": null,
+      "ok": true,
       "rows": null
     },
     "twse_punish": {
@@ -59,7 +57,7 @@
       "rows": 4
     },
     "twse_quotes": {
-      "as_of": "20261021",
+      "as_of": "20261022",
       "error": null,
       "ok": true,
       "rows": 1383
