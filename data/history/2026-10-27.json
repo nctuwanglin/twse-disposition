@@ -10,9 +10,9 @@
   "日期": "1151027"
  },
  "counts": {
-  "active": 9,
+  "active": 8,
   "twse": 2,
-  "tpex": 7,
+  "tpex": 6,
   "second": 1,
   "notetrans": 2
  },
@@ -27,9 +27,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 61.0,
+   "change_pct": -3.328050713153724,
+   "vol_k": 1385
   },
   {
    "code": "3354",
@@ -41,9 +41,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 50.1,
+   "change_pct": 0.30030030030030025,
+   "vol_k": 1805
   },
   {
    "code": "4542",
@@ -55,9 +55,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 358.0,
+   "change_pct": 3.768115942028986,
+   "vol_k": 434
   },
   {
    "code": "5205",
@@ -69,23 +69,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
-  },
-  {
-   "code": "6716",
-   "name": "應廣",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-19",
-   "period_start": "2026-10-20",
-   "period_end": "2026-10-27",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 22.15,
+   "change_pct": -9.959349593495936,
+   "vol_k": 24
   },
   {
    "code": "8358",
@@ -97,9 +83,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 420.5,
+   "change_pct": -4.104903078677309,
+   "vol_k": 3810
   },
   {
    "code": "8437",
@@ -111,9 +97,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 16.1,
+   "change_pct": 0.0,
+   "vol_k": 349
   },
   {
    "code": "2424",
@@ -155,9 +141,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 50.1,
+   "change_pct": 0.30030030030030025,
+   "vol_k": 1805
   },
   {
    "code": "5475",
@@ -169,9 +155,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 183.0,
+   "change_pct": -6.63265306122449,
+   "vol_k": 7236
   },
   {
    "code": "6751",
@@ -183,9 +169,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 77.2,
+   "change_pct": 9.815078236130867,
+   "vol_k": 991
   },
   {
    "code": "6925",
@@ -197,9 +183,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 111.5,
+   "change_pct": 9.852216748768473,
+   "vol_k": 2479
   }
  ],
  "notetrans": [
@@ -297,6 +283,76 @@
    "vol_k": 840,
    "monthly_avg": 995.81,
    "date": "20261027"
+  },
+  "3287": {
+   "close": 61.0,
+   "change": -2.1,
+   "change_pct": -3.328050713153724,
+   "vol_k": 1385,
+   "date": "20261027"
+  },
+  "3354": {
+   "close": 50.1,
+   "change": 0.15,
+   "change_pct": 0.30030030030030025,
+   "vol_k": 1805,
+   "date": "20261027"
+  },
+  "3441": {
+   "close": 196.0,
+   "change": -21.5,
+   "change_pct": -9.885057471264368,
+   "vol_k": 12820,
+   "date": "20261027"
+  },
+  "4542": {
+   "close": 358.0,
+   "change": 13.0,
+   "change_pct": 3.768115942028986,
+   "vol_k": 434,
+   "date": "20261027"
+  },
+  "5205": {
+   "close": 22.15,
+   "change": -2.45,
+   "change_pct": -9.959349593495936,
+   "vol_k": 24,
+   "date": "20261027"
+  },
+  "5475": {
+   "close": 183.0,
+   "change": -13.0,
+   "change_pct": -6.63265306122449,
+   "vol_k": 7236,
+   "date": "20261027"
+  },
+  "6751": {
+   "close": 77.2,
+   "change": 6.9,
+   "change_pct": 9.815078236130867,
+   "vol_k": 991,
+   "date": "20261027"
+  },
+  "6925": {
+   "close": 111.5,
+   "change": 10.0,
+   "change_pct": 9.852216748768473,
+   "vol_k": 2479,
+   "date": "20261027"
+  },
+  "8358": {
+   "close": 420.5,
+   "change": -18.0,
+   "change_pct": -4.104903078677309,
+   "vol_k": 3810,
+   "date": "20261027"
+  },
+  "8437": {
+   "close": 16.1,
+   "change": 0.0,
+   "change_pct": 0.0,
+   "vol_k": 349,
+   "date": "20261027"
   }
  },
  "prev_trading": "2026-10-22",
@@ -312,15 +368,15 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 11,
+   "rows": 10,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },
   "tpex_quotes": {
-   "ok": false,
-   "as_of": null,
-   "rows": null,
-   "error": "JSONDecodeError: Unterminated string starting at: line 306 column 267 (char 106280)"
+   "ok": true,
+   "as_of": "20261027",
+   "rows": 990,
+   "error": null
   },
   "tpex_warning": {
    "ok": true,

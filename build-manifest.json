@@ -2,8 +2,8 @@
   "announcement_asof": "2026-10-27",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "551c0b1865b3cdf9045162655b4831a690520b88b39f396b2cebfa95832b5e15",
-    "index.html": "f21c5267cb5d3680baee885e8eea66bd2d5681986ae961a1658cf86b9cc3b03c"
+    "dispo.json": "1dae0f4a8b42fd6bbc910eab52838f76efcae6cd04fbaa40fbbbc85ff5fe5f69",
+    "index.html": "d6e87f2296f4d11fcd196be9bff65dd42563c1da3dd97d265b6b8d9d570ed9b9"
   },
   "data_date": "2026-10-27",
   "generator": "0a55d786c93f",
@@ -21,13 +21,13 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 11
+      "rows": 10
     },
     "tpex_quotes": {
-      "as_of": null,
-      "error": "JSONDecodeError: Unterminated string starting at: line 306 column 267 (char 106280)",
-      "ok": false,
-      "rows": null
+      "as_of": "20261027",
+      "error": null,
+      "ok": true,
+      "rows": 990
     },
     "tpex_warning": {
       "as_of": null,
