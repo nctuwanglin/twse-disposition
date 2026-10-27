@@ -1,11 +1,11 @@
 {
-  "announcement_asof": "2026-10-21",
+  "announcement_asof": "2026-10-27",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "f7489212a1b1b5c9bc9fdc7f19b696633b8ea313b5f6ab4654aec145baea3a2a",
-    "index.html": "37fdc99d6cf55a4bbabd07bf705b481ee121cd93534b0bad7b50dbdae25de3f2"
+    "dispo.json": "551c0b1865b3cdf9045162655b4831a690520b88b39f396b2cebfa95832b5e15",
+    "index.html": "f21c5267cb5d3680baee885e8eea66bd2d5681986ae961a1658cf86b9cc3b03c"
   },
-  "data_date": "2026-10-22",
+  "data_date": "2026-10-27",
   "generator": "0a55d786c93f",
   "mode": "live",
   "schema": 1,
@@ -21,13 +21,13 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 9
+      "rows": 11
     },
     "tpex_quotes": {
-      "as_of": "20261022",
-      "error": null,
-      "ok": true,
-      "rows": 980
+      "as_of": null,
+      "error": "JSONDecodeError: Unterminated string starting at: line 306 column 267 (char 106280)",
+      "ok": false,
+      "rows": null
     },
     "tpex_warning": {
       "as_of": null,
@@ -36,10 +36,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-22",
+      "as_of": "2026-10-27",
       "error": null,
       "ok": true,
-      "rows": 56
+      "rows": 57
     },
     "twse_notetrans": {
       "as_of": null,
@@ -51,13 +51,13 @@
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 3
+      "rows": 2
     },
     "twse_quotes": {
-      "as_of": "20261022",
+      "as_of": "20261027",
       "error": null,
       "ok": true,
-      "rows": 1383
+      "rows": 1386
     }
   }
 }
