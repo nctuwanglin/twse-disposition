@@ -1,11 +1,11 @@
 {
-  "announcement_asof": "2026-10-27",
+  "announcement_asof": "2026-10-28",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "1dae0f4a8b42fd6bbc910eab52838f76efcae6cd04fbaa40fbbbc85ff5fe5f69",
-    "index.html": "d6e87f2296f4d11fcd196be9bff65dd42563c1da3dd97d265b6b8d9d570ed9b9"
+    "dispo.json": "6fcf32c508a828f54a7fddf6bb92c46a3023c98af4c295cc83dcad07861a4f60",
+    "index.html": "cffc3fa93b756ca72569d6dd2fee9b20878623e31bf0ef73c918a2d4f3ff781f"
   },
-  "data_date": "2026-10-27",
+  "data_date": "2026-10-28",
   "generator": "0a55d786c93f",
   "mode": "live",
   "schema": 1,
@@ -24,10 +24,10 @@
       "rows": 10
     },
     "tpex_quotes": {
-      "as_of": "20261027",
+      "as_of": "20261028",
       "error": null,
       "ok": true,
-      "rows": 990
+      "rows": 988
     },
     "tpex_warning": {
       "as_of": null,
@@ -36,10 +36,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-27",
+      "as_of": "2026-10-28",
       "error": null,
       "ok": true,
-      "rows": 57
+      "rows": 58
     },
     "twse_notetrans": {
       "as_of": null,
@@ -51,10 +51,10 @@
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 2
+      "rows": 1
     },
     "twse_quotes": {
-      "as_of": "20261027",
+      "as_of": "20261028",
       "error": null,
       "ok": true,
       "rows": 1386

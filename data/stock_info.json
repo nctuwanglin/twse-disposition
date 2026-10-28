@@ -1386,5 +1386,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "數位雲端"
+  },
+  "4577": {
+    "name": "達航科技",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "6418": {
+    "name": "詠昇",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
