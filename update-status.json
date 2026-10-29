@@ -1,14 +1,14 @@
 {
-  "data_date": "2026-10-28",
+  "data_date": "2026-10-29",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-10-28T18:22:16Z",
+    "at": "2026-10-29T16:22:37Z",
     "outcome": "success",
-    "run_id": "40744379913"
+    "run_id": "40910832498"
   },
-  "last_market_change_at": "2026-10-28T16:13:27Z",
-  "last_successful_check_at": "2026-10-28T18:22:16Z",
-  "market_hash": "6fcf32c508a828f54a7fddf6bb92c46a3023c98af4c295cc83dcad07861a4f60",
+  "last_market_change_at": "2026-10-29T16:22:37Z",
+  "last_successful_check_at": "2026-10-29T16:22:37Z",
+  "market_hash": "e7a0d019e520816fa29eabb2a4009675d75fdbd3b12e92fc6c5037994d7b267c",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -27,10 +27,10 @@
       "rows": 10
     },
     "tpex_quotes": {
-      "as_of": "20261028",
+      "as_of": "20261029",
       "error": null,
       "ok": true,
-      "rows": 988
+      "rows": 989
     },
     "tpex_warning": {
       "as_of": null,
@@ -39,10 +39,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "error": null,
       "ok": true,
-      "rows": 58
+      "rows": 59
     },
     "twse_notetrans": {
       "as_of": null,
@@ -54,13 +54,13 @@
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 1
+      "rows": 0
     },
     "twse_quotes": {
-      "as_of": "20261028",
+      "as_of": "20261029",
       "error": null,
       "ok": true,
-      "rows": 1386
+      "rows": 1388
     }
   }
 }
