@@ -2,10 +2,10 @@
   "announcement_asof": "2026-10-29",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "e7a0d019e520816fa29eabb2a4009675d75fdbd3b12e92fc6c5037994d7b267c",
-    "index.html": "be8b0145c3c5bfae836668eca3cee9da3b0ccf202c46c6e5319643f00a7d5d47"
+    "dispo.json": "11d55b1a3eda6f2b3f53950d73fcaa3280ad5d881e479111cf20966128af20ea",
+    "index.html": "9d0dd51bc4f02fef8557e952c38c813b6e6739df3e3b916114825860e58658ec"
   },
-  "data_date": "2026-10-29",
+  "data_date": "2026-10-30",
   "generator": "0a55d786c93f",
   "mode": "live",
   "schema": 1,
@@ -24,10 +24,10 @@
       "rows": 10
     },
     "tpex_quotes": {
-      "as_of": "20261029",
+      "as_of": "20261030",
       "error": null,
       "ok": true,
-      "rows": 989
+      "rows": 995
     },
     "tpex_warning": {
       "as_of": null,
@@ -36,28 +36,28 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-10-29",
+      "as_of": "2026-10-30",
       "error": null,
       "ok": true,
-      "rows": 59
+      "rows": 60
     },
     "twse_notetrans": {
       "as_of": null,
-      "error": null,
-      "ok": true,
+      "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')",
+      "ok": false,
       "rows": null
     },
     "twse_punish": {
       "as_of": null,
       "error": null,
       "ok": true,
-      "rows": 0
+      "rows": 2
     },
     "twse_quotes": {
-      "as_of": "20261029",
+      "as_of": "20261030",
       "error": null,
       "ok": true,
-      "rows": 1388
+      "rows": 1389
     }
   }
 }
