@@ -1428,5 +1428,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "資訊服務"
+  },
+  "7704": {
+    "name": "明遠精密",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
