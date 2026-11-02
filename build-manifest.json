@@ -2,8 +2,8 @@
   "announcement_asof": "2026-11-02",
   "artifacts": {
     "assets/health.js": "cb04c7f25d9f4eb20dba9fe2019f1fe2f14de3a81f65898debd7e9da9a693ce0",
-    "dispo.json": "e6b69b9b273622bb7fb6c9062f0cff43e6f8ea13dbc6ace44762168c6fcd4bb1",
-    "index.html": "a1f23cc025e3d0822a6eb2fd3642f459fd868aacc6675c88eefb46058f41ad1f"
+    "dispo.json": "1cfbf36df487bd584062e3a75013b1676c30225efa63bc2da8d03cefa267c936",
+    "index.html": "081d2e1d6cd18e86ccf98f96f12a04a2f86b00c8d9f17efba7646a6d97ea8294"
   },
   "data_date": "2026-11-02",
   "generator": "0a55d786c93f",
@@ -43,8 +43,8 @@
     },
     "twse_notetrans": {
       "as_of": null,
-      "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')",
-      "ok": false,
+      "error": null,
+      "ok": true,
       "rows": null
     },
     "twse_punish": {

@@ -14,7 +14,7 @@
   "twse": 2,
   "tpex": 10,
   "second": 1,
-  "notetrans": 1
+  "notetrans": 4
  },
  "active": [
   {
@@ -204,6 +204,77 @@
  ],
  "notetrans": [
   {
+   "code": "2466",
+   "name": "冠西電",
+   "exchange": "TWSE",
+   "criteria": "連續二次 (10/30–11/2)",
+   "raw_criteria": "115年10月30日至115年11月2日連續二次",
+   "thresholds": {
+    "current_close": 380.0,
+    "latest_date": "2026-11-02",
+    "history_days": 20,
+    "clause1": {
+     "ref_date": "2026-10-21",
+     "ref_close": 248.5,
+     "cum_pct": 52.91750503018109,
+     "pct": 32.0,
+     "threshold": 328.02000000000004,
+     "diff_pct": -13.678947368421044,
+     "triggered": true
+    },
+    "vol_avg": 3352.4736842105262,
+    "vol_days": 19
+   }
+  },
+  {
+   "code": "4526",
+   "name": "東台",
+   "exchange": "TWSE",
+   "criteria": "連續二次 (10/30–11/2)",
+   "raw_criteria": "115年10月30日至115年11月2日連續二次",
+   "thresholds": {
+    "current_close": 55.5,
+    "latest_date": "2026-11-02",
+    "history_days": 20,
+    "clause1": {
+     "ref_date": "2026-10-21",
+     "ref_close": 38.05,
+     "cum_pct": 45.86070959264127,
+     "pct": 32.0,
+     "threshold": 50.226,
+     "diff_pct": -9.502702702702704,
+     "triggered": true
+    },
+    "vol_avg": 19315.36842105263,
+    "vol_days": 19
+   }
+  },
+  {
+   "code": "6213",
+   "name": "聯茂",
+   "exchange": "TWSE",
+   "criteria": "115年10月19日至115年11月2日等九個營業日已有五次",
+   "raw_criteria": "115年10月19日至115年11月2日等九個營業日已有五次",
+   "thresholds": {
+    "current_close": 656.0,
+    "latest_date": "2026-11-02",
+    "history_days": 20,
+    "clause1": {
+     "ref_date": "2026-10-21",
+     "ref_close": 823.0,
+     "cum_pct": -20.291616038882136,
+     "pct": 32.0,
+     "threshold": 1086.3600000000001,
+     "diff_pct": 65.60365853658539,
+     "triggered": false,
+     "next_session_ref_date": "2026-10-22",
+     "next_session_threshold": 1025.64
+    },
+    "vol_avg": 16211.947368421053,
+    "vol_days": 19
+   }
+  },
+  {
    "code": "7704",
    "name": "明遠精密",
    "exchange": "TPEx",
@@ -294,6 +365,14 @@
    "vol_k": 1353,
    "date": "20261102"
   },
+  "6213": {
+   "close": 656.0,
+   "change": -31.0,
+   "change_pct": -4.512372634643377,
+   "vol_k": 20497,
+   "monthly_avg": 656.0,
+   "date": "20261102"
+  },
   "6751": {
    "close": 85.0,
    "change": 7.7,
@@ -366,10 +445,10 @@
    "error": null
   },
   "twse_notetrans": {
-   "ok": false,
+   "ok": true,
    "as_of": null,
    "rows": null,
-   "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')"
+   "error": null
   },
   "twse_punish": {
    "ok": true,
