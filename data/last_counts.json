@@ -1,18 +1,18 @@
 {
-  "date": "2026-11-02",
-  "quote_date": "2026-11-02",
+  "date": "2026-11-03",
+  "quote_date": "2026-11-03",
   "announcement_asof": "2026-11-02",
-  "total_active": 12,
+  "total_active": 8,
   "twse": 2,
-  "tpex": 10,
+  "tpex": 6,
   "second": 1,
-  "notetrans": 4,
+  "notetrans": 5,
   "prev_day": {
-    "date": "2026-10-30",
+    "date": "2026-11-02",
     "total_active": 12,
     "twse": 2,
     "tpex": 10,
     "second": 1,
-    "notetrans": 2
+    "notetrans": 4
   }
 }

@@ -1434,5 +1434,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "8272": {
+    "name": "全景軟體",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "資訊服務"
   }
 }
