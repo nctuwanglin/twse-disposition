@@ -1,20 +1,20 @@
 {
  "schema": 1,
- "date": "2026-11-03",
+ "date": "2026-11-04",
  "source": "live",
  "taiex": {
-  "收盤指數": "43307.54",
-  "漲跌點數": "1612.60",
-  "漲跌百分比": "3.59",
+  "收盤指數": "42948.91",
+  "漲跌點數": "358.63",
+  "漲跌百分比": "0.83",
   "漲跌": "-",
-  "日期": "1151103"
+  "日期": "1151104"
  },
  "counts": {
   "active": 8,
   "twse": 2,
   "tpex": 6,
   "second": 1,
-  "notetrans": 5
+  "notetrans": 2
  },
  "active": [
   {
@@ -27,9 +27,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 430.0,
-   "change_pct": -8.8016967126193,
-   "vol_k": 3709
+   "close": 447.0,
+   "change_pct": 3.953488372093023,
+   "vol_k": 3724
   },
   {
    "code": "3441",
@@ -41,9 +41,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 5,
-   "close": 162.0,
-   "change_pct": -10.0,
-   "vol_k": 717
+   "close": 163.0,
+   "change_pct": 0.6172839506172839,
+   "vol_k": 750
   },
   {
    "code": "3691",
@@ -55,9 +55,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 134.0,
-   "change_pct": -7.586206896551724,
-   "vol_k": 2312
+   "close": 147.0,
+   "change_pct": 9.701492537313433,
+   "vol_k": 2267
   },
   {
    "code": "4577",
@@ -69,9 +69,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 120.0,
-   "change_pct": -9.433962264150944,
-   "vol_k": 1080
+   "close": 128.0,
+   "change_pct": 6.666666666666667,
+   "vol_k": 1226
   },
   {
    "code": "8099",
@@ -83,9 +83,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 134.5,
-   "change_pct": 9.795918367346939,
-   "vol_k": 2396
+   "close": 143.5,
+   "change_pct": 6.691449814126393,
+   "vol_k": 2143
   },
   {
    "code": "8291",
@@ -97,9 +97,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 27.85,
-   "change_pct": -9.870550161812297,
-   "vol_k": 28
+   "close": 25.7,
+   "change_pct": -7.719928186714542,
+   "vol_k": 46
   },
   {
    "code": "2466",
@@ -110,10 +110,24 @@
    "period_end": "2026-11-05",
    "auction": "2分撮合",
    "disp_count": 2,
-   "career_count": 4,
-   "close": 342.0,
-   "change_pct": -10.0,
-   "vol_k": 1107
+   "career_count": 5,
+   "close": 330.5,
+   "change_pct": -3.3625730994152043,
+   "vol_k": 1233
+  },
+  {
+   "code": "2466",
+   "name": "冠西電",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-03",
+   "period_start": "2026-11-04",
+   "period_end": "2026-11-10",
+   "auction": "2分撮合",
+   "disp_count": 2,
+   "career_count": 5,
+   "close": 330.5,
+   "change_pct": -3.3625730994152043,
+   "vol_k": 1233
   },
   {
    "code": "4526",
@@ -125,212 +139,177 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 54.9,
-   "change_pct": -1.081081081081081,
-   "vol_k": 13013
+   "close": 60.3,
+   "change_pct": 9.836065573770494,
+   "vol_k": 11605
   }
  ],
- "upcoming": [],
- "notetrans": [
-  {
-   "code": "2466",
-   "name": "冠西電",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (10/30–11/2)",
-   "raw_criteria": "115年10月30日至115年11月2日連續二次",
-   "thresholds": {
-    "current_close": 342.0,
-    "latest_date": "2026-11-03",
-    "history_days": 21,
-    "clause1": {
-     "ref_date": "2026-10-22",
-     "ref_close": 261.0,
-     "cum_pct": 31.03448275862069,
-     "pct": 32.0,
-     "threshold": 344.52000000000004,
-     "diff_pct": 0.7368421052631692,
-     "triggered": false,
-     "next_session_ref_date": "2026-10-27",
-     "next_session_threshold": 378.84000000000003
-    },
-    "vol_avg": 3227.3,
-    "vol_days": 20
-   }
-  },
-  {
-   "code": "4526",
-   "name": "東台",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (10/30–11/2)",
-   "raw_criteria": "115年10月30日至115年11月2日連續二次",
-   "thresholds": {
-    "current_close": 54.9,
-    "latest_date": "2026-11-03",
-    "history_days": 21,
-    "clause1": {
-     "ref_date": "2026-10-22",
-     "ref_close": 41.05,
-     "cum_pct": 33.73934226552985,
-     "pct": 32.0,
-     "threshold": 54.186,
-     "diff_pct": -1.3005464480874294,
-     "triggered": true
-    },
-    "vol_avg": 19041.65,
-    "vol_days": 20
-   }
-  },
-  {
-   "code": "6213",
-   "name": "聯茂",
-   "exchange": "TWSE",
-   "criteria": "115年10月19日至115年11月2日等九個營業日已有五次",
-   "raw_criteria": "115年10月19日至115年11月2日等九個營業日已有五次",
-   "thresholds": {
-    "current_close": 600.0,
-    "latest_date": "2026-11-03",
-    "history_days": 21,
-    "clause1": {
-     "ref_date": "2026-10-22",
-     "ref_close": 777.0,
-     "cum_pct": -22.779922779922778,
-     "pct": 32.0,
-     "threshold": 1025.64,
-     "diff_pct": 70.94000000000001,
-     "triggered": false,
-     "next_session_ref_date": "2026-10-27",
-     "next_session_threshold": 984.72
-    },
-    "vol_avg": 16426.2,
-    "vol_days": 20
-   }
-  },
+ "upcoming": [
   {
    "code": "8099",
    "name": "大世科",
    "exchange": "TPEx",
-   "criteria": "連續二次 (11/2–11/3)",
-   "raw_criteria": "115年11月02日至115年11月03日連續二次",
-   "thresholds": {
-    "current_close": 134.5,
-    "latest_date": "2026-11-03",
-    "history_days": 21,
-    "clause1": {
-     "ref_date": "2026-10-22",
-     "ref_close": 77.4,
-     "cum_pct": 73.77260981912144,
-     "pct": 30.0,
-     "threshold": 100.62,
-     "diff_pct": -25.189591078066908,
-     "triggered": true
-    },
-    "vol_avg": 1126.15,
-    "vol_days": 20
-   }
+   "ann_date": "2026-11-04",
+   "period_start": "2026-11-05",
+   "period_end": "2026-11-11",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 143.5,
+   "change_pct": 6.691449814126393,
+   "vol_k": 2143
   },
   {
    "code": "8272",
    "name": "全景軟體",
    "exchange": "TPEx",
-   "criteria": "連續二次 (11/2–11/3)",
-   "raw_criteria": "115年11月02日至115年11月03日連續二次",
+   "ann_date": "2026-11-04",
+   "period_start": "2026-11-05",
+   "period_end": "2026-11-11",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 103.0,
+   "change_pct": 9.110169491525424,
+   "vol_k": 875
+  }
+ ],
+ "notetrans": [
+  {
+   "code": "6213",
+   "name": "聯茂",
+   "exchange": "TWSE",
+   "criteria": "115年10月20日至115年11月3日等九個營業日已有五次",
+   "raw_criteria": "115年10月20日至115年11月3日等九個營業日已有五次",
    "thresholds": {
-    "current_close": 94.4,
-    "latest_date": "2026-11-03",
-    "history_days": 21,
+    "current_close": 612.0,
+    "latest_date": "2026-11-04",
+    "history_days": 22,
     "clause1": {
-     "ref_date": "2026-10-22",
-     "ref_close": 67.6,
-     "cum_pct": 39.644970414201204,
+     "ref_date": "2026-10-27",
+     "ref_close": 746.0,
+     "cum_pct": -17.962466487935657,
+     "pct": 32.0,
+     "threshold": 984.72,
+     "diff_pct": 60.90196078431372,
+     "triggered": false,
+     "next_session_ref_date": "2026-10-28",
+     "next_session_threshold": 1026.96
+    },
+    "vol_avg": 16837.428571428572,
+    "vol_days": 21
+   }
+  },
+  {
+   "code": "5013",
+   "name": "強新",
+   "exchange": "TPEx",
+   "criteria": "連續二次 (11/3–11/4)",
+   "raw_criteria": "115年11月03日至115年11月04日連續二次",
+   "thresholds": {
+    "current_close": 62.9,
+    "latest_date": "2026-11-04",
+    "history_days": 22,
+    "clause1": {
+     "ref_date": "2026-10-27",
+     "ref_close": 47.15,
+     "cum_pct": 33.404029692470836,
      "pct": 30.0,
-     "threshold": 87.88,
-     "diff_pct": -6.90677966101696,
+     "threshold": 61.295,
+     "diff_pct": -2.551669316375194,
      "triggered": true
     },
-    "vol_avg": 47.9,
-    "vol_days": 20
+    "vol_avg": 1808.6666666666667,
+    "vol_days": 21
    }
   }
  ],
  "released": [],
  "quotes": {
   "2466": {
-   "close": 342.0,
-   "change": -38.0,
-   "change_pct": -10.0,
-   "vol_k": 1107,
-   "monthly_avg": 361.0,
-   "date": "20261103"
+   "close": 330.5,
+   "change": -11.5,
+   "change_pct": -3.3625730994152043,
+   "vol_k": 1233,
+   "monthly_avg": 350.83,
+   "date": "20261104"
   },
   "3374": {
-   "close": 430.0,
-   "change": -41.5,
-   "change_pct": -8.8016967126193,
-   "vol_k": 3709,
-   "date": "20261103"
+   "close": 447.0,
+   "change": 17.0,
+   "change_pct": 3.953488372093023,
+   "vol_k": 3724,
+   "date": "20261104"
   },
   "3441": {
-   "close": 162.0,
-   "change": -18.0,
-   "change_pct": -10.0,
-   "vol_k": 717,
-   "date": "20261103"
+   "close": 163.0,
+   "change": 1.0,
+   "change_pct": 0.6172839506172839,
+   "vol_k": 750,
+   "date": "20261104"
   },
   "3691": {
-   "close": 134.0,
-   "change": -11.0,
-   "change_pct": -7.586206896551724,
-   "vol_k": 2312,
-   "date": "20261103"
+   "close": 147.0,
+   "change": 13.0,
+   "change_pct": 9.701492537313433,
+   "vol_k": 2267,
+   "date": "20261104"
   },
   "4526": {
-   "close": 54.9,
-   "change": -0.6,
-   "change_pct": -1.081081081081081,
-   "vol_k": 13013,
-   "monthly_avg": 55.2,
-   "date": "20261103"
+   "close": 60.3,
+   "change": 5.4,
+   "change_pct": 9.836065573770494,
+   "vol_k": 11605,
+   "monthly_avg": 56.9,
+   "date": "20261104"
   },
   "4577": {
-   "close": 120.0,
-   "change": -12.5,
-   "change_pct": -9.433962264150944,
-   "vol_k": 1080,
-   "date": "20261103"
+   "close": 128.0,
+   "change": 8.0,
+   "change_pct": 6.666666666666667,
+   "vol_k": 1226,
+   "date": "20261104"
+  },
+  "5013": {
+   "close": 62.9,
+   "change": -3.7,
+   "change_pct": -5.555555555555556,
+   "vol_k": 20390,
+   "date": "20261104"
   },
   "6213": {
-   "close": 600.0,
-   "change": -56.0,
-   "change_pct": -8.536585365853659,
-   "vol_k": 25062,
-   "monthly_avg": 628.0,
-   "date": "20261103"
+   "close": 612.0,
+   "change": 12.0,
+   "change_pct": 2.0,
+   "vol_k": 42885,
+   "monthly_avg": 622.67,
+   "date": "20261104"
   },
   "8099": {
-   "close": 134.5,
-   "change": 12.0,
-   "change_pct": 9.795918367346939,
-   "vol_k": 2396,
-   "date": "20261103"
+   "close": 143.5,
+   "change": 9.0,
+   "change_pct": 6.691449814126393,
+   "vol_k": 2143,
+   "date": "20261104"
   },
   "8272": {
-   "close": 94.4,
-   "change": 8.5,
-   "change_pct": 9.89522700814901,
-   "vol_k": 1066,
-   "date": "20261103"
+   "close": 103.0,
+   "change": 8.6,
+   "change_pct": 9.110169491525424,
+   "vol_k": 875,
+   "date": "20261104"
   },
   "8291": {
-   "close": 27.85,
-   "change": -3.05,
-   "change_pct": -9.870550161812297,
-   "vol_k": 28,
-   "date": "20261103"
+   "close": 25.7,
+   "change": -2.15,
+   "change_pct": -7.719928186714542,
+   "vol_k": 46,
+   "date": "20261104"
   }
  },
- "prev_trading": "2026-11-02",
- "announcement_asof": "2026-11-02",
- "last_trade_date": "2026-11-03",
+ "prev_trading": "2026-11-03",
+ "announcement_asof": "2026-11-04",
+ "last_trade_date": "2026-11-04",
  "sources": {
   "taiex": {
    "ok": true,
@@ -341,14 +320,14 @@
   "tpex_disposal": {
    "ok": true,
    "as_of": null,
-   "rows": 6,
+   "rows": 8,
    "error": null,
    "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal"
   },
   "tpex_quotes": {
    "ok": true,
-   "as_of": "20261103",
-   "rows": 990,
+   "as_of": "20261104",
+   "rows": 1001,
    "error": null
   },
   "tpex_warning": {
@@ -359,8 +338,8 @@
   },
   "trading_calendar": {
    "ok": true,
-   "as_of": "2026-11-03",
-   "rows": 41,
+   "as_of": "2026-11-04",
+   "rows": 42,
    "error": null
   },
   "twse_notetrans": {
@@ -372,12 +351,12 @@
   "twse_punish": {
    "ok": true,
    "as_of": null,
-   "rows": 2,
+   "rows": 3,
    "error": null
   },
   "twse_quotes": {
    "ok": true,
-   "as_of": "20261103",
+   "as_of": "20261104",
    "rows": 1390,
    "error": null
   }
@@ -437,14 +416,15 @@
   "2026-10-29",
   "2026-10-30",
   "2026-11-02",
-  "2026-11-03"
+  "2026-11-03",
+  "2026-11-04"
  ],
  "comparison_baseline": {
-  "date": "2026-11-02",
-  "total_active": 12,
+  "date": "2026-11-03",
+  "total_active": 8,
   "twse": 2,
-  "tpex": 10,
+  "tpex": 6,
   "second": 1,
-  "notetrans": 4
+  "notetrans": 5
  }
 }
