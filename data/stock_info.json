@@ -1464,5 +1464,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "其他"
+  },
+  "7750": {
+    "name": "新代",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電機機械"
   }
 }
