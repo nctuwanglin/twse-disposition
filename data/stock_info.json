@@ -1440,5 +1440,29 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "資訊服務"
+  },
+  "2360": {
+    "name": "致茂",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他電子"
+  },
+  "4919": {
+    "name": "新唐",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5274": {
+    "name": "信驊",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "5284": {
+    "name": "jpp-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他"
   }
 }
