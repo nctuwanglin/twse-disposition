@@ -1470,5 +1470,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電機機械"
+  },
+  "5202": {
+    "name": "力新",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "資訊服務"
   }
 }
