@@ -350,10 +350,20 @@ def _invalid_source(source, message):
     raise ValueError(f"{source}: {message}")
 
 
-def _validate_rows(raw_rows, source, required):
+def _validate_rows(raw_rows, source, required, code_key=None):
+    """
+    格式驗證。給 code_key 時，代號明確「不是一般股票」的列（可轉債 5 碼、
+    權證 6 碼…）略過驗證 —— 它們之後本來就會被過濾掉，其欄位空白不該讓整班
+    中止（2026-11-06 TPEx 備援疑似即因此被拒）。代號空白的列仍照常驗證：
+    那無法判斷是否為一般股票，也可能是欄位改名這類格式變更，必須擋下。
+    """
     if not isinstance(raw_rows, list):
         _invalid_source(source, "預期資料列陣列")
     for i, row in enumerate(raw_rows):
+        if code_key and isinstance(row, dict):
+            code = clean_name(str(row.get(code_key) or ""))
+            if code and not is_regular_stock(code):
+                continue
         if not isinstance(row, dict) or any(
                 k not in row or not isinstance(row[k], str) or not row[k].strip()
                 for k in required):
@@ -362,7 +372,8 @@ def _validate_rows(raw_rows, source, required):
 
 
 def normalize_twse_rows(raw_rows):
-    _validate_rows(raw_rows, "twse_punish", ("Code", "Date", "DispositionPeriod"))
+    _validate_rows(raw_rows, "twse_punish", ("Code", "Date", "DispositionPeriod"),
+                   code_key="Code")
     result = []
     for row in raw_rows:
         code = row.get("Code", "").strip()
@@ -392,18 +403,38 @@ def normalize_twse_rows(raw_rows):
     return result
 
 
+_SECURITY_CODE = re.compile(r"\d{4,6}[A-Z]?")
+
+
+def _is_tpex_placeholder(values):
+    """
+    TPEx「本日無資料」占位列：某欄寫著「本日無…」且整列沒有任何證券代號。
+
+    已知兩種格式：單欄版 ['本日無公布注意交易累計資訊']（2026-09）；以及補滿全部
+    欄位的版本——公布日期為當天、處置內容寫「本日無處置資料」、其餘欄位空白
+    （2026-11-13 抓到；11-06 與 10-14 停更的根因）。後者長度與資料列相同，
+    舊的「單欄白名單」認不得，會被當成資料列而因代號空白中止整班。
+
+    「沒有證券代號」是關鍵條件：只要列裡有代號，就算某欄出現「本日無…」也
+    絕不當成占位列吞掉，避免誤刪真實資料。
+    """
+    texts = [str(v).strip() for v in values if v is not None]
+    return (any(t.startswith("本日無") for t in texts)
+            and not any(_SECURITY_CODE.fullmatch(t) for t in texts))
+
+
 def _tpex_rows_to_dicts(fields, rows):
     """
     TPEx 表格 API 的 {fields, data} 轉成 list[dict]。
 
-    只接受已知「本日無資料」占位列；未知短列是格式錯誤，不冒充零筆。
+    只略過已知格式的「本日無資料」占位列（見 _is_tpex_placeholder）；
+    未知短列是格式錯誤，不冒充零筆。
     """
     if not isinstance(fields, list) or not isinstance(rows, list):
         raise ValueError("TPEx fields/data 必須為陣列")
-    empty_labels = {"本日無公布注意交易累計資訊", "本日無處置有價證券", "本日無資料"}
     out = []
     for row in rows:
-        if isinstance(row, list) and len(row) == 1 and row[0] in empty_labels:
+        if isinstance(row, list) and _is_tpex_placeholder(row):
             continue
         if not isinstance(row, list) or not fields or len(row) < len(fields):
             raise ValueError("TPEx 未知短列或缺少欄位")
@@ -413,13 +444,13 @@ def _tpex_rows_to_dicts(fields, rows):
     return out
 
 
-def _tpex_table_rows(raw, source, required):
+def _tpex_table_rows(raw, source, required, code_key=None):
     try:
         table = raw["tables"][0]
         if not set(required).issubset(table["fields"]):
             raise ValueError("必要欄位缺漏")
         rows = _tpex_rows_to_dicts(table["fields"], table["data"])
-        return _validate_rows(rows, source, required)
+        return _validate_rows(rows, source, required, code_key=code_key)
     except (ValueError, TypeError, KeyError, IndexError) as exc:
         _invalid_source(source, str(exc))
 
@@ -435,8 +466,13 @@ def fetch_and_normalize_tpex(referer):
             fields = {"Date": "公布日期", "SecuritiesCompanyCode": "證券代號",
                       "CompanyName": "證券名稱", "DispositionPeriod": "處置起訖時間",
                       "DisposalCondition": "處置內容"}
-            _validate_rows(raw_backup, "tpex_disposal", tuple(fields))
-            rows = [{dst: row[src] for src, dst in fields.items()} for row in raw_backup]
+            if isinstance(raw_backup, list):
+                raw_backup = [r for r in raw_backup
+                              if not (isinstance(r, dict) and _is_tpex_placeholder(r.values()))]
+            _validate_rows(raw_backup, "tpex_disposal", tuple(fields),
+                           code_key="SecuritiesCompanyCode")
+            rows = [{dst: row.get(src) or "" for src, dst in fields.items()}
+                    for row in raw_backup]
             result = _normalize_tpex_disposal_rows(rows)
             _validate_tpex_backup(result)
             record_source("tpex_disposal", ok=True, rows=len(result),
@@ -446,15 +482,68 @@ def fetch_and_normalize_tpex(referer):
             print(f"  TPEx 使用官方 OpenAPI 備援：{len(result)} 筆；主來源失敗：{reason}")
             return result
         except Exception as exc:
-            record_source("tpex_disposal", ok=False,
-                          error=f"主來源：{reason}；備援：{type(exc).__name__}: {exc}")
+            failure = f"主來源：{reason}；備援：{type(exc).__name__}: {exc}"
             print(f"  WARNING: TPEx 備援拒絕採用：{exc}", file=sys.stderr)
-            return []
-    rows = _tpex_table_rows(raw, "tpex_disposal", ("證券代號", "公布日期", "處置起訖時間"))
+            try:
+                rows, origin = _carry_forward_tpex()
+            except ValueError as cf_exc:
+                record_source("tpex_disposal", ok=False, error=f"{failure}；無法沿用：{cf_exc}")
+                return []
+            # ok 維持 False：這是過期資料，必須出現在降級清單、頁面與 manifest 裡
+            record_source("tpex_disposal", ok=False, as_of=origin, rows=len(rows),
+                          error=f"主來源與官方備援皆失敗，沿用 {origin} 已驗證資料（{failure}）")
+            SOURCE_STATUS["tpex_disposal"]["carried_from"] = origin.isoformat()
+            print(f"  WARNING: TPEx 處置公告暫時無法取得，沿用 {origin} 的 {len(rows)} 筆"
+                  f"已驗證資料（頁面會標示）", file=sys.stderr)
+            return rows
+    rows = _tpex_table_rows(raw, "tpex_disposal", ("證券代號", "公布日期", "處置起訖時間"),
+                            code_key="證券代號")
     result = _normalize_tpex_disposal_rows(rows)
     record_source("tpex_disposal", ok=True, rows=len(result))
     SOURCE_STATUS["tpex_disposal"]["endpoint"] = TPEX_DISPOSAL
     return result
+
+
+# 上櫃處置公告沿用的期限（日曆日）。涵蓋長週末＋單日故障；超過就中止讓人工介入，
+# 避免源站長期掛掉時網站默默顯示越來越舊的上櫃資料。
+TPEX_CARRY_FORWARD_MAX_DAYS = 7
+
+
+def _carry_forward_tpex():
+    """
+    主來源與官方備援都失敗時，沿用上一份已驗證快照（dispo.json）的上櫃處置紀錄。
+
+    背景：2026-11-06 TPEx 源站整晚回 HTTP 520，備援也被驗證拒絕，兩班都中止——
+    上市資料明明正常，整個網站卻停更一個交易日。上櫃處置紀錄有明確起迄日，
+    沿用後由 group_into_batches 依今天重新分類（到期的自然移到出關），
+    唯一缺的是故障當天新公告的上櫃案件，頁面會明示沿用日期。
+
+    期限以「最初那份真正抓到的資料日」計算：前一份快照若本身就是沿用來的，
+    沿用 carried_from 而非快照日期，避免每天串接、無限期顯示舊資料。
+    """
+    path = REPO_ROOT / "dispo.json"
+    try:
+        prev = json.loads(path.read_text(encoding="utf-8"))
+        origin = date.fromisoformat(
+            ((prev.get("sources") or {}).get("tpex_disposal") or {}).get("carried_from")
+            or prev["date"])
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise ValueError(f"沒有可沿用的已驗證快照（{type(exc).__name__}）")
+    target = LAST_TRADE_DATE
+    if not target:
+        raise ValueError("目標資料日未知")
+    if origin > target:
+        raise ValueError(f"既有資料日 {origin} 晚於目標日 {target}")
+    if (target - origin).days > TPEX_CARRY_FORWARD_MAX_DAYS:
+        raise ValueError(f"最近一次取得的上櫃資料是 {origin}，"
+                         f"已超過 {TPEX_CARRY_FORWARD_MAX_DAYS} 天沿用期限")
+    entries = [e for key in ("active", "upcoming", "released")
+               for e in prev.get(key) or [] if e.get("exchange") == "TPEx"]
+    try:
+        rows = [_row_from_entry(e) for e in entries]
+    except (KeyError, ValueError, TypeError) as exc:
+        raise ValueError(f"既有快照的上櫃紀錄格式不符（{type(exc).__name__}）")
+    return rows, origin
 
 
 def _validate_tpex_backup(rows):
@@ -1990,7 +2079,13 @@ def render_source_notice():
     bad = degraded_sources()
     if not bad:
         return ""
-    names = "、".join(SOURCE_LABELS.get(n, n) for n in bad)
+    parts = []
+    for n in bad:
+        label = SOURCE_LABELS.get(n, n)
+        carried = (SOURCE_STATUS.get(n) or {}).get("carried_from")
+        parts.append(f"{label}（沿用 {fmt_short(date.fromisoformat(carried))} 資料）"
+                     if carried else label)
+    names = "、".join(parts)
     return (f'        <div class="text-[11px] text-amber-300 mt-1">'
             f'⚠ 部分更新：{names} 本次未取得，該區塊顯示的數字不代表市場實況</div>\n')
 
@@ -2671,6 +2766,24 @@ def _load_state():
         return {}
 
 
+def _disposal_source_gate(label, name, rows):
+    """
+    處置源放行判斷。抓不到回應就中止（讓 workflow 亮紅燈）；抓到但零筆是合法狀態。
+    唯一例外是 TPEx 已沿用上一份已驗證資料（見 _carry_forward_tpex）：上市照常
+    更新，上櫃標示過期，不再因為單一市場源站故障讓整個網站停更。
+    """
+    status = SOURCE_STATUS.get(name, {})
+    if source_ok(name):
+        if not rows:
+            print(f"  {label} 處置股：來源正常但回傳 0 筆（合法零筆，非故障）")
+        return
+    if name == "tpex_disposal" and status.get("carried_from"):
+        print(f"  {label} 處置股：來源暫時無法取得，沿用 {status['carried_from']} 已驗證資料")
+        return
+    sys.exit(f"ERROR: {label} 處置股來源抓取失敗"
+             f"（{status.get('error', '未取得回應')}），中止更新")
+
+
 def gather_live():
     """抓取所有來源並驗證，回傳渲染所需的資料束（bundle）。"""
     global LAST_TRADE_DATE
@@ -2747,11 +2860,7 @@ def gather_live():
     # 抓不到回應 → 中止讓 workflow 亮紅燈；抓到但零筆 → 合法狀態，照常發佈空狀態。
     for label, name, rows in (("TWSE", "twse_punish", twse_rows),
                               ("TPEx", "tpex_disposal", tpex_rows)):
-        if not source_ok(name):
-            sys.exit(f"ERROR: {label} 處置股來源抓取失敗"
-                     f"（{SOURCE_STATUS.get(name, {}).get('error', '未取得回應')}），中止更新")
-        if not rows:
-            print(f"  {label} 處置股：來源正常但回傳 0 筆（合法零筆，非故障）")
+        _disposal_source_gate(label, name, rows)
 
     all_rows = twse_rows + tpex_rows
     print(f"  合計 {len(all_rows)} 筆（去重前）")

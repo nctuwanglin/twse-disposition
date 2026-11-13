@@ -1262,15 +1262,18 @@ class TestR04BuildManifest(unittest.TestCase):
 
     def setUp(self):
         import tempfile
-        self._orig_root = ud.REPO_ROOT
+        self._orig_root, self._orig_html = ud.REPO_ROOT, ud.HTML_PATH
         self._tmp = tempfile.mkdtemp()
         ud.REPO_ROOT = Path(self._tmp)
+        # write_build_manifest 會把 market hash 蓋進頁面，而它用的是匯入時就固定的
+        # HTML_PATH——只替換 REPO_ROOT 會讓測試改寫到真實 repo 的 index.html。
+        ud.HTML_PATH = ud.REPO_ROOT / "index.html"
         (ud.REPO_ROOT / "index.html").write_text("<html>頁面</html>", encoding="utf-8")
         (ud.REPO_ROOT / "dispo.json").write_text('{"active": []}', encoding="utf-8")
 
     def tearDown(self):
         import shutil
-        ud.REPO_ROOT = self._orig_root
+        ud.REPO_ROOT, ud.HTML_PATH = self._orig_root, self._orig_html
         shutil.rmtree(self._tmp, ignore_errors=True)
 
     def _manifest(self):
