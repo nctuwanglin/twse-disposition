@@ -216,22 +216,22 @@
    "criteria": "連續四次 (11/10–11/13)",
    "raw_criteria": "115年11月10日至115年11月13日連續四次<br>115年11月03日至115年11月13日等九個營業日已有五次",
    "thresholds": {
-    "current_close": 73.4,
-    "latest_date": "2026-11-13",
-    "history_days": 29,
+    "current_close": 72.2,
+    "latest_date": "2026-10-30",
+    "history_days": 19,
     "clause1": {
-     "ref_date": "2026-11-05",
-     "ref_close": 74.0,
-     "cum_pct": -0.8108108108108031,
+     "ref_date": "2026-10-20",
+     "ref_close": 79.3,
+     "cum_pct": -8.953341740226978,
      "pct": 30.0,
-     "threshold": 96.2,
-     "diff_pct": 31.062670299727515,
+     "threshold": 103.09,
+     "diff_pct": 42.78393351800554,
      "triggered": false,
-     "next_session_ref_date": "2026-11-06",
-     "next_session_threshold": 88.53
+     "next_session_ref_date": "2026-10-21",
+     "next_session_threshold": 107.38
     },
-    "vol_avg": 9841.642857142857,
-    "vol_days": 28
+    "vol_avg": 11712.277777777777,
+    "vol_days": 18
    }
   }
  ],
