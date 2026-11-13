@@ -2,13 +2,13 @@
   "data_date": "2026-11-13",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-11-13T15:16:33Z",
+    "at": "2026-11-13T17:20:09Z",
     "outcome": "success",
-    "run_id": "43450841232"
+    "run_id": "43471663781"
   },
-  "last_market_change_at": "2026-11-13T15:16:33Z",
-  "last_successful_check_at": "2026-11-13T15:16:33Z",
-  "market_hash": "b0a976efdb7c89ccf35b703f3211289e2040acd433b0aa5899ae2d53be5bed80",
+  "last_market_change_at": "2026-11-13T17:20:09Z",
+  "last_successful_check_at": "2026-11-13T17:20:09Z",
+  "market_hash": "f96d0693796d5308d373c4d54d40461b29ac4dc811da41841ca745ce76bf3cc4",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
