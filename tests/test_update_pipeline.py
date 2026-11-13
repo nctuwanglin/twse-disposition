@@ -90,3 +90,37 @@ class DeploymentTests(unittest.TestCase):
             self.assertTrue(d.poll('url', {}, attempts=2, interval=0))
         with patch.object(d, 'check', return_value=False):
             self.assertFalse(d.poll('url', {}, attempts=2, interval=0))
+
+
+class VerifyBudgetTests(unittest.TestCase):
+    """
+    Pages 建置中位數不到 1 分鐘，但有約 6% 的長尾超過 5 分鐘（實測最長 22 分）。
+    舊驗證器固定只等 5 分鐘，於是內容其實稍後就上線，CI 卻判定失敗（10–11 月
+    8 次中有 5 次屬此類）。等待改以時間預算控制，由 workflow 分兩段給。
+    """
+
+    def setUp(self):
+        self.d = importlib.import_module('verify_deployment')
+        self.now = [0.0]
+        for p in [patch.object(self.d.time, 'monotonic', side_effect=lambda: self.now[0]),
+                  patch.object(self.d.time, 'sleep', side_effect=self.advance)]:
+            p.start()
+            self.addCleanup(p.stop)
+
+    def advance(self, seconds):
+        self.now[0] += seconds
+
+    def test_keeps_polling_until_budget_not_a_fixed_five_minutes(self):
+        calls = []
+        def check(url, expected):
+            calls.append(self.now[0])
+            return self.now[0] >= 540          # 第 9 分鐘才上線
+        with patch.object(self.d, 'check', side_effect=check):
+            self.assertTrue(self.d.poll('url', {}, budget=600, interval=15))
+        self.assertGreater(calls[-1], 300)     # 舊版 5 分鐘就會放棄
+
+    def test_gives_up_when_budget_exhausted(self):
+        with patch.object(self.d, 'check', return_value=False) as check:
+            self.assertFalse(self.d.poll('url', {}, budget=120, interval=15))
+        self.assertLessEqual(self.now[0], 120 + 15)
+        self.assertGreater(check.call_count, 1)

@@ -27,7 +27,8 @@ jobs:
   update-dashboard:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 更新約 2–3 分鐘＋部署驗證最長 10＋15 分鐘
+    timeout-minutes: 40
     permissions:
       contents: write
       pages: write
@@ -95,18 +96,30 @@ jobs:
           EXPECTED_BASE: ${{ steps.base.outputs.sha }}
         run: python scripts/push_update.py --expected-base "$EXPECTED_BASE"
 
-      # Explicit build request: GITHUB_TOKEN pushes may not trigger Pages.
-      # Request failure is diagnostic; public-byte verification remains mandatory.
-      - name: Request Pages build
-        continue-on-error: true
-        timeout-minutes: 1
+      # 部署驗證：比對線上實際位元組（含健康狀態檔）。
+      #
+      # 不再於推送後「預先」請求 Pages 建置：本站是 legacy 分支部署，bot 推送每次
+      # 都會觸發建置（10–11 月紀錄可證），預先請求只會讓同一 commit 在 1–2 秒內
+      # 被建置兩次、互相取消（200 次建置中 58 次被取消）。
+      #
+      # 分兩段等：建置中位數不到 1 分鐘，但約 6% 拖過 5 分鐘（實測最長 22 分），
+      # 第一段給 10 分鐘。仍不一致才請求一次重建再等 15 分鐘——這同時涵蓋 Pages
+      # 建置本身失敗（10–11 月有 4 次，失敗後原本沒有任何重建機制）。
+      - name: Verify live deployment
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
-        run: gh api --method POST "repos/${REPOSITORY}/pages/builds"
-
-      - name: Verify live deployment
-        run: python scripts/verify_deployment.py --url https://nctuwanglin.github.io/twse-disposition/
+          SITE: https://nctuwanglin.github.io/twse-disposition/
+        run: |
+          if python scripts/verify_deployment.py --url "$SITE" --budget 600; then
+            exit 0
+          fi
+          echo "⚠️ 10 分鐘內線上仍未一致，最新 Pages 建置狀態："
+          gh api "repos/${REPOSITORY}/pages/builds/latest" \
+            --jq '"  status=\(.status) commit=\(.commit[0:7]) error=\(.error.message // "none")"' || true
+          echo "請求重新建置一次後再驗證"
+          gh api --method POST "repos/${REPOSITORY}/pages/builds" >/dev/null || true
+          python scripts/verify_deployment.py --url "$SITE" --budget 900
 
       - name: Upload update status
         if: always()
