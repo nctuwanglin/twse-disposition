@@ -1482,5 +1482,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "生技醫療"
+  },
+  "1416": {
+    "name": "廣豐",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "其他"
+  },
+  "5230": {
+    "name": "雷笛克光學",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "光電"
   }
 }
