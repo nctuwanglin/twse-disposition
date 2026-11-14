@@ -37,6 +37,9 @@ from collections import defaultdict
 # ──────────────────────────────────────────────
 # 常數
 # ──────────────────────────────────────────────
+# 上市處置公告：RWD 為主、openapi 為備援。openapi 對公告日 D 的公告要到 D+1 早上
+# 才出現（2026-10/11 探測 86 次確認），兩班排程一律晚一天；RWD 當天約 18:15 前就有。
+TWSE_PUNISH_RWD  = "https://www.twse.com.tw/rwd/zh/announcement/punish"
 TWSE_PUNISH_API  = "https://openapi.twse.com.tw/v1/announcement/punish"
 TWSE_NOTETRANS   = "https://openapi.twse.com.tw/v1/announcement/notetrans"
 TWSE_MI_INDEX    = "https://www.twse.com.tw/rwd/zh/afterTrading/FMTQIK?response=json"
@@ -371,6 +374,69 @@ def _validate_rows(raw_rows, source, required, code_key=None):
     return raw_rows
 
 
+# 處置公告查詢區間。只查「目前公告中」會讓期滿的處置立刻消失——近期出關清單與
+# 出關績效統計就是因此從 2026-09 起完全沒有新資料。近期出關要往回看 30 個營業日
+# （含國定假日約 45 個日曆日），留餘裕取 60 天；往後 14 天涵蓋已公告待生效者。
+DISPOSAL_LOOKBACK_DAYS  = 60
+DISPOSAL_LOOKAHEAD_DAYS = 14
+
+_RWD_PUNISH_FIELDS = {"公布日期": "Date", "證券代號": "Code", "證券名稱": "Name",
+                      "處置起迄時間": "DispositionPeriod", "處置措施": "DispositionMeasures",
+                      "處置內容": "Detail"}
+
+
+def _disposal_window():
+    target = LAST_TRADE_DATE
+    if not target:
+        raise ValueError("目標資料日未知，無法決定處置公告查詢區間")
+    return (target - timedelta(days=DISPOSAL_LOOKBACK_DAYS),
+            target + timedelta(days=DISPOSAL_LOOKAHEAD_DAYS))
+
+
+def _rwd_punish_rows(data):
+    """RWD 回應轉成 openapi 欄位格式，以便沿用 normalize_twse_rows。"""
+    if not isinstance(data, dict) or data.get("stat") != "OK":
+        raise ValueError(f"stat={data.get('stat') if isinstance(data, dict) else type(data).__name__}")
+    fields, rows = data.get("fields"), data.get("data")
+    if not isinstance(fields, list) or not isinstance(rows, list):
+        raise ValueError("fields/data 不是陣列")
+    missing = [f for f in _RWD_PUNISH_FIELDS if f not in fields]
+    if missing:
+        raise ValueError(f"缺少欄位 {missing}")
+    out = []
+    for r in rows:
+        if not isinstance(r, list) or len(r) < len(fields):
+            raise ValueError("資料列長度不符")
+        d = dict(zip(fields, r))
+        # 少數列的公布日期帶「*」前綴（探測期間 336 筆中 11 筆）
+        out.append({dst: str(d.get(src) or "").lstrip("*").strip()
+                    for src, dst in _RWD_PUNISH_FIELDS.items()})
+    return out
+
+
+def fetch_twse_disposal_raw():
+    """上市處置公告（openapi 欄位格式）。RWD 失敗或格式不符時改用 openapi。"""
+    try:
+        start, end = _disposal_window()
+        url = (f"{TWSE_PUNISH_RWD}?response=json"
+               f"&startDate={start:%Y%m%d}&endDate={end:%Y%m%d}")
+        data = safe_fetch_json(url, {"Referer": "https://www.twse.com.tw/"},
+                               default=None, source="twse_punish")
+        if not source_ok("twse_punish"):
+            raise ValueError(SOURCE_STATUS["twse_punish"].get("error"))
+        rows = _rwd_punish_rows(data)
+        SOURCE_STATUS["twse_punish"]["endpoint"] = TWSE_PUNISH_RWD
+        return rows
+    except ValueError as exc:
+        reason = str(exc)
+        print(f"  WARNING: 上市處置 RWD 無法採用（{reason}），改用 openapi（約晚一天）",
+              file=sys.stderr)
+    raw = safe_fetch_json(TWSE_PUNISH_API, default=None, source="twse_punish")
+    if source_ok("twse_punish"):
+        SOURCE_STATUS["twse_punish"].update(endpoint=TWSE_PUNISH_API, fallback_reason=reason)
+    return raw
+
+
 def normalize_twse_rows(raw_rows):
     _validate_rows(raw_rows, "twse_punish", ("Code", "Date", "DispositionPeriod"),
                    code_key="Code")
@@ -399,7 +465,11 @@ def normalize_twse_rows(raw_rows):
             "auction": get_auction_type(detail, measures, period_end),
             "disp_count": get_disposition_count(measures),
         })
+    # record_source 會整筆重設；保留抓取階段記下的端點與備援原因（manifest／健康列要用）
+    kept = {k: v for k, v in SOURCE_STATUS.get("twse_punish", {}).items()
+            if k in ("endpoint", "fallback_reason")}
     record_source("twse_punish", ok=True, rows=len(result))
+    SOURCE_STATUS["twse_punish"].update(kept)
     return result
 
 
@@ -456,7 +526,12 @@ def _tpex_table_rows(raw, source, required, code_key=None):
 
 
 def fetch_and_normalize_tpex(referer):
-    raw = safe_fetch_json(TPEX_DISPOSAL, {"Referer": referer},
+    try:
+        start, end = _disposal_window()
+        url = f"{TPEX_DISPOSAL}?startDate={start:%Y/%m/%d}&endDate={end:%Y/%m/%d}&response=json"
+    except ValueError:
+        url = TPEX_DISPOSAL
+    raw = safe_fetch_json(url, {"Referer": referer},
                           default={"tables": [{"fields":[],"data":[]}]},
                           source="tpex_disposal")
     if not source_ok("tpex_disposal"):
@@ -2552,6 +2627,9 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
             stocks = grp["stocks"]
             if not stocks:
                 continue
+            # 近 30 營業日的出關可達近百檔、數十個日期群組；比照 Tab1 批次只展開最近 3 個，
+            # 其餘收合（搜尋命中時 applyFilter 會自動展開）。
+            open_attr = " open" if len(release_blocks) < 3 else ""
             # pe 是處置最後一日；pe == 前一交易日 ⇒ 今天起恢復正常交易
             is_today = (pe == prev_trading)
             label_pill = "今日恢復交易 ⏰" if is_today else f"{fmt_short(pe)} 期滿"
@@ -2567,7 +2645,7 @@ def render_tab3(notetrans_twse, notetrans_tpex, released_groups, stock_info, tod
                                           "pill-yellow", label_pill,
                                           border=bool(twse_s), stock_quotes=sq)
 
-            release_blocks.append(f"""      <details class="mb-0" open>
+            release_blocks.append(f"""      <details class="mb-0"{open_attr}>
         <summary class="px-3 py-2 flex items-center gap-2 border-b border-slate-800 cursor-pointer">
           <span class="pill {pill_cls}">{label_pill}</span>
           <span class="text-[11px] text-slate-400">{count} 檔 · 目前無有效處置</span>
@@ -2848,7 +2926,7 @@ def gather_live():
 
     # 抓處置股資料
     print("  TWSE 處置股...")
-    twse_raw  = safe_fetch_json(TWSE_PUNISH_API, default=None, source="twse_punish")
+    twse_raw  = fetch_twse_disposal_raw()
     twse_rows = normalize_twse_rows(twse_raw)
     print(f"  TPEx 處置股...")
     tpex_rows = fetch_and_normalize_tpex(TPEX_REFERER_D)
