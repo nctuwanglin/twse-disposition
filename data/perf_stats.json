@@ -11,6 +11,286 @@
   "period_end": "2026-08-07",
   "period_start": "2026-07-31"
  },
+ "1709:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_pct": -5.952380952380953,
+  "code": "1709",
+  "during_pct": -2.3255813953488413,
+  "entry_close": 60.2,
+  "exchange": "TWSE",
+  "exit_close": 58.8,
+  "name": "和益",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
+ "2030:2026-10-02:2026-10-08": {
+  "after5_date": "2026-10-16",
+  "after5_overlap": false,
+  "after5_pct": -17.580872011251746,
+  "code": "2030",
+  "during_pct": -5.577689243027894,
+  "entry_close": 37.65,
+  "exchange": "TWSE",
+  "exit_close": 35.55,
+  "name": "彰源",
+  "period_end": "2026-10-08",
+  "period_start": "2026-10-02"
+ },
+ "2033:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": false,
+  "after5_pct": 46.66666666666666,
+  "code": "2033",
+  "during_pct": -11.764705882352944,
+  "entry_close": 51.0,
+  "exchange": "TWSE",
+  "exit_close": 45.0,
+  "name": "佳大",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
+ },
+ "2221:2026-09-24:2026-10-06": {
+  "after5_date": "2026-10-14",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "2221",
+    "period_end": "2026-10-12",
+    "period_start": "2026-10-01"
+   },
+   {
+    "code": "2221",
+    "period_end": "2026-10-23",
+    "period_start": "2026-10-19"
+   }
+  ],
+  "after5_pct": -24.462365591397848,
+  "code": "2221",
+  "during_pct": 17.350157728706627,
+  "entry_close": 158.5,
+  "exchange": "TPEx",
+  "exit_close": 186.0,
+  "name": "大甲",
+  "period_end": "2026-10-06",
+  "period_start": "2026-09-24"
+ },
+ "2221:2026-10-01:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "2221",
+    "period_end": "2026-10-23",
+    "period_start": "2026-10-19"
+   }
+  ],
+  "after5_pct": -32.08092485549133,
+  "code": "2221",
+  "during_pct": -12.40506329113924,
+  "entry_close": 197.5,
+  "exchange": "TPEx",
+  "exit_close": 173.0,
+  "name": "大甲",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-01"
+ },
+ "2221:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": 7.364341085271309,
+  "code": "2221",
+  "during_pct": 5.737704918032782,
+  "entry_close": 122.0,
+  "exchange": "TPEx",
+  "exit_close": 129.0,
+  "name": "大甲",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
+ },
+ "2305:2026-09-18:2026-09-30": {
+  "after5_date": "2026-10-07",
+  "after5_overlap": false,
+  "after5_pct": -14.264919941775844,
+  "code": "2305",
+  "during_pct": 26.519337016574607,
+  "entry_close": 54.3,
+  "exchange": "TWSE",
+  "exit_close": 68.7,
+  "name": "全友",
+  "period_end": "2026-09-30",
+  "period_start": "2026-09-18"
+ },
+ "2424:2026-10-16:2026-10-22": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "2424",
+    "period_end": "2026-10-28",
+    "period_start": "2026-10-21"
+   }
+  ],
+  "after5_pct": -4.832713754646834,
+  "code": "2424",
+  "during_pct": -5.2816901408450745,
+  "entry_close": 14.2,
+  "exchange": "TWSE",
+  "exit_close": 13.45,
+  "name": "隴華",
+  "period_end": "2026-10-22",
+  "period_start": "2026-10-16"
+ },
+ "2424:2026-10-21:2026-10-28": {
+  "after5_date": "2026-11-04",
+  "after5_overlap": false,
+  "after5_pct": -14.39114391143912,
+  "code": "2424",
+  "during_pct": -9.966777408637872,
+  "entry_close": 15.05,
+  "exchange": "TWSE",
+  "exit_close": 13.55,
+  "name": "隴華",
+  "period_end": "2026-10-28",
+  "period_start": "2026-10-21"
+ },
+ "2455:2026-09-23:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_pct": -16.171617161716167,
+  "code": "2455",
+  "during_pct": 10.786106032906773,
+  "entry_close": 547.0,
+  "exchange": "TWSE",
+  "exit_close": 606.0,
+  "name": "全新",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-23"
+ },
+ "2466:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "2466",
+    "period_end": "2026-10-20",
+    "period_start": "2026-10-14"
+   },
+   {
+    "code": "2466",
+    "period_end": "2026-11-05",
+    "period_start": "2026-10-30"
+   }
+  ],
+  "after5_pct": 35.58441558441559,
+  "code": "2466",
+  "during_pct": 6.648199445983383,
+  "entry_close": 180.5,
+  "exchange": "TWSE",
+  "exit_close": 192.5,
+  "name": "冠西電",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
+ "2466:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "2466",
+    "period_end": "2026-11-05",
+    "period_start": "2026-10-30"
+   },
+   {
+    "code": "2466",
+    "period_end": "2026-11-10",
+    "period_start": "2026-11-04"
+   }
+  ],
+  "after5_pct": 42.47787610619469,
+  "code": "2466",
+  "during_pct": -4.641350210970463,
+  "entry_close": 237.0,
+  "exchange": "TWSE",
+  "exit_close": 226.0,
+  "name": "冠西電",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
+ },
+ "2466:2026-10-30:2026-11-05": {
+  "after5_date": "2026-11-12",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "2466",
+    "period_end": "2026-11-10",
+    "period_start": "2026-11-04"
+   }
+  ],
+  "after5_pct": 46.72268907563024,
+  "code": "2466",
+  "during_pct": -7.608695652173914,
+  "entry_close": 322.0,
+  "exchange": "TWSE",
+  "exit_close": 297.5,
+  "name": "冠西電",
+  "period_end": "2026-11-05",
+  "period_start": "2026-10-30"
+ },
+ "2466:2026-11-04:2026-11-10": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "2466",
+  "during_pct": 5.555555555555558,
+  "entry_close": 342.0,
+  "exchange": "TWSE",
+  "exit_close": 361.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "冠西電",
+  "period_end": "2026-11-10",
+  "period_start": "2026-11-04"
+ },
+ "2468:2026-09-22:2026-10-02": {
+  "after5_date": "2026-10-12",
+  "after5_overlap": false,
+  "after5_pct": -1.433296582138921,
+  "code": "2468",
+  "during_pct": -2.5778732545649774,
+  "entry_close": 46.55,
+  "exchange": "TWSE",
+  "exit_close": 45.35,
+  "name": "華經",
+  "period_end": "2026-10-02",
+  "period_start": "2026-09-22"
+ },
+ "2492:2026-10-13:2026-10-19": {
+  "after5_date": "2026-10-28",
+  "after5_overlap": false,
+  "after5_pct": 9.340659340659329,
+  "code": "2492",
+  "during_pct": -12.918660287081341,
+  "entry_close": 418.0,
+  "exchange": "TWSE",
+  "exit_close": 364.0,
+  "name": "華新科",
+  "period_end": "2026-10-19",
+  "period_start": "2026-10-13"
+ },
+ "3016:2026-10-01:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": false,
+  "after5_pct": -16.480446927374302,
+  "code": "3016",
+  "during_pct": 5.9171597633136175,
+  "entry_close": 169.0,
+  "exchange": "TWSE",
+  "exit_close": 179.0,
+  "name": "嘉晶",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-01"
+ },
  "3026:2026-08-03:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": 20.934579439252342,
@@ -35,6 +315,52 @@
   "period_end": "2026-08-07",
   "period_start": "2026-07-31"
  },
+ "3055:2026-10-01:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "3055",
+    "period_end": "2026-10-23",
+    "period_start": "2026-10-19"
+   }
+  ],
+  "after5_pct": -27.114427860696523,
+  "code": "3055",
+  "during_pct": -4.057279236276845,
+  "entry_close": 209.5,
+  "exchange": "TWSE",
+  "exit_close": 201.0,
+  "name": "蔚華科",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-01"
+ },
+ "3055:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": -2.7972027972028024,
+  "code": "3055",
+  "during_pct": 1.4184397163120588,
+  "entry_close": 141.0,
+  "exchange": "TWSE",
+  "exit_close": 143.0,
+  "name": "蔚華科",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
+ },
+ "3094:2026-10-07:2026-10-14": {
+  "after5_date": "2026-10-21",
+  "after5_overlap": false,
+  "after5_pct": -14.241960183767223,
+  "code": "3094",
+  "during_pct": -5.63583815028903,
+  "entry_close": 69.2,
+  "exchange": "TWSE",
+  "exit_close": 65.3,
+  "name": "聯傑",
+  "period_end": "2026-10-14",
+  "period_start": "2026-10-07"
+ },
  "3167:2026-07-31:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": -2.315484804630974,
@@ -46,6 +372,52 @@
   "name": "大量",
   "period_end": "2026-08-07",
   "period_start": "2026-07-31"
+ },
+ "3167:2026-10-05:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "3167",
+    "period_end": "2026-10-27",
+    "period_start": "2026-10-20"
+   }
+  ],
+  "after5_pct": -8.847926267281103,
+  "code": "3167",
+  "during_pct": 10.601427115188589,
+  "entry_close": 981.0,
+  "exchange": "TWSE",
+  "exit_close": 1085.0,
+  "name": "大量",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-05"
+ },
+ "3167:2026-10-20:2026-10-27": {
+  "after5_date": "2026-11-03",
+  "after5_overlap": false,
+  "after5_pct": -14.479166666666664,
+  "code": "3167",
+  "during_pct": -2.932254802831147,
+  "entry_close": 989.0,
+  "exchange": "TWSE",
+  "exit_close": 960.0,
+  "name": "大量",
+  "period_end": "2026-10-27",
+  "period_start": "2026-10-20"
+ },
+ "3219:2026-10-01:2026-10-07": {
+  "after5_date": "2026-10-15",
+  "after5_overlap": false,
+  "after5_pct": -9.999999999999998,
+  "code": "3219",
+  "during_pct": -1.1406844106463865,
+  "entry_close": 131.5,
+  "exchange": "TPEx",
+  "exit_close": 130.0,
+  "name": "倚強科",
+  "period_end": "2026-10-07",
+  "period_start": "2026-10-01"
  },
  "3230:2026-07-01:2026-07-14": {
   "after5_overlap": false,
@@ -59,6 +431,65 @@
   "period_end": "2026-07-14",
   "period_start": "2026-07-01"
  },
+ "3230:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": -7.182320441988943,
+  "code": "3230",
+  "during_pct": 14.556962025316444,
+  "entry_close": 23.7,
+  "exchange": "TPEx",
+  "exit_close": 27.15,
+  "name": "錦明",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
+ },
+ "3265:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": false,
+  "after5_pct": -14.516129032258062,
+  "code": "3265",
+  "during_pct": -6.766917293233088,
+  "entry_close": 266.0,
+  "exchange": "TPEx",
+  "exit_close": 248.0,
+  "name": "台星科",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
+ },
+ "3287:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "3287",
+    "period_end": "2026-10-29",
+    "period_start": "2026-10-22"
+   }
+  ],
+  "after5_pct": -6.339144215530901,
+  "code": "3287",
+  "during_pct": 5.87248322147651,
+  "entry_close": 59.6,
+  "exchange": "TPEx",
+  "exit_close": 63.1,
+  "name": "廣寰科",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
+ },
+ "3287:2026-10-22:2026-10-29": {
+  "after5_date": "2026-11-05",
+  "after5_overlap": false,
+  "after5_pct": 11.352253756260433,
+  "code": "3287",
+  "during_pct": -14.550641940085585,
+  "entry_close": 70.1,
+  "exchange": "TPEx",
+  "exit_close": 59.9,
+  "name": "廣寰科",
+  "period_end": "2026-10-29",
+  "period_start": "2026-10-22"
+ },
  "3288:2026-07-22:2026-08-04": {
   "after5_overlap": false,
   "after5_pct": -12.770137524557956,
@@ -70,6 +501,39 @@
   "name": "點晶",
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
+ },
+ "3354:2026-10-21:2026-10-28": {
+  "after5_date": "2026-11-04",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "3354",
+    "period_end": "2026-11-03",
+    "period_start": "2026-10-28"
+   }
+  ],
+  "after5_pct": -25.233644859813086,
+  "code": "3354",
+  "during_pct": 5.940594059405946,
+  "entry_close": 50.5,
+  "exchange": "TPEx",
+  "exit_close": 53.5,
+  "name": "律勝",
+  "period_end": "2026-10-28",
+  "period_start": "2026-10-21"
+ },
+ "3354:2026-10-28:2026-11-03": {
+  "after5_date": "2026-11-10",
+  "after5_overlap": false,
+  "after5_pct": -1.6431924882629123,
+  "code": "3354",
+  "during_pct": -14.970059880239518,
+  "entry_close": 50.1,
+  "exchange": "TPEx",
+  "exit_close": 42.6,
+  "name": "律勝",
+  "period_end": "2026-11-03",
+  "period_start": "2026-10-28"
  },
  "3362:2026-08-05:2026-08-13": {
   "after5_overlap": false,
@@ -83,6 +547,126 @@
   "period_end": "2026-08-13",
   "period_start": "2026-08-05"
  },
+ "3374:2026-09-29:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_pct": -6.619859578736209,
+  "code": "3374",
+  "during_pct": 11.024498886414257,
+  "entry_close": 449.0,
+  "exchange": "TPEx",
+  "exit_close": 498.5,
+  "name": "精材",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-29"
+ },
+ "3374:2026-11-02:2026-11-10": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "3374",
+  "during_pct": -13.012295081967217,
+  "entry_close": 488.0,
+  "exchange": "TPEx",
+  "exit_close": 424.5,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "精材",
+  "period_end": "2026-11-10",
+  "period_start": "2026-11-02"
+ },
+ "3441:2026-09-18:2026-09-30": {
+  "after5_date": "2026-10-07",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "3441",
+    "period_end": "2026-10-19",
+    "period_start": "2026-10-08"
+   }
+  ],
+  "after5_pct": 34.959349593495936,
+  "code": "3441",
+  "during_pct": -4.155844155844157,
+  "entry_close": 192.5,
+  "exchange": "TPEx",
+  "exit_close": 184.5,
+  "name": "聯一光",
+  "period_end": "2026-09-30",
+  "period_start": "2026-09-18"
+ },
+ "3441:2026-10-08:2026-10-19": {
+  "after5_date": "2026-10-28",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "3441",
+    "period_end": "2026-11-06",
+    "period_start": "2026-10-29"
+   }
+  ],
+  "after5_pct": -18.237704918032783,
+  "code": "3441",
+  "during_pct": -2.008032128514059,
+  "entry_close": 249.0,
+  "exchange": "TPEx",
+  "exit_close": 244.0,
+  "name": "聯一光",
+  "period_end": "2026-10-19",
+  "period_start": "2026-10-08"
+ },
+ "3441:2026-10-29:2026-11-06": {
+  "after5_date": "2026-11-13",
+  "after5_overlap": false,
+  "after5_pct": 36.55172413793104,
+  "code": "3441",
+  "during_pct": -27.318295739348375,
+  "entry_close": 199.5,
+  "exchange": "TPEx",
+  "exit_close": 145.0,
+  "name": "聯一光",
+  "period_end": "2026-11-06",
+  "period_start": "2026-10-29"
+ },
+ "3443:2026-09-29:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_pct": -5.872093023255809,
+  "code": "3443",
+  "during_pct": 0.8797653958944274,
+  "entry_close": 8525.0,
+  "exchange": "TWSE",
+  "exit_close": 8600.0,
+  "name": "創意",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-29"
+ },
+ "3455:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": false,
+  "after5_pct": -11.683848797250862,
+  "code": "3455",
+  "during_pct": 2.645502645502651,
+  "entry_close": 283.5,
+  "exchange": "TPEx",
+  "exit_close": 291.0,
+  "name": "由田",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
+ },
+ "3518:2026-10-07:2026-10-14": {
+  "after5_date": "2026-10-21",
+  "after5_overlap": false,
+  "after5_pct": -12.920738327904447,
+  "code": "3518",
+  "during_pct": -8.449304174950301,
+  "entry_close": 50.3,
+  "exchange": "TWSE",
+  "exit_close": 46.05,
+  "name": "柏騰",
+  "period_end": "2026-10-14",
+  "period_start": "2026-10-07"
+ },
  "3532:2026-07-31:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": 13.919999999999998,
@@ -94,6 +678,39 @@
   "name": "台勝科",
   "period_end": "2026-08-07",
   "period_start": "2026-07-31"
+ },
+ "3597:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "3597",
+    "period_end": "2026-10-23",
+    "period_start": "2026-10-19"
+   }
+  ],
+  "after5_pct": -9.026369168356984,
+  "code": "3597",
+  "during_pct": 1.4403292181069949,
+  "entry_close": 48.6,
+  "exchange": "TPEx",
+  "exit_close": 49.3,
+  "name": "映興",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
+ },
+ "3597:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": -16.878980891719753,
+  "code": "3597",
+  "during_pct": -8.0078125,
+  "entry_close": 51.2,
+  "exchange": "TPEx",
+  "exit_close": 47.1,
+  "name": "映興",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
  },
  "3624:2026-06-24:2026-07-09": {
   "after5_date": "2026-07-17",
@@ -159,6 +776,32 @@
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
  },
+ "3691:2026-11-02:2026-11-06": {
+  "after5_date": "2026-11-13",
+  "after5_overlap": false,
+  "after5_pct": 1.4814814814814836,
+  "code": "3691",
+  "during_pct": -4.255319148936165,
+  "entry_close": 141.0,
+  "exchange": "TPEx",
+  "exit_close": 135.0,
+  "name": "碩禾",
+  "period_end": "2026-11-06",
+  "period_start": "2026-11-02"
+ },
+ "3701:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_pct": -9.317803660565726,
+  "code": "3701",
+  "during_pct": -1.6366612111292977,
+  "entry_close": 61.1,
+  "exchange": "TWSE",
+  "exit_close": 60.1,
+  "name": "大眾控",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
  "4139:2026-07-21:2026-08-03": {
   "after5_date": "2026-08-10",
   "after5_overlap": true,
@@ -203,6 +846,54 @@
   "period_end": "2026-08-07",
   "period_start": "2026-08-03"
  },
+ "4174:2026-10-05:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "4174",
+    "period_end": "2026-10-15",
+    "period_start": "2026-10-08"
+   }
+  ],
+  "after5_pct": -8.52173913043478,
+  "code": "4174",
+  "during_pct": 36.904761904761905,
+  "entry_close": 42.0,
+  "exchange": "TPEx",
+  "exit_close": 57.5,
+  "name": "浩鼎",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-05"
+ },
+ "4174:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_pct": -14.85809682804674,
+  "code": "4174",
+  "during_pct": 14.971209213051818,
+  "entry_close": 52.1,
+  "exchange": "TPEx",
+  "exit_close": 59.9,
+  "name": "浩鼎",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
+ "4526:2026-10-30:2026-11-09": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "4526",
+  "during_pct": 2.6515151515151603,
+  "entry_close": 52.8,
+  "exchange": "TWSE",
+  "exit_close": 54.2,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "東台",
+  "period_end": "2026-11-09",
+  "period_start": "2026-10-30"
+ },
  "4542:2026-07-15:2026-07-28": {
   "after5_overlap": false,
   "after5_pct": -0.5347593582887722,
@@ -214,6 +905,39 @@
   "name": "科嶠",
   "period_end": "2026-07-28",
   "period_start": "2026-07-15"
+ },
+ "4542:2026-09-29:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_pct": -2.7932960893854775,
+  "code": "4542",
+  "during_pct": 9.146341463414643,
+  "entry_close": 328.0,
+  "exchange": "TPEx",
+  "exit_close": 358.0,
+  "name": "科嶠",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-29"
+ },
+ "4542:2026-10-23:2026-11-03": {
+  "after5_date": "2026-11-10",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "4542",
+    "period_end": "2026-11-16",
+    "period_start": "2026-11-10"
+   }
+  ],
+  "after5_pct": -14.608695652173909,
+  "code": "4542",
+  "during_pct": -16.666666666666664,
+  "entry_close": 345.0,
+  "exchange": "TPEx",
+  "exit_close": 287.5,
+  "name": "科嶠",
+  "period_end": "2026-11-03",
+  "period_start": "2026-10-23"
  },
  "4556:2026-07-15:2026-07-28": {
   "after5_date": "2026-08-04",
@@ -247,6 +971,32 @@
   "period_end": "2026-08-10",
   "period_start": "2026-08-04"
  },
+ "4556:2026-10-07:2026-10-14": {
+  "after5_date": "2026-10-21",
+  "after5_overlap": false,
+  "after5_pct": 0.0,
+  "code": "4556",
+  "during_pct": -3.2727272727272716,
+  "entry_close": 137.5,
+  "exchange": "TPEx",
+  "exit_close": 133.0,
+  "name": "旭然",
+  "period_end": "2026-10-14",
+  "period_start": "2026-10-07"
+ },
+ "4577:2026-10-30:2026-11-05": {
+  "after5_date": "2026-11-12",
+  "after5_overlap": false,
+  "after5_pct": 12.12121212121211,
+  "code": "4577",
+  "during_pct": -11.494252873563216,
+  "entry_close": 130.5,
+  "exchange": "TPEx",
+  "exit_close": 115.5,
+  "name": "達航科技",
+  "period_end": "2026-11-05",
+  "period_start": "2026-10-30"
+ },
  "4707:2026-07-09:2026-07-22": {
   "after5_overlap": false,
   "after5_pct": -27.221438645980257,
@@ -258,6 +1008,19 @@
   "name": "磐亞",
   "period_end": "2026-07-22",
   "period_start": "2026-07-09"
+ },
+ "4760:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_pct": -11.940298507462687,
+  "code": "4760",
+  "during_pct": 10.32934131736527,
+  "entry_close": 334.0,
+  "exchange": "TPEx",
+  "exit_close": 368.5,
+  "name": "勤凱",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
  },
  "4979:2026-07-30:2026-08-07": {
   "after5_overlap": false,
@@ -271,6 +1034,39 @@
   "period_end": "2026-08-07",
   "period_start": "2026-07-30"
  },
+ "4979:2026-09-29:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "4979",
+    "period_end": "2026-10-23",
+    "period_start": "2026-10-19"
+   }
+  ],
+  "after5_pct": -10.53511705685619,
+  "code": "4979",
+  "during_pct": 6.216696269982247,
+  "entry_close": 563.0,
+  "exchange": "TPEx",
+  "exit_close": 598.0,
+  "name": "華星光",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-29"
+ },
+ "4979:2026-10-19:2026-10-23": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": -5.333333333333334,
+  "code": "4979",
+  "during_pct": -13.461538461538458,
+  "entry_close": 520.0,
+  "exchange": "TPEx",
+  "exit_close": 450.0,
+  "name": "華星光",
+  "period_end": "2026-10-23",
+  "period_start": "2026-10-19"
+ },
  "4991:2026-07-30:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": -1.0752688172043001,
@@ -282,6 +1078,103 @@
   "name": "環宇-KY",
   "period_end": "2026-08-07",
   "period_start": "2026-07-30"
+ },
+ "5013:2026-10-07:2026-10-14": {
+  "after5_date": "2026-10-21",
+  "after5_overlap": false,
+  "after5_pct": 26.74418604651163,
+  "code": "5013",
+  "during_pct": -10.32325338894683,
+  "entry_close": 47.95,
+  "exchange": "TPEx",
+  "exit_close": 43.0,
+  "name": "強新",
+  "period_end": "2026-10-14",
+  "period_start": "2026-10-07"
+ },
+ "5205:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "5205",
+    "period_end": "2026-10-20",
+    "period_start": "2026-10-14"
+   },
+   {
+    "code": "5205",
+    "period_end": "2026-10-30",
+    "period_start": "2026-10-23"
+   }
+  ],
+  "after5_pct": -21.279999999999998,
+  "code": "5205",
+  "during_pct": 3.1353135313531233,
+  "entry_close": 30.3,
+  "exchange": "TPEx",
+  "exit_close": 31.25,
+  "name": "中茂",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
+ "5205:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "5205",
+    "period_end": "2026-10-30",
+    "period_start": "2026-10-23"
+   }
+  ],
+  "after5_pct": -10.5603448275862,
+  "code": "5205",
+  "during_pct": -39.81841763942931,
+  "entry_close": 38.55,
+  "exchange": "TPEx",
+  "exit_close": 23.2,
+  "name": "中茂",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
+ },
+ "5205:2026-10-23:2026-10-30": {
+  "after5_date": "2026-11-06",
+  "after5_overlap": false,
+  "after5_pct": 22.666666666666657,
+  "code": "5205",
+  "during_pct": -23.78048780487805,
+  "entry_close": 24.6,
+  "exchange": "TPEx",
+  "exit_close": 18.75,
+  "name": "中茂",
+  "period_end": "2026-10-30",
+  "period_start": "2026-10-23"
+ },
+ "5228:2026-10-13:2026-10-19": {
+  "after5_date": "2026-10-28",
+  "after5_overlap": false,
+  "after5_pct": 11.891891891891904,
+  "code": "5228",
+  "during_pct": -6.879194630872487,
+  "entry_close": 59.6,
+  "exchange": "TPEx",
+  "exit_close": 55.5,
+  "name": "鈺鎧",
+  "period_end": "2026-10-19",
+  "period_start": "2026-10-13"
+ },
+ "5314:2026-09-22:2026-09-30": {
+  "after5_date": "2026-10-07",
+  "after5_overlap": false,
+  "after5_pct": -4.506065857885622,
+  "code": "5314",
+  "during_pct": -0.688468158347677,
+  "entry_close": 29.05,
+  "exchange": "TPEx",
+  "exit_close": 28.85,
+  "name": "世紀*",
+  "period_end": "2026-09-30",
+  "period_start": "2026-09-22"
  },
  "5321:2026-06-29:2026-07-10": {
   "after5_overlap": false,
@@ -319,6 +1212,39 @@
   "period_end": "2026-07-10",
   "period_start": "2026-06-29"
  },
+ "5475:2026-10-12:2026-10-16": {
+  "after5_date": "2026-10-27",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "5475",
+    "period_end": "2026-11-03",
+    "period_start": "2026-10-28"
+   }
+  ],
+  "after5_pct": -7.8085642317380355,
+  "code": "5475",
+  "during_pct": -2.2167487684729092,
+  "entry_close": 203.0,
+  "exchange": "TPEx",
+  "exit_close": 198.5,
+  "name": "德宏",
+  "period_end": "2026-10-16",
+  "period_start": "2026-10-12"
+ },
+ "5475:2026-10-28:2026-11-03": {
+  "after5_date": "2026-11-10",
+  "after5_overlap": false,
+  "after5_pct": 1.9230769230769162,
+  "code": "5475",
+  "during_pct": -0.5464480874316946,
+  "entry_close": 183.0,
+  "exchange": "TPEx",
+  "exit_close": 182.0,
+  "name": "德宏",
+  "period_end": "2026-11-03",
+  "period_start": "2026-10-28"
+ },
  "5489:2026-06-26:2026-07-09": {
   "after5_overlap": false,
   "after5_pct": -25.04051863857375,
@@ -330,6 +1256,19 @@
   "name": "彩富",
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
+ },
+ "6168:2026-09-24:2026-10-02": {
+  "after5_date": "2026-10-12",
+  "after5_overlap": false,
+  "after5_pct": -15.217391304347828,
+  "code": "6168",
+  "during_pct": 11.650485436893199,
+  "entry_close": 41.2,
+  "exchange": "TWSE",
+  "exit_close": 46.0,
+  "name": "宏齊",
+  "period_end": "2026-10-02",
+  "period_start": "2026-09-24"
  },
  "6173:2026-07-17:2026-07-30": {
   "after5_date": "2026-08-06",
@@ -387,6 +1326,34 @@
   "period_end": "2026-08-07",
   "period_start": "2026-08-03"
  },
+ "6213:2026-10-08:2026-10-19": {
+  "after5_date": "2026-10-28",
+  "after5_overlap": false,
+  "after5_pct": 1.4341590612777066,
+  "code": "6213",
+  "during_pct": -3.643216080402012,
+  "entry_close": 796.0,
+  "exchange": "TWSE",
+  "exit_close": 767.0,
+  "name": "聯茂",
+  "period_end": "2026-10-19",
+  "period_start": "2026-10-08"
+ },
+ "6213:2026-11-05:2026-11-11": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "6213",
+  "during_pct": -5.228758169934644,
+  "entry_close": 612.0,
+  "exchange": "TWSE",
+  "exit_close": 580.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "聯茂",
+  "period_end": "2026-11-11",
+  "period_start": "2026-11-05"
+ },
  "6217:2026-07-23:2026-08-05": {
   "after5_date": "2026-08-12",
   "after5_overlap": true,
@@ -419,6 +1386,32 @@
   "period_end": "2026-08-07",
   "period_start": "2026-07-31"
  },
+ "6218:2026-09-23:2026-10-05": {
+  "after5_date": "2026-10-13",
+  "after5_overlap": false,
+  "after5_pct": -13.355048859934849,
+  "code": "6218",
+  "during_pct": 0.6557377049180246,
+  "entry_close": 61.0,
+  "exchange": "TPEx",
+  "exit_close": 61.4,
+  "name": "豪勉",
+  "period_end": "2026-10-05",
+  "period_start": "2026-09-23"
+ },
+ "6226:2026-09-21:2026-10-01": {
+  "after5_date": "2026-10-08",
+  "after5_overlap": false,
+  "after5_pct": -7.500000000000007,
+  "code": "6226",
+  "during_pct": 5.032822757111588,
+  "entry_close": 45.7,
+  "exchange": "TWSE",
+  "exit_close": 48.0,
+  "name": "光鼎",
+  "period_end": "2026-10-01",
+  "period_start": "2026-09-21"
+ },
  "6274:2026-08-10:2026-08-14": {
   "after5_overlap": false,
   "after5_pct": -10.746268656716417,
@@ -431,6 +1424,19 @@
   "period_end": "2026-08-14",
   "period_start": "2026-08-10"
  },
+ "6526:2026-09-30:2026-10-06": {
+  "after5_date": "2026-10-14",
+  "after5_overlap": false,
+  "after5_pct": -4.750593824228034,
+  "code": "6526",
+  "during_pct": 3.439803439803435,
+  "entry_close": 814.0,
+  "exchange": "TWSE",
+  "exit_close": 842.0,
+  "name": "達發",
+  "period_end": "2026-10-06",
+  "period_start": "2026-09-30"
+ },
  "6531:2026-08-03:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": -1.9978969505783373,
@@ -442,6 +1448,19 @@
   "name": "愛普*",
   "period_end": "2026-08-07",
   "period_start": "2026-08-03"
+ },
+ "6533:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": false,
+  "after5_pct": -11.198738170347,
+  "code": "6533",
+  "during_pct": -5.654761904761907,
+  "entry_close": 336.0,
+  "exchange": "TWSE",
+  "exit_close": 317.0,
+  "name": "晶心科",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
  },
  "6617:2026-07-08:2026-07-21": {
   "after5_overlap": false,
@@ -466,6 +1485,39 @@
   "name": "漢達",
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
+ },
+ "6672:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "6672",
+    "period_end": "2026-10-16",
+    "period_start": "2026-10-12"
+   }
+  ],
+  "after5_pct": 5.75139146567718,
+  "code": "6672",
+  "during_pct": 19.512195121951216,
+  "entry_close": 451.0,
+  "exchange": "TWSE",
+  "exit_close": 539.0,
+  "name": "騰輝電子-KY",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
+ },
+ "6672:2026-10-12:2026-10-16": {
+  "after5_date": "2026-10-27",
+  "after5_overlap": false,
+  "after5_pct": -9.813874788494081,
+  "code": "6672",
+  "during_pct": 6.486486486486487,
+  "entry_close": 555.0,
+  "exchange": "TWSE",
+  "exit_close": 591.0,
+  "name": "騰輝電子-KY",
+  "period_end": "2026-10-16",
+  "period_start": "2026-10-12"
  },
  "6683:2026-06-29:2026-07-10": {
   "after5_date": "2026-07-17",
@@ -499,6 +1551,65 @@
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
  },
+ "6708:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "6708",
+    "period_end": "2026-10-16",
+    "period_start": "2026-10-12"
+   }
+  ],
+  "after5_pct": 2.782071097372474,
+  "code": "6708",
+  "during_pct": -5.685131195335269,
+  "entry_close": 68.6,
+  "exchange": "TPEx",
+  "exit_close": 64.7,
+  "name": "天擎",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
+ },
+ "6708:2026-10-12:2026-10-16": {
+  "after5_date": "2026-10-27",
+  "after5_overlap": false,
+  "after5_pct": 4.0000000000000036,
+  "code": "6708",
+  "during_pct": -20.52023121387283,
+  "entry_close": 69.2,
+  "exchange": "TPEx",
+  "exit_close": 55.0,
+  "name": "天擎",
+  "period_end": "2026-10-16",
+  "period_start": "2026-10-12"
+ },
+ "6715:2026-09-23:2026-10-01": {
+  "after5_date": "2026-10-08",
+  "after5_overlap": false,
+  "after5_pct": 2.428256070640167,
+  "code": "6715",
+  "during_pct": 0.33222591362125353,
+  "entry_close": 451.5,
+  "exchange": "TWSE",
+  "exit_close": 453.0,
+  "name": "嘉基",
+  "period_end": "2026-10-01",
+  "period_start": "2026-09-23"
+ },
+ "6716:2026-10-20:2026-10-27": {
+  "after5_date": "2026-11-03",
+  "after5_overlap": false,
+  "after5_pct": -10.485651214128033,
+  "code": "6716",
+  "during_pct": -0.11025358324145973,
+  "entry_close": 90.7,
+  "exchange": "TPEx",
+  "exit_close": 90.6,
+  "name": "應廣",
+  "period_end": "2026-10-27",
+  "period_start": "2026-10-20"
+ },
  "6727:2026-07-22:2026-08-04": {
   "after5_overlap": false,
   "after5_pct": 5.5405405405405395,
@@ -523,6 +1634,19 @@
   "period_end": "2026-08-07",
   "period_start": "2026-08-03"
  },
+ "6751:2026-10-28:2026-11-03": {
+  "after5_date": "2026-11-10",
+  "after5_overlap": false,
+  "after5_pct": 14.379084967320255,
+  "code": "6751",
+  "during_pct": -0.90673575129534,
+  "entry_close": 77.2,
+  "exchange": "TPEx",
+  "exit_close": 76.5,
+  "name": "智聯服務",
+  "period_end": "2026-11-03",
+  "period_start": "2026-10-28"
+ },
  "6907:2026-07-17:2026-07-30": {
   "after5_overlap": false,
   "after5_pct": 30.000000000000004,
@@ -534,6 +1658,45 @@
   "name": "雅特力-KY",
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
+ },
+ "6925:2026-10-28:2026-11-03": {
+  "after5_date": "2026-11-10",
+  "after5_overlap": false,
+  "after5_pct": -3.0243902439024306,
+  "code": "6925",
+  "during_pct": -8.071748878923767,
+  "entry_close": 111.5,
+  "exchange": "TPEx",
+  "exit_close": 102.5,
+  "name": "意藍",
+  "period_end": "2026-11-03",
+  "period_start": "2026-10-28"
+ },
+ "6945:2026-09-23:2026-10-01": {
+  "after5_date": "2026-10-08",
+  "after5_overlap": false,
+  "after5_pct": -6.99300699300699,
+  "code": "6945",
+  "during_pct": 5.9259259259259345,
+  "entry_close": 135.0,
+  "exchange": "TPEx",
+  "exit_close": 143.0,
+  "name": "圓祥生技",
+  "period_end": "2026-10-01",
+  "period_start": "2026-09-23"
+ },
+ "6957:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_pct": -1.943844492440605,
+  "code": "6957",
+  "during_pct": 4.279279279279269,
+  "entry_close": 444.0,
+  "exchange": "TWSE",
+  "exit_close": 463.0,
+  "name": "裕慶-KY",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
  },
  "7610:2026-07-30:2026-08-07": {
   "after5_overlap": false,
@@ -559,6 +1722,52 @@
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
  },
+ "7772:2026-09-24:2026-10-02": {
+  "after5_date": "2026-10-12",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "7772",
+    "period_end": "2026-10-20",
+    "period_start": "2026-10-14"
+   }
+  ],
+  "after5_pct": -29.032258064516125,
+  "code": "7772",
+  "during_pct": 7.204610951008639,
+  "entry_close": 173.5,
+  "exchange": "TPEx",
+  "exit_close": 186.0,
+  "name": "耀穎",
+  "period_end": "2026-10-02",
+  "period_start": "2026-09-24"
+ },
+ "7772:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": false,
+  "after5_pct": -12.8755364806867,
+  "code": "7772",
+  "during_pct": -6.799999999999995,
+  "entry_close": 125.0,
+  "exchange": "TPEx",
+  "exit_close": 116.5,
+  "name": "耀穎",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
+ },
+ "7792:2026-09-30:2026-10-06": {
+  "after5_date": "2026-10-14",
+  "after5_overlap": false,
+  "after5_pct": -13.178294573643413,
+  "code": "7792",
+  "during_pct": 8.533653846153854,
+  "entry_close": 416.0,
+  "exchange": "TPEx",
+  "exit_close": 451.5,
+  "name": "安葆",
+  "period_end": "2026-10-06",
+  "period_start": "2026-09-30"
+ },
  "7828:2026-08-03:2026-08-07": {
   "after5_overlap": false,
   "after5_pct": 0.5847953216374213,
@@ -570,6 +1779,39 @@
   "name": "創新服務",
   "period_end": "2026-08-07",
   "period_start": "2026-08-03"
+ },
+ "8021:2026-09-23:2026-10-01": {
+  "after5_date": "2026-10-08",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "8021",
+    "period_end": "2026-10-16",
+    "period_start": "2026-10-12"
+   }
+  ],
+  "after5_pct": 10.735586481113323,
+  "code": "8021",
+  "during_pct": 5.450733752620551,
+  "entry_close": 477.0,
+  "exchange": "TWSE",
+  "exit_close": 503.0,
+  "name": "尖點",
+  "period_end": "2026-10-01",
+  "period_start": "2026-09-23"
+ },
+ "8021:2026-10-12:2026-10-16": {
+  "after5_date": "2026-10-27",
+  "after5_overlap": false,
+  "after5_pct": -12.348178137651821,
+  "code": "8021",
+  "during_pct": -11.31059245960503,
+  "entry_close": 557.0,
+  "exchange": "TWSE",
+  "exit_close": 494.0,
+  "name": "尖點",
+  "period_end": "2026-10-16",
+  "period_start": "2026-10-12"
  },
  "8024:2026-06-30:2026-07-13": {
   "after5_overlap": false,
@@ -607,6 +1849,64 @@
   "period_end": "2026-08-11",
   "period_start": "2026-08-03"
  },
+ "8084:2026-10-02:2026-10-08": {
+  "after5_date": "2026-10-16",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "8084",
+    "period_end": "2026-10-14",
+    "period_start": "2026-10-07"
+   },
+   {
+    "code": "8084",
+    "period_end": "2026-10-19",
+    "period_start": "2026-10-13"
+   }
+  ],
+  "after5_pct": -3.125000000000011,
+  "code": "8084",
+  "during_pct": -40.49586776859504,
+  "entry_close": 24.2,
+  "exchange": "TPEx",
+  "exit_close": 14.4,
+  "name": "巨虹",
+  "period_end": "2026-10-08",
+  "period_start": "2026-10-02"
+ },
+ "8084:2026-10-07:2026-10-14": {
+  "after5_date": "2026-10-21",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "8084",
+    "period_end": "2026-10-19",
+    "period_start": "2026-10-13"
+   }
+  ],
+  "after5_pct": -2.4054982817869552,
+  "code": "8084",
+  "during_pct": -17.796610169491522,
+  "entry_close": 17.7,
+  "exchange": "TPEx",
+  "exit_close": 14.55,
+  "name": "巨虹",
+  "period_end": "2026-10-14",
+  "period_start": "2026-10-07"
+ },
+ "8084:2026-10-13:2026-10-19": {
+  "after5_date": "2026-10-28",
+  "after5_overlap": false,
+  "after5_pct": -13.571428571428578,
+  "code": "8084",
+  "during_pct": -11.392405063291145,
+  "entry_close": 15.8,
+  "exchange": "TPEx",
+  "exit_close": 14.0,
+  "name": "巨虹",
+  "period_end": "2026-10-19",
+  "period_start": "2026-10-13"
+ },
  "8096:2026-07-16:2026-07-29": {
   "after5_overlap": false,
   "after5_pct": 14.09691629955947,
@@ -618,6 +1918,95 @@
   "name": "擎亞",
   "period_end": "2026-07-29",
   "period_start": "2026-07-16"
+ },
+ "8099:2026-11-02:2026-11-06": {
+  "after5_date": "2026-11-13",
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "8099",
+    "period_end": "2026-11-11",
+    "period_start": "2026-11-05"
+   }
+  ],
+  "after5_pct": 22.558922558922557,
+  "code": "8099",
+  "during_pct": 33.18385650224216,
+  "entry_close": 111.5,
+  "exchange": "TPEx",
+  "exit_close": 148.5,
+  "name": "大世科",
+  "period_end": "2026-11-06",
+  "period_start": "2026-11-02"
+ },
+ "8099:2026-11-05:2026-11-11": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "8099",
+  "during_pct": 4.878048780487809,
+  "entry_close": 143.5,
+  "exchange": "TPEx",
+  "exit_close": 150.5,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "大世科",
+  "period_end": "2026-11-11",
+  "period_start": "2026-11-05"
+ },
+ "8111:2026-10-16:2026-10-22": {
+  "after5_date": "2026-11-02",
+  "after5_overlap": false,
+  "after5_pct": 0.3875968992248069,
+  "code": "8111",
+  "during_pct": -5.60975609756097,
+  "entry_close": 82.0,
+  "exchange": "TPEx",
+  "exit_close": 77.4,
+  "name": "立碁",
+  "period_end": "2026-10-22",
+  "period_start": "2026-10-16"
+ },
+ "8201:2026-10-06:2026-10-13": {
+  "after5_date": "2026-10-20",
+  "after5_overlap": false,
+  "after5_pct": 0.0,
+  "code": "8201",
+  "during_pct": -4.587155963302758,
+  "entry_close": 16.35,
+  "exchange": "TWSE",
+  "exit_close": 15.6,
+  "name": "無敵",
+  "period_end": "2026-10-13",
+  "period_start": "2026-10-06"
+ },
+ "8227:2026-10-02:2026-10-08": {
+  "after5_date": "2026-10-16",
+  "after5_overlap": false,
+  "after5_pct": -15.820895522388057,
+  "code": "8227",
+  "during_pct": -7.840440165061901,
+  "entry_close": 363.5,
+  "exchange": "TPEx",
+  "exit_close": 335.0,
+  "name": "巨有科技",
+  "period_end": "2026-10-08",
+  "period_start": "2026-10-02"
+ },
+ "8272:2026-11-05:2026-11-11": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "8272",
+  "during_pct": -5.533980582524278,
+  "entry_close": 103.0,
+  "exchange": "TPEx",
+  "exit_close": 97.3,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "全景軟體",
+  "period_end": "2026-11-11",
+  "period_start": "2026-11-05"
  },
  "8291:2026-07-16:2026-07-29": {
   "after5_date": "2026-08-05",
@@ -651,6 +2040,54 @@
   "period_end": "2026-08-07",
   "period_start": "2026-07-27"
  },
+ "8291:2026-11-03:2026-11-09": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "8291",
+  "during_pct": -23.46278317152104,
+  "entry_close": 30.9,
+  "exchange": "TPEx",
+  "exit_close": 23.65,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "尚茂",
+  "period_end": "2026-11-09",
+  "period_start": "2026-11-03"
+ },
+ "8358:2026-10-08:2026-10-15": {
+  "after5_date": "2026-10-22",
+  "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "8358",
+    "period_end": "2026-10-30",
+    "period_start": "2026-10-23"
+   }
+  ],
+  "after5_pct": -4.9837486457204765,
+  "code": "8358",
+  "during_pct": -15.938069216757745,
+  "entry_close": 549.0,
+  "exchange": "TPEx",
+  "exit_close": 461.5,
+  "name": "金居",
+  "period_end": "2026-10-15",
+  "period_start": "2026-10-08"
+ },
+ "8358:2026-10-23:2026-10-30": {
+  "after5_date": "2026-11-06",
+  "after5_overlap": false,
+  "after5_pct": -25.185185185185187,
+  "code": "8358",
+  "during_pct": -7.639680729760546,
+  "entry_close": 438.5,
+  "exchange": "TPEx",
+  "exit_close": 405.0,
+  "name": "金居",
+  "period_end": "2026-10-30",
+  "period_start": "2026-10-23"
+ },
  "8383:2026-07-20:2026-07-31": {
   "after5_overlap": false,
   "after5_pct": 2.1897810218978186,
@@ -662,5 +2099,44 @@
   "name": "千附",
   "period_end": "2026-07-31",
   "period_start": "2026-07-20"
+ },
+ "8437:2026-10-23:2026-10-30": {
+  "after5_date": "2026-11-06",
+  "after5_overlap": false,
+  "after5_pct": -7.770270270270274,
+  "code": "8437",
+  "during_pct": -8.074534161490687,
+  "entry_close": 16.1,
+  "exchange": "TPEx",
+  "exit_close": 14.8,
+  "name": "大地-KY",
+  "period_end": "2026-10-30",
+  "period_start": "2026-10-23"
+ },
+ "8996:2026-10-05:2026-10-12": {
+  "after5_date": "2026-10-19",
+  "after5_overlap": false,
+  "after5_pct": -11.33720930232558,
+  "code": "8996",
+  "during_pct": 13.907284768211925,
+  "entry_close": 1510.0,
+  "exchange": "TWSE",
+  "exit_close": 1720.0,
+  "name": "高力",
+  "period_end": "2026-10-12",
+  "period_start": "2026-10-05"
+ },
+ "9103:2026-10-14:2026-10-20": {
+  "after5_date": "2026-10-29",
+  "after5_overlap": false,
+  "after5_pct": -4.363001745200701,
+  "code": "9103",
+  "during_pct": -18.376068376068368,
+  "entry_close": 7.02,
+  "exchange": "TWSE",
+  "exit_close": 5.73,
+  "name": "美德醫療-DR",
+  "period_end": "2026-10-20",
+  "period_start": "2026-10-14"
  }
 }
