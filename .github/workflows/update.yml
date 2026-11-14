@@ -35,28 +35,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Capture checkout base SHA
         id: base
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
 
       # Optional diagnostic: default stdout only; never stage probe output.
-      - name: Probe announcement sources (diagnostic stdout only)
-        continue-on-error: true
-        timeout-minutes: 2
-        run: python scripts/probe_announcement_sources.py
-
       - name: Run parser tests
         run: python -m unittest discover -s tests -q
 
@@ -123,7 +118,7 @@ jobs:
 
       - name: Upload update status
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: update-status-${{ github.run_id }}-${{ github.run_attempt }}
           path: update-status.json

@@ -1,25 +1,16 @@
-name: 公告來源時效探測
+name: 公告來源時效探測（手動診斷）
 
 # 目的：釐清證交所處置公告幾點才真的取得到。
 #
-# 背景：回推 55 天歷史快照發現 59 筆公告當天沒收錄、隔一交易日才出現，且高度
-# 偏向證交所（TWSE 漏 52、TPEx 漏 7）。既有的兩班更新排程（實測落在台灣 ~21:47
-# 與 ~00:40）都在盤後深夜；R01 修好後第二班已會補抓，但公告真正出現的時間窗
-# 仍未證實，所以繼續蒐集實證再決定要不要調整時段。
+# 結論（2026-11-14，分析 10/15–11/13 共 86 次探測，見 docs/probe-window-analysis.md）：
+#   openapi 對公告日 D 的公告要到 D+1 早上 06–11 點才出現；RWD 在 D 當天約 18:15
+#   前就有。主更新已改用 RWD（openapi 為備援），排程時段不需調整。
 #
-# 每次執行會把當下兩個來源的內容印進 run log，並上傳單一 JSON artifact，
-# 保留 30 天。包含實際執行時刻、參考日期、公告識別與內容雜湊供跨次比對。
-# 純診斷：不修改 repository，不觸發或影響主更新 pipeline。
-#
-# ⚠ 這是暫時性的實證蒐集。
-#    蒐集到足以判斷公告時間窗（約 1–2 週）之後，請直接停用本 workflow。
+# 蒐證任務已完成，排程停用；保留手動觸發，日後懷疑公告時效有變時可再跑。
+# 每次執行把兩個來源的內容印進 run log，並上傳 JSON artifact（保留 30 天），
+# 含實際執行時刻、公告識別與內容雜湊。純診斷：不修改 repository。
 
 on:
-  schedule:
-    - cron: "30 23 * * 0-4"  # 台灣 07:30（隔日）＝盤前，判斷是否需要加盤前一班
-    - cron: "0 3 * * 1-5"    # 台灣 11:00＝盤中，作為對照基準
-    - cron: "0 9 * * 1-5"    # 台灣 17:00＝盤後公告時段前緣
-    - cron: "0 12 * * 1-5"   # 台灣 20:00＝兩班更新排程之間
   workflow_dispatch:
 
 # 探測獨立排隊，不與主更新共用 concurrency group。
@@ -34,16 +25,16 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Probe announcement sources
         run: python scripts/probe_announcement_sources.py --output .run/probe.json
       - name: Upload diagnostic probe result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: announcement-probe-${{ github.run_id }}-${{ github.run_attempt }}
           path: .run/probe.json
