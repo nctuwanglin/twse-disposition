@@ -1542,5 +1542,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "通信網路"
+  },
+  "3661": {
+    "name": "世芯-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "半導體"
+  },
+  "3715": {
+    "name": "定穎投控",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
   }
 }
