@@ -1,18 +1,18 @@
 {
-  "date": "2026-11-16",
-  "quote_date": "2026-11-16",
-  "announcement_asof": "2026-11-16",
-  "total_active": 3,
-  "twse": 2,
-  "tpex": 1,
-  "second": 0,
-  "notetrans": 15,
+  "date": "2026-11-17",
+  "quote_date": "2026-11-17",
+  "announcement_asof": "2026-11-17",
+  "total_active": 5,
+  "twse": 3,
+  "tpex": 2,
+  "second": 1,
+  "notetrans": 4,
   "prev_day": {
-    "date": "2026-11-13",
-    "total_active": 5,
-    "twse": 4,
+    "date": "2026-11-16",
+    "total_active": 3,
+    "twse": 2,
     "tpex": 1,
     "second": 0,
-    "notetrans": 8
+    "notetrans": 15
   }
 }

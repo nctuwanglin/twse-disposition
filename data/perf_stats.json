@@ -258,6 +258,7 @@
   "period_start": "2026-10-30"
  },
  "2466:2026-11-04:2026-11-10": {
+  "after5_date": "2026-11-17",
   "after5_overlap": true,
   "after5_overlap_events": [
    {
@@ -266,15 +267,12 @@
     "period_start": "2026-11-17"
    }
   ],
-  "after5_pct": null,
+  "after5_pct": 20.637119113573398,
   "code": "2466",
   "during_pct": 5.555555555555558,
   "entry_close": 342.0,
   "exchange": "TWSE",
   "exit_close": 361.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "冠西電",
   "period_end": "2026-11-10",
   "period_start": "2026-11-04"
@@ -433,6 +431,21 @@
   "period_end": "2026-10-27",
   "period_start": "2026-10-20"
  },
+ "3189:2026-11-10:2026-11-16": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "3189",
+  "during_pct": -12.753623188405793,
+  "entry_close": 690.0,
+  "exchange": "TWSE",
+  "exit_close": 602.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "景碩",
+  "period_end": "2026-11-16",
+  "period_start": "2026-11-10"
+ },
  "3219:2026-10-01:2026-10-07": {
   "after5_date": "2026-10-15",
   "after5_overlap": false,
@@ -588,16 +601,14 @@
   "period_start": "2026-09-29"
  },
  "3374:2026-11-02:2026-11-10": {
+  "after5_date": "2026-11-17",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -0.824499411071844,
   "code": "3374",
   "during_pct": -13.012295081967217,
   "entry_close": 488.0,
   "exchange": "TPEx",
   "exit_close": 424.5,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "精材",
   "period_end": "2026-11-10",
   "period_start": "2026-11-02"
@@ -985,6 +996,21 @@
   "name": "科嶠",
   "period_end": "2026-11-03",
   "period_start": "2026-10-23"
+ },
+ "4542:2026-11-10:2026-11-16": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "4542",
+  "during_pct": 2.6666666666666616,
+  "entry_close": 225.0,
+  "exchange": "TPEx",
+  "exit_close": 231.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "科嶠",
+  "period_end": "2026-11-16",
+  "period_start": "2026-11-10"
  },
  "4556:2026-07-15:2026-07-28": {
   "after5_date": "2026-08-04",
