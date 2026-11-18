@@ -1560,5 +1560,17 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "通信網路"
+  },
+  "2471": {
+    "name": "資通",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "資訊服務"
+  },
+  "4534": {
+    "name": "慶騰",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電機機械"
   }
 }

@@ -182,6 +182,21 @@
   "period_end": "2026-10-05",
   "period_start": "2026-09-23"
  },
+ "2455:2026-11-11:2026-11-17": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "2455",
+  "during_pct": -12.313937753721248,
+  "entry_close": 369.5,
+  "exchange": "TWSE",
+  "exit_close": 324.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "全新",
+  "period_end": "2026-11-17",
+  "period_start": "2026-11-11"
+ },
  "2466:2026-10-08:2026-10-15": {
   "after5_date": "2026-10-22",
   "after5_overlap": true,
@@ -1413,16 +1428,14 @@
   "period_start": "2026-10-08"
  },
  "6213:2026-11-05:2026-11-11": {
+  "after5_date": "2026-11-18",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -24.39655172413793,
   "code": "6213",
   "during_pct": -5.228758169934644,
   "entry_close": 612.0,
   "exchange": "TWSE",
   "exit_close": 580.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "聯茂",
   "period_end": "2026-11-11",
   "period_start": "2026-11-05"
@@ -2020,16 +2033,14 @@
   "period_start": "2026-11-02"
  },
  "8099:2026-11-05:2026-11-11": {
+  "after5_date": "2026-11-18",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": 9.302325581395344,
   "code": "8099",
   "during_pct": 4.878048780487809,
   "entry_close": 143.5,
   "exchange": "TPEx",
   "exit_close": 150.5,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "大世科",
   "period_end": "2026-11-11",
   "period_start": "2026-11-05"
@@ -2074,16 +2085,14 @@
   "period_start": "2026-10-02"
  },
  "8272:2026-11-05:2026-11-11": {
+  "after5_date": "2026-11-18",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -0.5138746145940343,
   "code": "8272",
   "during_pct": -5.533980582524278,
   "entry_close": 103.0,
   "exchange": "TPEx",
   "exit_close": 97.3,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "全景軟體",
   "period_end": "2026-11-11",
   "period_start": "2026-11-05"
