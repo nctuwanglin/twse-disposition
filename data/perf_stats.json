@@ -122,16 +122,14 @@
   "period_start": "2026-09-18"
  },
  "2360:2026-11-09:2026-11-13": {
+  "after5_date": "2026-11-20",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -33.785714285714285,
   "code": "2360",
   "during_pct": 16.182572614107894,
   "entry_close": 1205.0,
   "exchange": "TWSE",
   "exit_close": 1400.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "致茂",
   "period_end": "2026-11-13",
   "period_start": "2026-11-09"
@@ -740,16 +738,21 @@
   "period_start": "2026-07-31"
  },
  "3532:2026-11-09:2026-11-13": {
+  "after5_date": "2026-11-20",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_overlap_events": [
+   {
+    "code": "3532",
+    "period_end": "2026-11-27",
+    "period_start": "2026-11-23"
+   }
+  ],
+  "after5_pct": -36.77966101694915,
   "code": "3532",
   "during_pct": 15.009746588693961,
   "entry_close": 256.5,
   "exchange": "TWSE",
   "exit_close": 295.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "台勝科",
   "period_end": "2026-11-13",
   "period_start": "2026-11-09"

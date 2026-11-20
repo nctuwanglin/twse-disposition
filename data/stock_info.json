@@ -1572,5 +1572,29 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "電機機械"
+  },
+  "1569": {
+    "name": "濱川",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電腦及週邊設備"
+  },
+  "3162": {
+    "name": "精確",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電機機械"
+  },
+  "3363": {
+    "name": "上詮",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "通信網路"
+  },
+  "7856": {
+    "name": "漢測",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
