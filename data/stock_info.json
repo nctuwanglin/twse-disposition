@@ -1596,5 +1596,41 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "1528": {
+    "name": "恩德",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電機機械"
+  },
+  "1809": {
+    "name": "中釉",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "玻璃陶瓷"
+  },
+  "4716": {
+    "name": "大立",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "化學工業"
+  },
+  "4927": {
+    "name": "泰鼎-KY",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "電子零組件"
+  },
+  "6472": {
+    "name": "保瑞",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "生技醫療"
+  },
+  "6609": {
+    "name": "瀧澤科",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "電機機械"
   }
 }

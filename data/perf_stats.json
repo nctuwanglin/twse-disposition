@@ -445,16 +445,14 @@
   "period_start": "2026-10-20"
  },
  "3189:2026-11-10:2026-11-16": {
+  "after5_date": "2026-11-23",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -22.342192691029904,
   "code": "3189",
   "during_pct": -12.753623188405793,
   "entry_close": 690.0,
   "exchange": "TWSE",
   "exit_close": 602.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "景碩",
   "period_end": "2026-11-16",
   "period_start": "2026-11-10"
@@ -960,6 +958,13 @@
  "4526:2026-10-30:2026-11-09": {
   "after5_date": "2026-11-16",
   "after5_overlap": false,
+  "after5_overlap_events": [
+   {
+    "code": "4526",
+    "period_end": "2026-11-30",
+    "period_start": "2026-11-24"
+   }
+  ],
   "after5_pct": -4.612546125461259,
   "code": "4526",
   "during_pct": 2.6515151515151603,
@@ -1016,16 +1021,14 @@
   "period_start": "2026-10-23"
  },
  "4542:2026-11-10:2026-11-16": {
+  "after5_date": "2026-11-23",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -33.98268398268398,
   "code": "4542",
   "during_pct": 2.6666666666666616,
   "entry_close": 225.0,
   "exchange": "TPEx",
   "exit_close": 231.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "科嶠",
   "period_end": "2026-11-16",
   "period_start": "2026-11-10"
