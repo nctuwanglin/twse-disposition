@@ -1,22 +1,64 @@
 {
  "schema": 1,
- "date": "2026-11-23",
+ "date": "2026-11-24",
  "source": "live",
  "taiex": {
-  "收盤指數": "36811.89",
-  "漲跌點數": "778.60",
-  "漲跌百分比": "2.16",
+  "收盤指數": "40122.35",
+  "漲跌點數": "3310.46",
+  "漲跌百分比": "8.99",
   "漲跌": "+",
-  "日期": "1151123"
+  "日期": "1151124"
  },
  "counts": {
-  "active": 18,
-  "twse": 5,
-  "tpex": 13,
-  "second": 2,
-  "notetrans": 19
+  "active": 29,
+  "twse": 10,
+  "tpex": 19,
+  "second": 3,
+  "notetrans": 14
  },
  "active": [
+  {
+   "code": "1569",
+   "name": "濱川",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 72.3,
+   "change_pct": 9.878419452887538,
+   "vol_k": 207
+  },
+  {
+   "code": "3081",
+   "name": "聯亞",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 2,
+   "close": 1525.0,
+   "change_pct": 9.712230215827338,
+   "vol_k": 207
+  },
+  {
+   "code": "3162",
+   "name": "精確",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 53.0,
+   "change_pct": 9.278350515463918,
+   "vol_k": 1146
+  },
   {
    "code": "3287",
    "name": "廣寰科",
@@ -27,9 +69,37 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 40.8,
-   "change_pct": -6.529209621993128,
-   "vol_k": 336
+   "close": 44.85,
+   "change_pct": 9.926470588235292,
+   "vol_k": 255
+  },
+  {
+   "code": "3354",
+   "name": "律勝",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 3,
+   "close": 30.05,
+   "change_pct": 9.87202925045704,
+   "vol_k": 65
+  },
+  {
+   "code": "3363",
+   "name": "上詮",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 272.0,
+   "change_pct": 9.8989898989899,
+   "vol_k": 537
   },
   {
    "code": "3441",
@@ -41,9 +111,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 125.5,
-   "change_pct": -6.343283582089552,
-   "vol_k": 871
+   "close": 138.0,
+   "change_pct": 9.9601593625498,
+   "vol_k": 319
   },
   {
    "code": "3491",
@@ -55,9 +125,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 1260.0,
-   "change_pct": 2.857142857142857,
-   "vol_k": 870
+   "close": 1385.0,
+   "change_pct": 9.920634920634921,
+   "vol_k": 376
   },
   {
    "code": "4174",
@@ -69,9 +139,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 65.8,
-   "change_pct": 2.8125,
-   "vol_k": 605
+   "close": 67.8,
+   "change_pct": 3.0395136778115504,
+   "vol_k": 752
   },
   {
    "code": "4534",
@@ -83,9 +153,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 19.5,
-   "change_pct": -2.5,
-   "vol_k": 209
+   "close": 21.45,
+   "change_pct": 10.0,
+   "vol_k": 200
   },
   {
    "code": "4577",
@@ -97,9 +167,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 75.2,
-   "change_pct": -9.940119760479043,
-   "vol_k": 396
+   "close": 82.7,
+   "change_pct": 9.97340425531915,
+   "vol_k": 179
   },
   {
    "code": "6140",
@@ -111,9 +181,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 27.5,
-   "change_pct": -7.094594594594595,
-   "vol_k": 879
+   "close": 29.75,
+   "change_pct": 8.181818181818182,
+   "vol_k": 957
   },
   {
    "code": "6538",
@@ -125,9 +195,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 185.5,
-   "change_pct": 1.366120218579235,
-   "vol_k": 1531
+   "close": 204.0,
+   "change_pct": 9.973045822102426,
+   "vol_k": 177
   },
   {
    "code": "6697",
@@ -139,23 +209,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 53.1,
-   "change_pct": -10.0,
-   "vol_k": 855
-  },
-  {
-   "code": "6751",
-   "name": "智聯服務",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-16",
-   "period_start": "2026-11-17",
-   "period_end": "2026-11-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 71.0,
-   "change_pct": -4.697986577181208,
-   "vol_k": 337
+   "close": 57.4,
+   "change_pct": 8.097928436911488,
+   "vol_k": 1224
   },
   {
    "code": "7584",
@@ -167,9 +223,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 48.5,
-   "change_pct": 3.854389721627409,
-   "vol_k": 306
+   "close": 46.85,
+   "change_pct": -3.402061855670103,
+   "vol_k": 349
   },
   {
    "code": "7717",
@@ -181,9 +237,37 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 465.0,
-   "change_pct": 0.6493506493506493,
-   "vol_k": 513
+   "close": 511.0,
+   "change_pct": 9.89247311827957,
+   "vol_k": 206
+  },
+  {
+   "code": "7856",
+   "name": "漢測",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 1735.0,
+   "change_pct": 9.81012658227848,
+   "vol_k": 200
+  },
+  {
+   "code": "8042",
+   "name": "金山電",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-23",
+   "period_start": "2026-11-24",
+   "period_end": "2026-11-30",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 2,
+   "close": 85.8,
+   "change_pct": 10.0,
+   "vol_k": 580
   },
   {
    "code": "8084",
@@ -209,23 +293,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 29.5,
-   "change_pct": 9.869646182495345,
-   "vol_k": 1767
-  },
-  {
-   "code": "2466",
-   "name": "冠西電",
-   "exchange": "TWSE",
-   "ann_date": "2026-11-16",
-   "period_start": "2026-11-17",
-   "period_end": "2026-11-23",
-   "auction": "2分撮合",
-   "disp_count": 2,
-   "career_count": 6,
-   "close": 425.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361
+   "close": 32.45,
+   "change_pct": 10.0,
+   "vol_k": 314
   },
   {
    "code": "3532",
@@ -237,137 +307,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 4,
-   "close": 168.0,
-   "change_pct": -9.919571045576408,
-   "vol_k": 5526
-  },
-  {
-   "code": "6108",
-   "name": "競國",
-   "exchange": "TWSE",
-   "ann_date": "2026-11-16",
-   "period_start": "2026-11-17",
-   "period_end": "2026-11-23",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 31.05,
-   "change_pct": -9.869375907111754,
-   "vol_k": 3259
-  },
-  {
-   "code": "7610",
-   "name": "聯友金屬-創",
-   "exchange": "TWSE",
-   "ann_date": "2026-11-19",
-   "period_start": "2026-11-20",
-   "period_end": "2026-11-26",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 5,
-   "close": 789.0,
-   "change_pct": 8.827586206896552,
-   "vol_k": 725
-  }
- ],
- "upcoming": [
-  {
-   "code": "1569",
-   "name": "濱川",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 65.8,
-   "change_pct": -1.0526315789473684,
-   "vol_k": 5326
-  },
-  {
-   "code": "3081",
-   "name": "聯亞",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 1390.0,
-   "change_pct": 1.8315018315018317,
-   "vol_k": 6509
-  },
-  {
-   "code": "3162",
-   "name": "精確",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 48.5,
-   "change_pct": 0.10319917440660474,
-   "vol_k": 1887
-  },
-  {
-   "code": "3354",
-   "name": "律勝",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 2,
-   "close": 27.35,
-   "change_pct": -2.146690518783542,
-   "vol_k": 1711
-  },
-  {
-   "code": "3363",
-   "name": "上詮",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 247.5,
-   "change_pct": -3.508771929824561,
-   "vol_k": 3705
-  },
-  {
-   "code": "7856",
-   "name": "漢測",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 1580.0,
-   "change_pct": -6.508875739644971,
-   "vol_k": 1201
-  },
-  {
-   "code": "8042",
-   "name": "金山電",
-   "exchange": "TPEx",
-   "ann_date": "2026-11-23",
-   "period_start": "2026-11-24",
-   "period_end": "2026-11-30",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 78.0,
-   "change_pct": 0.38610038610038605,
-   "vol_k": 6775
+   "close": 184.5,
+   "change_pct": 9.821428571428571,
+   "vol_k": 343
   },
   {
    "code": "3653",
@@ -378,10 +320,10 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 1,
-   "career_count": 1,
-   "close": 3685.0,
-   "change_pct": -0.5398110661268556,
-   "vol_k": 4450
+   "career_count": 2,
+   "close": 4050.0,
+   "change_pct": 9.905020352781547,
+   "vol_k": 61
   },
   {
    "code": "4526",
@@ -392,10 +334,10 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 2,
-   "career_count": 1,
-   "close": 33.7,
-   "change_pct": -4.936530324400564,
-   "vol_k": 12294
+   "career_count": 2,
+   "close": 37.05,
+   "change_pct": 9.940652818991099,
+   "vol_k": 1302
   },
   {
    "code": "4927",
@@ -407,9 +349,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 37.05,
-   "change_pct": 0.27063599458728016,
-   "vol_k": 15867
+   "close": 40.75,
+   "change_pct": 9.98650472334683,
+   "vol_k": 692
   },
   {
    "code": "6451",
@@ -420,10 +362,10 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 1,
-   "career_count": 1,
-   "close": 184.5,
-   "change_pct": -1.8617021276595744,
-   "vol_k": 2533
+   "career_count": 2,
+   "close": 202.5,
+   "change_pct": 9.75609756097561,
+   "vol_k": 210
   },
   {
    "code": "6715",
@@ -434,10 +376,24 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 1,
-   "career_count": 2,
-   "close": 274.0,
-   "change_pct": -3.8596491228070176,
-   "vol_k": 1027
+   "career_count": 3,
+   "close": 301.0,
+   "change_pct": 9.854014598540147,
+   "vol_k": 55
+  },
+  {
+   "code": "7610",
+   "name": "聯友金屬-創",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-19",
+   "period_start": "2026-11-20",
+   "period_end": "2026-11-26",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 5,
+   "close": 867.0,
+   "change_pct": 9.885931558935361,
+   "vol_k": 41
   },
   {
    "code": "8021",
@@ -448,10 +404,10 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 2,
-   "career_count": 6,
-   "close": 247.0,
-   "change_pct": -0.20202020202020202,
-   "vol_k": 9565
+   "career_count": 7,
+   "close": 271.5,
+   "change_pct": 9.919028340080972,
+   "vol_k": 251
   },
   {
    "code": "8996",
@@ -462,10 +418,82 @@
    "period_end": "2026-11-30",
    "auction": "2分撮合",
    "disp_count": 1,
+   "career_count": 4,
+   "close": 943.0,
+   "change_pct": 9.906759906759907,
+   "vol_k": 118
+  }
+ ],
+ "upcoming": [
+  {
+   "code": "3287",
+   "name": "廣寰科",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-24",
+   "period_start": "2026-11-25",
+   "period_end": "2026-12-01",
+   "auction": "2分撮合",
+   "disp_count": 1,
    "career_count": 3,
-   "close": 858.0,
-   "change_pct": -7.042253521126761,
-   "vol_k": 5680
+   "close": 44.85,
+   "change_pct": 9.926470588235292,
+   "vol_k": 255
+  },
+  {
+   "code": "3693",
+   "name": "營邦",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-24",
+   "period_start": "2026-11-25",
+   "period_end": "2026-12-01",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 481.5,
+   "change_pct": 9.931506849315069,
+   "vol_k": 90
+  },
+  {
+   "code": "4716",
+   "name": "大立",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-24",
+   "period_start": "2026-11-25",
+   "period_end": "2026-12-01",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 13.45,
+   "change_pct": 3.861003861003861,
+   "vol_k": 1984
+  },
+  {
+   "code": "3443",
+   "name": "創意",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-24",
+   "period_start": "2026-11-25",
+   "period_end": "2026-12-01",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 5630.0,
+   "change_pct": 9.9609375,
+   "vol_k": 129
+  },
+  {
+   "code": "6456",
+   "name": "GIS-KY",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-24",
+   "period_start": "2026-11-25",
+   "period_end": "2026-12-01",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 1,
+   "close": 64.8,
+   "change_pct": -0.6134969325153374,
+   "vol_k": 87399
   }
  ],
  "notetrans": [
@@ -476,31 +504,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 19.1,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 21.0,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 29.25,
-     "cum_pct": -34.70085470085469,
+     "ref_date": "2026-11-16",
+     "ref_close": 27.05,
+     "cum_pct": -22.36598890942699,
      "pct": 32.0,
-     "threshold": 38.61,
-     "diff_pct": 102.14659685863872,
+     "threshold": 35.706,
+     "diff_pct": 70.02857142857144,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 35.706
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 32.406000000000006
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 23.7,
-     "cum_pct": -19.409282700421933,
+     "ref_date": "2026-10-12",
+     "ref_close": 23.1,
+     "cum_pct": -9.090909090909097,
      "pct": 100.0,
-     "threshold": 47.4,
-     "diff_pct": 148.16753926701568,
+     "threshold": 46.2,
+     "diff_pct": 120.00000000000001,
      "triggered": false
     },
-    "vol_avg": 13162.382352941177,
-    "vol_days": 34
+    "vol_avg": 12921.142857142857,
+    "vol_days": 35
    }
   },
   {
@@ -510,31 +538,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 55.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 60.5,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 79.8,
-     "cum_pct": -31.07769423558897,
+     "ref_date": "2026-11-16",
+     "ref_close": 71.9,
+     "cum_pct": -15.855354659248963,
      "pct": 32.0,
-     "threshold": 105.336,
-     "diff_pct": 91.52,
+     "threshold": 94.90800000000002,
+     "diff_pct": 56.872727272727296,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 94.90800000000002
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 90.024
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 103.0,
-     "cum_pct": -46.601941747572816,
+     "ref_date": "2026-10-12",
+     "ref_close": 100.5,
+     "cum_pct": -39.800995024875625,
      "pct": 100.0,
-     "threshold": 206.0,
-     "diff_pct": 274.54545454545456,
+     "threshold": 201.0,
+     "diff_pct": 232.2314049586777,
      "triggered": false
     },
-    "vol_avg": 16630.323529411766,
-    "vol_days": 34
+    "vol_avg": 16411.685714285715,
+    "vol_days": 35
    }
   },
   {
@@ -544,31 +572,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 116.5,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 128.0,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 170.0,
-     "cum_pct": -31.470588235294116,
+     "ref_date": "2026-11-16",
+     "ref_close": 153.0,
+     "cum_pct": -16.33986928104575,
      "pct": 32.0,
-     "threshold": 224.4,
-     "diff_pct": 92.61802575107296,
+     "threshold": 201.96,
+     "diff_pct": 57.78125000000001,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 201.96
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 188.76000000000002
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 238.5,
-     "cum_pct": -51.15303983228512,
+     "ref_date": "2026-10-12",
+     "ref_close": 233.5,
+     "cum_pct": -45.182012847965744,
      "pct": 100.0,
-     "threshold": 477.0,
-     "diff_pct": 309.44206008583694,
+     "threshold": 467.0,
+     "diff_pct": 264.84375,
      "triggered": false
     },
-    "vol_avg": 3429.5588235294117,
-    "vol_days": 34
+    "vol_avg": 3541.0285714285715,
+    "vol_days": 35
    }
   },
   {
@@ -578,31 +606,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 5120.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 5630.0,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 8610.0,
-     "cum_pct": -40.534262485481996,
+     "ref_date": "2026-11-16",
+     "ref_close": 7750.0,
+     "cum_pct": -27.35483870967742,
      "pct": 32.0,
-     "threshold": 11365.2,
-     "diff_pct": 121.97656250000001,
+     "threshold": 10230.0,
+     "diff_pct": 81.70515097690941,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 10230.0
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 9207.0
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 8360.0,
-     "cum_pct": -38.75598086124402,
+     "ref_date": "2026-10-12",
+     "ref_close": 8100.0,
+     "cum_pct": -30.493827160493826,
      "pct": 100.0,
-     "threshold": 16720.0,
-     "diff_pct": 226.5625,
+     "threshold": 16200.0,
+     "diff_pct": 187.7442273534636,
      "triggered": false
     },
-    "vol_avg": 2248.176470588235,
-    "vol_days": 34
+    "vol_avg": 2431.1428571428573,
+    "vol_days": 35
    }
   },
   {
@@ -612,31 +640,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 28.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 30.8,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 41.6,
-     "cum_pct": -32.69230769230769,
+     "ref_date": "2026-11-16",
+     "ref_close": 38.1,
+     "cum_pct": -19.160104986876643,
      "pct": 32.0,
-     "threshold": 54.912000000000006,
-     "diff_pct": 96.11428571428574,
+     "threshold": 50.292,
+     "diff_pct": 63.28571428571429,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 50.292
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 45.275999999999996
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 51.3,
-     "cum_pct": -45.419103313840154,
+     "ref_date": "2026-10-12",
+     "ref_close": 54.7,
+     "cum_pct": -43.692870201096895,
      "pct": 100.0,
-     "threshold": 102.6,
-     "diff_pct": 266.4285714285714,
+     "threshold": 109.4,
+     "diff_pct": 255.19480519480518,
      "triggered": false
     },
-    "vol_avg": 2268.529411764706,
-    "vol_days": 34
+    "vol_avg": 2234.285714285714,
+    "vol_days": 35
    }
   },
   {
@@ -646,31 +674,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 65.2,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 64.8,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 101.5,
-     "cum_pct": -35.76354679802955,
+     "ref_date": "2026-11-16",
+     "ref_close": 91.4,
+     "cum_pct": -29.102844638949684,
      "pct": 32.0,
-     "threshold": 133.98000000000002,
-     "diff_pct": 105.49079754601229,
+     "threshold": 120.64800000000001,
+     "diff_pct": 86.1851851851852,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 120.64800000000001
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 111.54
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 100.0,
-     "cum_pct": -34.8,
+     "ref_date": "2026-10-12",
+     "ref_close": 102.0,
+     "cum_pct": -36.47058823529412,
      "pct": 100.0,
-     "threshold": 200.0,
-     "diff_pct": 206.74846625766872,
+     "threshold": 204.0,
+     "diff_pct": 214.81481481481478,
      "triggered": false
     },
-    "vol_avg": 32452.352941176472,
-    "vol_days": 34
+    "vol_avg": 32038.77142857143,
+    "vol_days": 35
    }
   },
   {
@@ -680,31 +708,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 272.5,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 284.0,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 402.0,
-     "cum_pct": -32.21393034825871,
+     "ref_date": "2026-11-16",
+     "ref_close": 363.0,
+     "cum_pct": -21.763085399449036,
      "pct": 32.0,
-     "threshold": 530.64,
-     "diff_pct": 94.7302752293578,
+     "threshold": 479.16,
+     "diff_pct": 68.71830985915494,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 479.16
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 467.94
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 421.0,
-     "cum_pct": -35.273159144893114,
+     "ref_date": "2026-10-12",
+     "ref_close": 422.5,
+     "cum_pct": -32.781065088757394,
      "pct": 100.0,
-     "threshold": 842.0,
-     "diff_pct": 208.9908256880734,
+     "threshold": 845.0,
+     "diff_pct": 197.53521126760563,
      "triggered": false
     },
-    "vol_avg": 819.9411764705883,
-    "vol_days": 34
+    "vol_avg": 845.4285714285714,
+    "vol_days": 35
    }
   },
   {
@@ -714,31 +742,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 308.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 338.5,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 472.5,
-     "cum_pct": -34.81481481481482,
+     "ref_date": "2026-11-16",
+     "ref_close": 425.5,
+     "cum_pct": -20.44653349001175,
      "pct": 32.0,
-     "threshold": 623.7,
-     "diff_pct": 102.50000000000001,
+     "threshold": 561.6600000000001,
+     "diff_pct": 65.92614475627772,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 561.6600000000001
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 510.84000000000003
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 530.0,
-     "cum_pct": -41.88679245283019,
+     "ref_date": "2026-10-12",
+     "ref_close": 540.0,
+     "cum_pct": -37.31481481481482,
      "pct": 100.0,
-     "threshold": 1060.0,
-     "diff_pct": 244.15584415584414,
+     "threshold": 1080.0,
+     "diff_pct": 219.0546528803545,
      "triggered": false
     },
-    "vol_avg": 1217.0294117647059,
-    "vol_days": 34
+    "vol_avg": 1228.2,
+    "vol_days": 35
    }
   },
   {
@@ -748,31 +776,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 31.4,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 34.5,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 45.4,
-     "cum_pct": -30.837004405286343,
+     "ref_date": "2026-11-16",
+     "ref_close": 41.8,
+     "cum_pct": -17.46411483253588,
      "pct": 32.0,
-     "threshold": 59.928000000000004,
-     "diff_pct": 90.8535031847134,
+     "threshold": 55.176,
+     "diff_pct": 59.9304347826087,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 55.176
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 50.09400000000001
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 59.3,
-     "cum_pct": -47.048903878583474,
+     "ref_date": "2026-10-12",
+     "ref_close": 59.5,
+     "cum_pct": -42.016806722689076,
      "pct": 100.0,
-     "threshold": 118.6,
-     "diff_pct": 277.7070063694267,
+     "threshold": 119.0,
+     "diff_pct": 244.9275362318841,
      "triggered": false
     },
-    "vol_avg": 326.52941176470586,
-    "vol_days": 34
+    "vol_avg": 325.1714285714286,
+    "vol_days": 35
    }
   },
   {
@@ -782,31 +810,31 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 30.25,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 33.25,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 45.1,
-     "cum_pct": -32.926829268292686,
+     "ref_date": "2026-11-16",
+     "ref_close": 40.6,
+     "cum_pct": -18.10344827586207,
      "pct": 32.0,
-     "threshold": 59.532000000000004,
-     "diff_pct": 96.80000000000001,
+     "threshold": 53.592000000000006,
+     "diff_pct": 61.17894736842106,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 53.592000000000006
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 50.292
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 45.45,
-     "cum_pct": -33.44334433443345,
+     "ref_date": "2026-10-12",
+     "ref_close": 43.8,
+     "cum_pct": -24.086757990867575,
      "pct": 100.0,
-     "threshold": 90.9,
-     "diff_pct": 200.49586776859508,
+     "threshold": 87.6,
+     "diff_pct": 163.45864661654133,
      "triggered": false
     },
-    "vol_avg": 5371.323529411765,
-    "vol_days": 34
+    "vol_avg": 5309.5142857142855,
+    "vol_days": 35
    }
   },
   {
@@ -816,294 +844,133 @@
    "criteria": "連續二次 (11/20–11/23)",
    "raw_criteria": "115年11月20日至115年11月23日連續二次",
    "thresholds": {
-    "current_close": 927.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 1015.0,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 1400.0,
-     "cum_pct": -33.785714285714285,
+     "ref_date": "2026-11-16",
+     "ref_close": 1260.0,
+     "cum_pct": -19.444444444444446,
      "pct": 32.0,
-     "threshold": 1848.0,
-     "diff_pct": 99.35275080906149,
+     "threshold": 1663.2,
+     "diff_pct": 63.86206896551725,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 1663.2
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 1498.2
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 2330.0,
-     "cum_pct": -60.21459227467811,
+     "ref_date": "2026-10-12",
+     "ref_close": 2365.0,
+     "cum_pct": -57.082452431289646,
      "pct": 100.0,
-     "threshold": 4660.0,
-     "diff_pct": 402.69687162891046,
+     "threshold": 4730.0,
+     "diff_pct": 366.00985221674875,
      "triggered": false
     },
-    "vol_avg": 3342.029411764706,
-    "vol_days": 34
+    "vol_avg": 3450.2571428571428,
+    "vol_days": 35
    }
   },
   {
-   "code": "3287",
-   "name": "廣寰科",
+   "code": "4542",
+   "name": "科嶠",
    "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
+   "criteria": "連續二次 (11/23–11/24)",
+   "raw_criteria": "115年11月23日至115年11月24日連續二次",
    "thresholds": {
-    "current_close": 40.8,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 167.5,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 68.8,
-     "cum_pct": -40.69767441860465,
+     "ref_date": "2026-11-16",
+     "ref_close": 231.0,
+     "cum_pct": -27.48917748917749,
      "pct": 30.0,
-     "threshold": 89.44,
-     "diff_pct": 119.21568627450982,
+     "threshold": 300.3,
+     "diff_pct": 79.28358208955224,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 80.60000000000001
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 270.40000000000003
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 43.45,
-     "cum_pct": -6.098964326812441,
+     "ref_date": "2026-10-12",
+     "ref_close": 361.5,
+     "cum_pct": -53.665283540802214,
      "pct": 100.0,
-     "threshold": 86.9,
-     "diff_pct": 112.9901960784314,
+     "threshold": 723.0,
+     "diff_pct": 331.64179104477614,
      "triggered": false
     },
-    "vol_avg": 2828.470588235294,
-    "vol_days": 34
+    "vol_avg": 1207.2857142857142,
+    "vol_days": 35
    }
   },
   {
-   "code": "3498",
-   "name": "陽程",
+   "code": "4577",
+   "name": "達航科技",
    "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
+   "criteria": "連續二次 (11/23–11/24)",
+   "raw_criteria": "115年11月23日至115年11月24日連續二次",
    "thresholds": {
-    "current_close": 130.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 82.7,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 202.0,
-     "cum_pct": -35.64356435643564,
+     "ref_date": "2026-11-16",
+     "ref_close": 124.5,
+     "cum_pct": -33.57429718875502,
      "pct": 30.0,
-     "threshold": 262.6,
-     "diff_pct": 102.00000000000003,
+     "threshold": 161.85,
+     "diff_pct": 95.70737605804109,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 236.6
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 146.25
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 225.5,
-     "cum_pct": -42.350332594235034,
+     "ref_date": "2026-10-12",
+     "ref_close": 90.1,
+     "cum_pct": -8.213096559378458,
      "pct": 100.0,
-     "threshold": 451.0,
-     "diff_pct": 246.92307692307693,
+     "threshold": 180.2,
+     "diff_pct": 117.89600967351872,
      "triggered": false
     },
-    "vol_avg": 4353.5,
-    "vol_days": 34
+    "vol_avg": 1955.0285714285715,
+    "vol_days": 35
    }
   },
   {
-   "code": "3691",
-   "name": "碩禾",
+   "code": "6697",
+   "name": "東捷資訊",
    "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
+   "criteria": "連續二次 (11/23–11/24)",
+   "raw_criteria": "115年11月23日至115年11月24日連續二次",
    "thresholds": {
-    "current_close": 83.5,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
+    "current_close": 57.4,
+    "latest_date": "2026-11-24",
+    "history_days": 36,
     "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 137.0,
-     "cum_pct": -39.05109489051095,
+     "ref_date": "2026-11-16",
+     "ref_close": 88.6,
+     "cum_pct": -35.214446952595935,
      "pct": 30.0,
-     "threshold": 178.1,
-     "diff_pct": 113.2934131736527,
+     "threshold": 115.17999999999999,
+     "diff_pct": 100.66202090592333,
      "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 160.55
+     "next_session_ref_date": "2026-11-17",
+     "next_session_threshold": 103.74
     },
     "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 103.5,
-     "cum_pct": -19.32367149758454,
+     "ref_date": "2026-10-12",
+     "ref_close": 40.8,
+     "cum_pct": 40.68627450980393,
      "pct": 100.0,
-     "threshold": 207.0,
-     "diff_pct": 147.90419161676647,
+     "threshold": 81.6,
+     "diff_pct": 42.16027874564459,
      "triggered": false
     },
-    "vol_avg": 3441.529411764706,
-    "vol_days": 34
-   }
-  },
-  {
-   "code": "3693",
-   "name": "營邦",
-   "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 438.0,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
-    "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 718.0,
-     "cum_pct": -38.99721448467967,
-     "pct": 30.0,
-     "threshold": 933.4,
-     "diff_pct": 113.10502283105022,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 841.1
-    },
-    "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 736.0,
-     "cum_pct": -40.48913043478261,
-     "pct": 100.0,
-     "threshold": 1472.0,
-     "diff_pct": 236.07305936073058,
-     "triggered": false
-    },
-    "vol_avg": 2133.0882352941176,
-    "vol_days": 34
-   }
-  },
-  {
-   "code": "4534",
-   "name": "慶騰",
-   "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 19.5,
-    "latest_date": "2026-11-23",
-    "history_days": 28,
-    "clause1": {
-     "ref_date": "2026-11-04",
-     "ref_close": 25.45,
-     "cum_pct": -23.379174852652255,
-     "pct": 30.0,
-     "threshold": 33.085,
-     "diff_pct": 69.66666666666667,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 37.57
-    },
-    "vol_avg": 497.25925925925924,
-    "vol_days": 27
-   }
-  },
-  {
-   "code": "4556",
-   "name": "旭然",
-   "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 70.2,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
-    "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 104.0,
-     "cum_pct": -32.49999999999999,
-     "pct": 30.0,
-     "threshold": 135.20000000000002,
-     "diff_pct": 92.59259259259261,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 121.67999999999999
-    },
-    "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 145.0,
-     "cum_pct": -51.58620689655172,
-     "pct": 100.0,
-     "threshold": 290.0,
-     "diff_pct": 313.1054131054131,
-     "triggered": false
-    },
-    "vol_avg": 1014.7058823529412,
-    "vol_days": 34
-   }
-  },
-  {
-   "code": "4716",
-   "name": "大立",
-   "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 12.95,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
-    "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 19.75,
-     "cum_pct": -34.43037974683545,
-     "pct": 30.0,
-     "threshold": 25.675,
-     "diff_pct": 98.26254826254828,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 24.180000000000003
-    },
-    "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 19.75,
-     "cum_pct": -34.43037974683545,
-     "pct": 100.0,
-     "threshold": 39.5,
-     "diff_pct": 205.01930501930502,
-     "triggered": false
-    },
-    "vol_avg": 3067.0588235294117,
-    "vol_days": 34
-   }
-  },
-  {
-   "code": "6609",
-   "name": "瀧澤科",
-   "exchange": "TPEx",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 38.6,
-    "latest_date": "2026-11-23",
-    "history_days": 35,
-    "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 58.7,
-     "cum_pct": -34.241908006814306,
-     "pct": 30.0,
-     "threshold": 76.31,
-     "diff_pct": 97.69430051813471,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-16",
-     "next_session_threshold": 69.28999999999999
-    },
-    "clause2": {
-     "ref_date": "2026-10-08",
-     "ref_close": 38.65,
-     "cum_pct": -0.12936610608019963,
-     "pct": 100.0,
-     "threshold": 77.3,
-     "diff_pct": 100.25906735751293,
-     "triggered": false
-    },
-    "vol_avg": 1926.3529411764705,
-    "vol_days": 34
+    "vol_avg": 2133.3714285714286,
+    "vol_days": 35
    }
   }
  ],
@@ -1118,9 +985,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 119.5,
-   "change_pct": 0.42016806722689076,
-   "vol_k": 3237
+   "close": 131.0,
+   "change_pct": 9.623430962343097,
+   "vol_k": 221
   },
   {
    "code": "2221",
@@ -1132,9 +999,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 119.5,
-   "change_pct": 0.42016806722689076,
-   "vol_k": 3237
+   "close": 131.0,
+   "change_pct": 9.623430962343097,
+   "vol_k": 221
   },
   {
    "code": "3230",
@@ -1146,9 +1013,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 17.4,
-   "change_pct": 0.578034682080925,
-   "vol_k": 308
+   "close": 19.1,
+   "change_pct": 9.770114942528735,
+   "vol_k": 70
   },
   {
    "code": "3265",
@@ -1160,9 +1027,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 106.0,
-   "change_pct": -2.3041474654377883,
-   "vol_k": 5981
+   "close": 116.5,
+   "change_pct": 9.90566037735849,
+   "vol_k": 132
   },
   {
    "code": "3287",
@@ -1174,9 +1041,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 40.8,
-   "change_pct": -6.529209621993128,
-   "vol_k": 336
+   "close": 44.85,
+   "change_pct": 9.926470588235292,
+   "vol_k": 255
   },
   {
    "code": "3287",
@@ -1188,9 +1055,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 40.8,
-   "change_pct": -6.529209621993128,
-   "vol_k": 336
+   "close": 44.85,
+   "change_pct": 9.926470588235292,
+   "vol_k": 255
   },
   {
    "code": "3354",
@@ -1201,10 +1068,10 @@
    "period_end": "2026-10-28",
    "auction": "2分撮合",
    "disp_count": 1,
-   "career_count": 2,
-   "close": 27.35,
-   "change_pct": -2.146690518783542,
-   "vol_k": 1711
+   "career_count": 3,
+   "close": 30.05,
+   "change_pct": 9.87202925045704,
+   "vol_k": 65
   },
   {
    "code": "3354",
@@ -1215,10 +1082,10 @@
    "period_end": "2026-11-03",
    "auction": "2分撮合",
    "disp_count": 1,
-   "career_count": 2,
-   "close": 27.35,
-   "change_pct": -2.146690518783542,
-   "vol_k": 1711
+   "career_count": 3,
+   "close": 30.05,
+   "change_pct": 9.87202925045704,
+   "vol_k": 65
   },
   {
    "code": "3374",
@@ -1230,9 +1097,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 339.5,
-   "change_pct": 6.259780907668231,
-   "vol_k": 19498
+   "close": 373.0,
+   "change_pct": 9.867452135493373,
+   "vol_k": 572
   },
   {
    "code": "3441",
@@ -1244,9 +1111,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 125.5,
-   "change_pct": -6.343283582089552,
-   "vol_k": 871
+   "close": 138.0,
+   "change_pct": 9.9601593625498,
+   "vol_k": 319
   },
   {
    "code": "3441",
@@ -1258,9 +1125,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 125.5,
-   "change_pct": -6.343283582089552,
-   "vol_k": 871
+   "close": 138.0,
+   "change_pct": 9.9601593625498,
+   "vol_k": 319
   },
   {
    "code": "3455",
@@ -1272,9 +1139,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 123.5,
-   "change_pct": 1.2295081967213115,
-   "vol_k": 1899
+   "close": 135.5,
+   "change_pct": 9.7165991902834,
+   "vol_k": 42
   },
   {
    "code": "3597",
@@ -1286,9 +1153,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 29.35,
-   "change_pct": -2.166666666666667,
-   "vol_k": 907
+   "close": 32.25,
+   "change_pct": 9.880749574105621,
+   "vol_k": 51
   },
   {
    "code": "3597",
@@ -1300,9 +1167,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 29.35,
-   "change_pct": -2.166666666666667,
-   "vol_k": 907
+   "close": 32.25,
+   "change_pct": 9.880749574105621,
+   "vol_k": 51
   },
   {
    "code": "3691",
@@ -1314,9 +1181,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 83.5,
-   "change_pct": -1.4167650531286893,
-   "vol_k": 1713
+   "close": 91.8,
+   "change_pct": 9.940119760479043,
+   "vol_k": 799
   },
   {
    "code": "4174",
@@ -1328,9 +1195,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 65.8,
-   "change_pct": 2.8125,
-   "vol_k": 605
+   "close": 67.8,
+   "change_pct": 3.0395136778115504,
+   "vol_k": 752
   },
   {
    "code": "4174",
@@ -1342,9 +1209,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 65.8,
-   "change_pct": 2.8125,
-   "vol_k": 605
+   "close": 67.8,
+   "change_pct": 3.0395136778115504,
+   "vol_k": 752
   },
   {
    "code": "4542",
@@ -1356,9 +1223,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 5,
-   "close": 152.5,
-   "change_pct": -1.6129032258064515,
-   "vol_k": 1380
+   "close": 167.5,
+   "change_pct": 9.836065573770492,
+   "vol_k": 63
   },
   {
    "code": "4542",
@@ -1370,9 +1237,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 5,
-   "close": 152.5,
-   "change_pct": -1.6129032258064515,
-   "vol_k": 1380
+   "close": 167.5,
+   "change_pct": 9.836065573770492,
+   "vol_k": 63
   },
   {
    "code": "4556",
@@ -1384,9 +1251,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 5,
-   "close": 70.2,
-   "change_pct": 2.631578947368421,
-   "vol_k": 637
+   "close": 77.2,
+   "change_pct": 9.971509971509972,
+   "vol_k": 25
   },
   {
    "code": "4577",
@@ -1398,9 +1265,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 75.2,
-   "change_pct": -9.940119760479043,
-   "vol_k": 396
+   "close": 82.7,
+   "change_pct": 9.97340425531915,
+   "vol_k": 179
   },
   {
    "code": "4760",
@@ -1412,9 +1279,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 199.0,
-   "change_pct": 2.313624678663239,
-   "vol_k": 594
+   "close": 218.5,
+   "change_pct": 9.798994974874372,
+   "vol_k": 83
   },
   {
    "code": "4979",
@@ -1426,9 +1293,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 255.0,
-   "change_pct": -4.135338345864661,
-   "vol_k": 9832
+   "close": 280.5,
+   "change_pct": 10.0,
+   "vol_k": 390
   },
   {
    "code": "5013",
@@ -1440,9 +1307,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 46.1,
-   "change_pct": -9.784735812133071,
-   "vol_k": 1236
+   "close": 50.7,
+   "change_pct": 9.978308026030367,
+   "vol_k": 281
   },
   {
    "code": "5205",
@@ -1454,9 +1321,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 17.0,
-   "change_pct": -8.602150537634408,
-   "vol_k": 4
+   "close": 17.7,
+   "change_pct": 4.117647058823529,
+   "vol_k": 9
   },
   {
    "code": "5205",
@@ -1468,9 +1335,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 17.0,
-   "change_pct": -8.602150537634408,
-   "vol_k": 4
+   "close": 17.7,
+   "change_pct": 4.117647058823529,
+   "vol_k": 9
   },
   {
    "code": "5205",
@@ -1482,9 +1349,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 17.0,
-   "change_pct": -8.602150537634408,
-   "vol_k": 4
+   "close": 17.7,
+   "change_pct": 4.117647058823529,
+   "vol_k": 9
   },
   {
    "code": "5228",
@@ -1496,9 +1363,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 30.5,
-   "change_pct": 6.2717770034843205,
-   "vol_k": 411
+   "close": 33.55,
+   "change_pct": 10.0,
+   "vol_k": 221
   },
   {
    "code": "5475",
@@ -1510,9 +1377,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 141.5,
-   "change_pct": 4.428044280442804,
-   "vol_k": 8452
+   "close": 155.5,
+   "change_pct": 9.89399293286219,
+   "vol_k": 180
   },
   {
    "code": "5475",
@@ -1524,9 +1391,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 141.5,
-   "change_pct": 4.428044280442804,
-   "vol_k": 8452
+   "close": 155.5,
+   "change_pct": 9.89399293286219,
+   "vol_k": 180
   },
   {
    "code": "6708",
@@ -1538,9 +1405,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 67.8,
-   "change_pct": 9.886547811993516,
-   "vol_k": 507
+   "close": 74.5,
+   "change_pct": 9.882005899705016,
+   "vol_k": 40
   },
   {
    "code": "6708",
@@ -1552,9 +1419,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 67.8,
-   "change_pct": 9.886547811993516,
-   "vol_k": 507
+   "close": 74.5,
+   "change_pct": 9.882005899705016,
+   "vol_k": 40
   },
   {
    "code": "6716",
@@ -1566,9 +1433,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 63.9,
-   "change_pct": 3.064516129032258,
-   "vol_k": 230
+   "close": 70.2,
+   "change_pct": 9.859154929577464,
+   "vol_k": 188
   },
   {
    "code": "6751",
@@ -1580,9 +1447,23 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 71.0,
-   "change_pct": -4.697986577181208,
-   "vol_k": 337
+   "close": 75.2,
+   "change_pct": 5.915492957746479,
+   "vol_k": 1082
+  },
+  {
+   "code": "6751",
+   "name": "智聯服務",
+   "exchange": "TPEx",
+   "ann_date": "2026-11-16",
+   "period_start": "2026-11-17",
+   "period_end": "2026-11-23",
+   "auction": "2分撮合",
+   "disp_count": 1,
+   "career_count": 2,
+   "close": 75.2,
+   "change_pct": 5.915492957746479,
+   "vol_k": 1082
   },
   {
    "code": "6925",
@@ -1594,9 +1475,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 111.0,
-   "change_pct": 9.900990099009901,
-   "vol_k": 8740
+   "close": 122.0,
+   "change_pct": 9.90990990990991,
+   "vol_k": 637
   },
   {
    "code": "7772",
@@ -1608,23 +1489,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 73.0,
-   "change_pct": 6.25909752547307,
-   "vol_k": 228
-  },
-  {
-   "code": "8084",
-   "name": "巨虹",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-01",
-   "period_start": "2026-10-02",
-   "period_end": "2026-10-08",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 4,
-   "close": null,
-   "change_pct": null,
-   "vol_k": null
+   "close": 80.3,
+   "change_pct": 10.0,
+   "vol_k": 34
   },
   {
    "code": "8084",
@@ -1664,9 +1531,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 140.0,
-   "change_pct": -1.7543859649122806,
-   "vol_k": 4051
+   "close": 154.0,
+   "change_pct": 10.0,
+   "vol_k": 549
   },
   {
    "code": "8099",
@@ -1678,9 +1545,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 140.0,
-   "change_pct": -1.7543859649122806,
-   "vol_k": 4051
+   "close": 154.0,
+   "change_pct": 10.0,
+   "vol_k": 549
   },
   {
    "code": "8111",
@@ -1692,23 +1559,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 56.1,
-   "change_pct": -0.5319148936170213,
-   "vol_k": 2741
-  },
-  {
-   "code": "8227",
-   "name": "巨有科技",
-   "exchange": "TPEx",
-   "ann_date": "2026-10-01",
-   "period_start": "2026-10-02",
-   "period_end": "2026-10-08",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 3,
-   "close": 196.0,
-   "change_pct": 4.533333333333333,
-   "vol_k": 3640
+   "close": 61.7,
+   "change_pct": 9.98217468805704,
+   "vol_k": 326
   },
   {
    "code": "8272",
@@ -1720,9 +1573,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 76.8,
-   "change_pct": -7.35826296743064,
-   "vol_k": 522
+   "close": 80.4,
+   "change_pct": 4.687499999999999,
+   "vol_k": 374
   },
   {
    "code": "8291",
@@ -1748,9 +1601,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 243.5,
-   "change_pct": -1.417004048582996,
-   "vol_k": 21333
+   "close": 267.5,
+   "change_pct": 9.856262833675565,
+   "vol_k": 372
   },
   {
    "code": "8358",
@@ -1762,9 +1615,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 243.5,
-   "change_pct": -1.417004048582996,
-   "vol_k": 21333
+   "close": 267.5,
+   "change_pct": 9.856262833675565,
+   "vol_k": 372
   },
   {
    "code": "8437",
@@ -1776,9 +1629,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 10.35,
-   "change_pct": 2.985074626865672,
-   "vol_k": 114
+   "close": 11.1,
+   "change_pct": 7.246376811594203,
+   "vol_k": 44
   },
   {
    "code": "1709",
@@ -1790,23 +1643,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 39.4,
-   "change_pct": 3.1413612565445033,
-   "vol_k": 10554
-  },
-  {
-   "code": "2030",
-   "name": "彰源",
-   "exchange": "TWSE",
-   "ann_date": "2026-10-01",
-   "period_start": "2026-10-02",
-   "period_end": "2026-10-08",
-   "auction": "2分撮合",
-   "disp_count": 1,
-   "career_count": 1,
-   "close": 21.15,
-   "change_pct": 1.682692307692308,
-   "vol_k": 2078
+   "close": 43.3,
+   "change_pct": 9.898477157360407,
+   "vol_k": 1108
   },
   {
    "code": "2033",
@@ -1818,9 +1657,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 66.3,
-   "change_pct": 5.573248407643312,
-   "vol_k": 1914
+   "close": 67.8,
+   "change_pct": 2.262443438914027,
+   "vol_k": 3576
   },
   {
    "code": "2360",
@@ -1832,9 +1671,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 927.0,
-   "change_pct": 0.0,
-   "vol_k": 7130
+   "close": 1015.0,
+   "change_pct": 9.492988133764833,
+   "vol_k": 131
   },
   {
    "code": "2424",
@@ -1846,9 +1685,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 10.15,
-   "change_pct": 9.492988133764833,
-   "vol_k": 23
+   "close": 11.15,
+   "change_pct": 9.852216748768472,
+   "vol_k": 34
   },
   {
    "code": "2424",
@@ -1860,9 +1699,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 10.15,
-   "change_pct": 9.492988133764833,
-   "vol_k": 23
+   "close": 11.15,
+   "change_pct": 9.852216748768472,
+   "vol_k": 34
   },
   {
    "code": "2455",
@@ -1874,9 +1713,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 271.5,
-   "change_pct": 2.4528301886792456,
-   "vol_k": 6845
+   "close": 298.5,
+   "change_pct": 9.94475138121547,
+   "vol_k": 188
   },
   {
    "code": "2466",
@@ -1888,9 +1727,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 425.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361
+   "close": 383.0,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399
   },
   {
    "code": "2466",
@@ -1902,9 +1741,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 425.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361
+   "close": 383.0,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399
   },
   {
    "code": "2466",
@@ -1916,9 +1755,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 425.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361
+   "close": 383.0,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399
   },
   {
    "code": "2466",
@@ -1930,9 +1769,23 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 425.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361
+   "close": 383.0,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399
+  },
+  {
+   "code": "2466",
+   "name": "冠西電",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-16",
+   "period_start": "2026-11-17",
+   "period_end": "2026-11-23",
+   "auction": "2分撮合",
+   "disp_count": 2,
+   "career_count": 6,
+   "close": 383.0,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399
   },
   {
    "code": "2492",
@@ -1944,9 +1797,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 193.0,
-   "change_pct": 2.933333333333333,
-   "vol_k": 30283
+   "close": 212.0,
+   "change_pct": 9.844559585492227,
+   "vol_k": 896
   },
   {
    "code": "3016",
@@ -1958,9 +1811,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 84.5,
-   "change_pct": -0.23612750885478156,
-   "vol_k": 5603
+   "close": 92.9,
+   "change_pct": 9.940828402366865,
+   "vol_k": 1785
   },
   {
    "code": "3055",
@@ -1972,9 +1825,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 103.5,
-   "change_pct": 6.481481481481481,
-   "vol_k": 1780
+   "close": 113.5,
+   "change_pct": 9.66183574879227,
+   "vol_k": 104
   },
   {
    "code": "3055",
@@ -1986,9 +1839,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 103.5,
-   "change_pct": 6.481481481481481,
-   "vol_k": 1780
+   "close": 113.5,
+   "change_pct": 9.66183574879227,
+   "vol_k": 104
   },
   {
    "code": "3094",
@@ -2000,9 +1853,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 33.8,
-   "change_pct": 5.46021840873635,
-   "vol_k": 2502
+   "close": 37.15,
+   "change_pct": 9.911242603550296,
+   "vol_k": 317
   },
   {
    "code": "3167",
@@ -2014,9 +1867,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 6,
-   "close": 559.0,
-   "change_pct": 9.823182711198427,
-   "vol_k": 8248
+   "close": 614.0,
+   "change_pct": 9.838998211091235,
+   "vol_k": 202
   },
   {
    "code": "3167",
@@ -2028,9 +1881,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 6,
-   "close": 559.0,
-   "change_pct": 9.823182711198427,
-   "vol_k": 8248
+   "close": 614.0,
+   "change_pct": 9.838998211091235,
+   "vol_k": 202
   },
   {
    "code": "3189",
@@ -2042,9 +1895,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 3,
-   "close": 467.5,
-   "change_pct": -0.5319148936170213,
-   "vol_k": 54944
+   "close": 514.0,
+   "change_pct": 9.946524064171124,
+   "vol_k": 1383
   },
   {
    "code": "3518",
@@ -2056,9 +1909,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 23.9,
-   "change_pct": 3.0172413793103448,
-   "vol_k": 995
+   "close": 26.25,
+   "change_pct": 9.832635983263598,
+   "vol_k": 85
   },
   {
    "code": "3532",
@@ -2070,9 +1923,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 168.0,
-   "change_pct": -9.919571045576408,
-   "vol_k": 5526
+   "close": 184.5,
+   "change_pct": 9.821428571428571,
+   "vol_k": 343
   },
   {
    "code": "3701",
@@ -2084,9 +1937,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 48.0,
-   "change_pct": -6.432748538011696,
-   "vol_k": 8495
+   "close": 52.8,
+   "change_pct": 10.0,
+   "vol_k": 516
   },
   {
    "code": "4526",
@@ -2097,10 +1950,24 @@
    "period_end": "2026-11-09",
    "auction": "2分撮合",
    "disp_count": 1,
+   "career_count": 2,
+   "close": 37.05,
+   "change_pct": 9.940652818991099,
+   "vol_k": 1302
+  },
+  {
+   "code": "6108",
+   "name": "競國",
+   "exchange": "TWSE",
+   "ann_date": "2026-11-16",
+   "period_start": "2026-11-17",
+   "period_end": "2026-11-23",
+   "auction": "2分撮合",
+   "disp_count": 1,
    "career_count": 1,
-   "close": 33.7,
-   "change_pct": -4.936530324400564,
-   "vol_k": 12294
+   "close": 34.15,
+   "change_pct": 9.983896940418681,
+   "vol_k": 1396
   },
   {
    "code": "6213",
@@ -2112,9 +1979,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 4,
-   "close": 391.0,
-   "change_pct": 9.985935302390999,
-   "vol_k": 27929
+   "close": 430.0,
+   "change_pct": 9.974424552429667,
+   "vol_k": 480
   },
   {
    "code": "6213",
@@ -2126,9 +1993,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 4,
-   "close": 391.0,
-   "change_pct": 9.985935302390999,
-   "vol_k": 27929
+   "close": 430.0,
+   "change_pct": 9.974424552429667,
+   "vol_k": 480
   },
   {
    "code": "6533",
@@ -2140,9 +2007,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 202.0,
-   "change_pct": 4.123711340206185,
-   "vol_k": 1377
+   "close": 222.0,
+   "change_pct": 9.900990099009901,
+   "vol_k": 240
   },
   {
    "code": "6672",
@@ -2154,9 +2021,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 2,
-   "close": 360.0,
-   "change_pct": 4.499274310595065,
-   "vol_k": 12429
+   "close": 396.0,
+   "change_pct": 10.0,
+   "vol_k": 510
   },
   {
    "code": "6672",
@@ -2168,9 +2035,9 @@
    "auction": "2分撮合",
    "disp_count": 2,
    "career_count": 2,
-   "close": 360.0,
-   "change_pct": 4.499274310595065,
-   "vol_k": 12429
+   "close": 396.0,
+   "change_pct": 10.0,
+   "vol_k": 510
   },
   {
    "code": "6957",
@@ -2182,9 +2049,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 374.0,
-   "change_pct": 10.0,
-   "vol_k": 545
+   "close": 411.0,
+   "change_pct": 9.893048128342247,
+   "vol_k": 104
   },
   {
    "code": "8021",
@@ -2195,10 +2062,10 @@
    "period_end": "2026-10-16",
    "auction": "2分撮合",
    "disp_count": 2,
-   "career_count": 6,
-   "close": 247.0,
-   "change_pct": -0.20202020202020202,
-   "vol_k": 9565
+   "career_count": 7,
+   "close": 271.5,
+   "change_pct": 9.919028340080972,
+   "vol_k": 251
   },
   {
    "code": "8201",
@@ -2210,9 +2077,9 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 12.4,
-   "change_pct": 9.734513274336283,
-   "vol_k": 143
+   "close": 13.35,
+   "change_pct": 7.661290322580644,
+   "vol_k": 164
   },
   {
    "code": "8996",
@@ -2223,10 +2090,10 @@
    "period_end": "2026-10-12",
    "auction": "2分撮合",
    "disp_count": 2,
-   "career_count": 3,
-   "close": 858.0,
-   "change_pct": -7.042253521126761,
-   "vol_k": 5680
+   "career_count": 4,
+   "close": 943.0,
+   "change_pct": 9.906759906759907,
+   "vol_k": 118
   },
   {
    "code": "9103",
@@ -2238,688 +2105,659 @@
    "auction": "2分撮合",
    "disp_count": 1,
    "career_count": 1,
-   "close": 4.5,
-   "change_pct": 2.0408163265306123,
-   "vol_k": 1469
+   "close": 4.73,
+   "change_pct": 5.111111111111112,
+   "vol_k": 1087
   }
  ],
  "quotes": {
   "1528": {
-   "close": 19.1,
-   "change": -0.15,
-   "change_pct": -0.7792207792207793,
-   "vol_k": 4719,
-   "monthly_avg": 24.95,
-   "date": "20261123"
+   "close": 21.0,
+   "change": 1.9,
+   "change_pct": 9.947643979057592,
+   "vol_k": 932,
+   "monthly_avg": 24.72,
+   "date": "20261124"
   },
   "1569": {
-   "close": 65.8,
-   "change": -0.7,
-   "change_pct": -1.0526315789473684,
-   "vol_k": 5326,
-   "date": "20261123"
+   "close": 72.3,
+   "change": 6.5,
+   "change_pct": 9.878419452887538,
+   "vol_k": 207,
+   "date": "20261124"
   },
   "1709": {
-   "close": 39.4,
-   "change": 1.2,
-   "change_pct": 3.1413612565445033,
-   "vol_k": 10554,
-   "monthly_avg": 46.22,
-   "date": "20261123"
+   "close": 43.3,
+   "change": 3.9,
+   "change_pct": 9.898477157360407,
+   "vol_k": 1108,
+   "monthly_avg": 46.05,
+   "date": "20261124"
   },
   "1809": {
-   "close": 30.25,
-   "change": 0.55,
-   "change_pct": 1.851851851851852,
-   "vol_k": 3208,
-   "monthly_avg": 40.27,
-   "date": "20261123"
-  },
-  "2030": {
-   "close": 21.15,
-   "change": 0.35,
-   "change_pct": 1.682692307692308,
-   "vol_k": 2078,
-   "monthly_avg": 24.46,
-   "date": "20261123"
+   "close": 33.25,
+   "change": 3.0,
+   "change_pct": 9.917355371900827,
+   "vol_k": 304,
+   "monthly_avg": 39.85,
+   "date": "20261124"
   },
   "2033": {
-   "close": 66.3,
-   "change": 3.5,
-   "change_pct": 5.573248407643312,
-   "vol_k": 1914,
-   "monthly_avg": 72.47,
-   "date": "20261123"
+   "close": 67.8,
+   "change": 1.5,
+   "change_pct": 2.262443438914027,
+   "vol_k": 3576,
+   "monthly_avg": 72.19,
+   "date": "20261124"
   },
   "2221": {
-   "close": 119.5,
-   "change": 0.5,
-   "change_pct": 0.42016806722689076,
-   "vol_k": 3237,
-   "date": "20261123"
+   "close": 131.0,
+   "change": 11.5,
+   "change_pct": 9.623430962343097,
+   "vol_k": 221,
+   "date": "20261124"
   },
   "2243": {
-   "close": 31.4,
-   "change": -0.85,
-   "change_pct": -2.635658914728682,
-   "vol_k": 279,
-   "monthly_avg": 43.02,
-   "date": "20261123"
+   "close": 34.5,
+   "change": 3.1,
+   "change_pct": 9.872611464968154,
+   "vol_k": 27,
+   "monthly_avg": 42.52,
+   "date": "20261124"
   },
   "2305": {
-   "close": 29.5,
-   "change": 2.65,
-   "change_pct": 9.869646182495345,
-   "vol_k": 1767,
-   "monthly_avg": 39.86,
-   "date": "20261123"
+   "close": 32.45,
+   "change": 2.95,
+   "change_pct": 10.0,
+   "vol_k": 314,
+   "monthly_avg": 39.43,
+   "date": "20261124"
   },
   "2360": {
-   "close": 927.0,
-   "change": 0.0,
-   "change_pct": 0.0,
-   "vol_k": 7130,
-   "monthly_avg": 1277.44,
-   "date": "20261123"
+   "close": 1015.0,
+   "change": 88.0,
+   "change_pct": 9.492988133764833,
+   "vol_k": 131,
+   "monthly_avg": 1262.0,
+   "date": "20261124"
   },
   "2424": {
-   "close": 10.15,
-   "change": 0.88,
-   "change_pct": 9.492988133764833,
-   "vol_k": 23,
-   "monthly_avg": 11.04,
-   "date": "20261123"
+   "close": 11.15,
+   "change": 1.0,
+   "change_pct": 9.852216748768472,
+   "vol_k": 34,
+   "monthly_avg": 11.05,
+   "date": "20261124"
   },
   "2426": {
-   "close": 55.0,
-   "change": 0.5,
-   "change_pct": 0.9174311926605505,
-   "vol_k": 8978,
-   "monthly_avg": 72.61,
-   "date": "20261123"
+   "close": 60.5,
+   "change": 5.5,
+   "change_pct": 10.0,
+   "vol_k": 528,
+   "monthly_avg": 71.89,
+   "date": "20261124"
   },
   "2455": {
-   "close": 271.5,
-   "change": 6.5,
-   "change_pct": 2.4528301886792456,
-   "vol_k": 6845,
-   "monthly_avg": 350.12,
-   "date": "20261123"
+   "close": 298.5,
+   "change": 27.0,
+   "change_pct": 9.94475138121547,
+   "vol_k": 188,
+   "monthly_avg": 347.09,
+   "date": "20261124"
   },
   "2466": {
-   "close": 425.5,
-   "change": 38.5,
-   "change_pct": 9.948320413436692,
-   "vol_k": 361,
-   "monthly_avg": 378.5,
-   "date": "20261123"
+   "close": 383.0,
+   "change": -42.5,
+   "change_pct": -9.9882491186839,
+   "vol_k": 9399,
+   "monthly_avg": 378.76,
+   "date": "20261124"
   },
   "2486": {
-   "close": 116.5,
-   "change": 2.0,
-   "change_pct": 1.7467248908296942,
-   "vol_k": 7331,
-   "monthly_avg": 155.19,
-   "date": "20261123"
+   "close": 128.0,
+   "change": 11.5,
+   "change_pct": 9.871244635193133,
+   "vol_k": 147,
+   "monthly_avg": 153.59,
+   "date": "20261124"
   },
   "2492": {
-   "close": 193.0,
-   "change": 5.5,
-   "change_pct": 2.933333333333333,
-   "vol_k": 30283,
-   "monthly_avg": 266.0,
-   "date": "20261123"
+   "close": 212.0,
+   "change": 19.0,
+   "change_pct": 9.844559585492227,
+   "vol_k": 896,
+   "monthly_avg": 262.82,
+   "date": "20261124"
   },
   "3016": {
-   "close": 84.5,
-   "change": -0.2,
-   "change_pct": -0.23612750885478156,
-   "vol_k": 5603,
-   "monthly_avg": 108.58,
-   "date": "20261123"
+   "close": 92.9,
+   "change": 8.4,
+   "change_pct": 9.940828402366865,
+   "vol_k": 1785,
+   "monthly_avg": 107.66,
+   "date": "20261124"
   },
   "3055": {
-   "close": 103.5,
-   "change": 6.3,
-   "change_pct": 6.481481481481481,
-   "vol_k": 1780,
-   "monthly_avg": 122.79,
-   "date": "20261123"
+   "close": 113.5,
+   "change": 10.0,
+   "change_pct": 9.66183574879227,
+   "vol_k": 104,
+   "monthly_avg": 122.25,
+   "date": "20261124"
   },
   "3081": {
-   "close": 1390.0,
-   "change": 25.0,
-   "change_pct": 1.8315018315018317,
-   "vol_k": 6509,
-   "date": "20261123"
+   "close": 1525.0,
+   "change": 135.0,
+   "change_pct": 9.712230215827338,
+   "vol_k": 207,
+   "date": "20261124"
   },
   "3094": {
-   "close": 33.8,
-   "change": 1.75,
-   "change_pct": 5.46021840873635,
-   "vol_k": 2502,
-   "monthly_avg": 41.95,
-   "date": "20261123"
+   "close": 37.15,
+   "change": 3.35,
+   "change_pct": 9.911242603550296,
+   "vol_k": 317,
+   "monthly_avg": 41.67,
+   "date": "20261124"
   },
   "3162": {
-   "close": 48.5,
-   "change": 0.05,
-   "change_pct": 0.10319917440660474,
-   "vol_k": 1887,
-   "date": "20261123"
+   "close": 53.0,
+   "change": 4.5,
+   "change_pct": 9.278350515463918,
+   "vol_k": 1146,
+   "date": "20261124"
   },
   "3167": {
-   "close": 559.0,
-   "change": 50.0,
-   "change_pct": 9.823182711198427,
-   "vol_k": 8248,
-   "monthly_avg": 741.69,
-   "date": "20261123"
+   "close": 614.0,
+   "change": 55.0,
+   "change_pct": 9.838998211091235,
+   "vol_k": 202,
+   "monthly_avg": 734.18,
+   "date": "20261124"
   },
   "3189": {
-   "close": 467.5,
-   "change": -2.5,
-   "change_pct": -0.5319148936170213,
-   "vol_k": 54944,
-   "monthly_avg": 665.97,
-   "date": "20261123"
+   "close": 514.0,
+   "change": 46.5,
+   "change_pct": 9.946524064171124,
+   "vol_k": 1383,
+   "monthly_avg": 657.03,
+   "date": "20261124"
   },
   "3230": {
-   "close": 17.4,
-   "change": 0.1,
-   "change_pct": 0.578034682080925,
-   "vol_k": 308,
-   "date": "20261123"
+   "close": 19.1,
+   "change": 1.7,
+   "change_pct": 9.770114942528735,
+   "vol_k": 70,
+   "date": "20261124"
   },
   "3265": {
-   "close": 106.0,
-   "change": -2.5,
-   "change_pct": -2.3041474654377883,
-   "vol_k": 5981,
-   "date": "20261123"
+   "close": 116.5,
+   "change": 10.5,
+   "change_pct": 9.90566037735849,
+   "vol_k": 132,
+   "date": "20261124"
   },
   "3287": {
-   "close": 40.8,
-   "change": -2.85,
-   "change_pct": -6.529209621993128,
-   "vol_k": 336,
-   "date": "20261123"
+   "close": 44.85,
+   "change": 4.05,
+   "change_pct": 9.926470588235292,
+   "vol_k": 255,
+   "date": "20261124"
   },
   "3354": {
-   "close": 27.35,
-   "change": -0.6,
-   "change_pct": -2.146690518783542,
-   "vol_k": 1711,
-   "date": "20261123"
+   "close": 30.05,
+   "change": 2.7,
+   "change_pct": 9.87202925045704,
+   "vol_k": 65,
+   "date": "20261124"
   },
   "3363": {
-   "close": 247.5,
-   "change": -9.0,
-   "change_pct": -3.508771929824561,
-   "vol_k": 3705,
-   "date": "20261123"
+   "close": 272.0,
+   "change": 24.5,
+   "change_pct": 9.8989898989899,
+   "vol_k": 537,
+   "date": "20261124"
   },
   "3374": {
-   "close": 339.5,
-   "change": 20.0,
-   "change_pct": 6.259780907668231,
-   "vol_k": 19498,
-   "date": "20261123"
+   "close": 373.0,
+   "change": 33.5,
+   "change_pct": 9.867452135493373,
+   "vol_k": 572,
+   "date": "20261124"
   },
   "3441": {
-   "close": 125.5,
-   "change": -8.5,
-   "change_pct": -6.343283582089552,
-   "vol_k": 871,
-   "date": "20261123"
+   "close": 138.0,
+   "change": 12.5,
+   "change_pct": 9.9601593625498,
+   "vol_k": 319,
+   "date": "20261124"
   },
   "3443": {
-   "close": 5120.0,
-   "change": -280.0,
-   "change_pct": -5.185185185185185,
-   "vol_k": 8652,
-   "monthly_avg": 6871.56,
-   "date": "20261123"
+   "close": 5630.0,
+   "change": 510.0,
+   "change_pct": 9.9609375,
+   "vol_k": 129,
+   "monthly_avg": 6798.53,
+   "date": "20261124"
   },
   "3455": {
-   "close": 123.5,
-   "change": 1.5,
-   "change_pct": 1.2295081967213115,
-   "vol_k": 1899,
-   "date": "20261123"
+   "close": 135.5,
+   "change": 12.0,
+   "change_pct": 9.7165991902834,
+   "vol_k": 42,
+   "date": "20261124"
   },
   "3491": {
-   "close": 1260.0,
-   "change": 35.0,
-   "change_pct": 2.857142857142857,
-   "vol_k": 870,
-   "date": "20261123"
-  },
-  "3498": {
-   "close": 130.0,
-   "change": -3.0,
-   "change_pct": -2.2556390977443606,
-   "vol_k": 4655,
-   "date": "20261123"
+   "close": 1385.0,
+   "change": 125.0,
+   "change_pct": 9.920634920634921,
+   "vol_k": 376,
+   "date": "20261124"
   },
   "3518": {
-   "close": 23.9,
-   "change": 0.7,
-   "change_pct": 3.0172413793103448,
-   "vol_k": 995,
-   "monthly_avg": 29.75,
-   "date": "20261123"
+   "close": 26.25,
+   "change": 2.35,
+   "change_pct": 9.832635983263598,
+   "vol_k": 85,
+   "monthly_avg": 29.55,
+   "date": "20261124"
   },
   "3532": {
-   "close": 168.0,
-   "change": -18.5,
-   "change_pct": -9.919571045576408,
-   "vol_k": 5526,
-   "monthly_avg": 267.84,
-   "date": "20261123"
+   "close": 184.5,
+   "change": 16.5,
+   "change_pct": 9.821428571428571,
+   "vol_k": 343,
+   "monthly_avg": 262.94,
+   "date": "20261124"
   },
   "3597": {
-   "close": 29.35,
-   "change": -0.65,
-   "change_pct": -2.166666666666667,
-   "vol_k": 907,
-   "date": "20261123"
+   "close": 32.25,
+   "change": 2.9,
+   "change_pct": 9.880749574105621,
+   "vol_k": 51,
+   "date": "20261124"
   },
   "3653": {
-   "close": 3685.0,
-   "change": -20.0,
-   "change_pct": -0.5398110661268556,
-   "vol_k": 4450,
-   "monthly_avg": 5228.75,
-   "date": "20261123"
+   "close": 4050.0,
+   "change": 365.0,
+   "change_pct": 9.905020352781547,
+   "vol_k": 61,
+   "monthly_avg": 5159.41,
+   "date": "20261124"
   },
   "3691": {
-   "close": 83.5,
-   "change": -1.2,
-   "change_pct": -1.4167650531286893,
-   "vol_k": 1713,
-   "date": "20261123"
+   "close": 91.8,
+   "change": 8.3,
+   "change_pct": 9.940119760479043,
+   "vol_k": 799,
+   "date": "20261124"
   },
   "3693": {
-   "close": 438.0,
-   "change": 3.5,
-   "change_pct": 0.805523590333717,
-   "vol_k": 2354,
-   "date": "20261123"
+   "close": 481.5,
+   "change": 43.5,
+   "change_pct": 9.931506849315069,
+   "vol_k": 90,
+   "date": "20261124"
   },
   "3701": {
-   "close": 48.0,
-   "change": -3.3,
-   "change_pct": -6.432748538011696,
-   "vol_k": 8495,
-   "monthly_avg": 57.05,
-   "date": "20261123"
+   "close": 52.8,
+   "change": 4.8,
+   "change_pct": 10.0,
+   "vol_k": 516,
+   "monthly_avg": 56.8,
+   "date": "20261124"
   },
   "4174": {
-   "close": 65.8,
-   "change": 1.8,
-   "change_pct": 2.8125,
-   "vol_k": 605,
-   "date": "20261123"
+   "close": 67.8,
+   "change": 2.0,
+   "change_pct": 3.0395136778115504,
+   "vol_k": 752,
+   "date": "20261124"
   },
   "4526": {
-   "close": 33.7,
-   "change": -1.75,
-   "change_pct": -4.936530324400564,
-   "vol_k": 12294,
-   "monthly_avg": 50.66,
-   "date": "20261123"
+   "close": 37.05,
+   "change": 3.35,
+   "change_pct": 9.940652818991099,
+   "vol_k": 1302,
+   "monthly_avg": 49.86,
+   "date": "20261124"
   },
   "4534": {
-   "close": 19.5,
-   "change": -0.5,
-   "change_pct": -2.5,
-   "vol_k": 209,
-   "date": "20261123"
+   "close": 21.45,
+   "change": 1.95,
+   "change_pct": 10.0,
+   "vol_k": 200,
+   "date": "20261124"
   },
   "4542": {
-   "close": 152.5,
-   "change": -2.5,
-   "change_pct": -1.6129032258064515,
-   "vol_k": 1380,
-   "date": "20261123"
+   "close": 167.5,
+   "change": 15.0,
+   "change_pct": 9.836065573770492,
+   "vol_k": 63,
+   "date": "20261124"
   },
   "4556": {
-   "close": 70.2,
-   "change": 1.8,
-   "change_pct": 2.631578947368421,
-   "vol_k": 637,
-   "date": "20261123"
+   "close": 77.2,
+   "change": 7.0,
+   "change_pct": 9.971509971509972,
+   "vol_k": 25,
+   "date": "20261124"
   },
   "4577": {
-   "close": 75.2,
-   "change": -8.3,
-   "change_pct": -9.940119760479043,
-   "vol_k": 396,
-   "date": "20261123"
+   "close": 82.7,
+   "change": 7.5,
+   "change_pct": 9.97340425531915,
+   "vol_k": 179,
+   "date": "20261124"
   },
   "4716": {
-   "close": 12.95,
-   "change": -0.55,
-   "change_pct": -4.074074074074074,
-   "vol_k": 1628,
-   "date": "20261123"
+   "close": 13.45,
+   "change": 0.5,
+   "change_pct": 3.861003861003861,
+   "vol_k": 1984,
+   "date": "20261124"
   },
   "4760": {
-   "close": 199.0,
-   "change": 4.5,
-   "change_pct": 2.313624678663239,
-   "vol_k": 594,
-   "date": "20261123"
+   "close": 218.5,
+   "change": 19.5,
+   "change_pct": 9.798994974874372,
+   "vol_k": 83,
+   "date": "20261124"
   },
   "4927": {
-   "close": 37.05,
-   "change": 0.1,
-   "change_pct": 0.27063599458728016,
-   "vol_k": 15867,
-   "monthly_avg": 48.62,
-   "date": "20261123"
+   "close": 40.75,
+   "change": 3.7,
+   "change_pct": 9.98650472334683,
+   "vol_k": 692,
+   "monthly_avg": 48.15,
+   "date": "20261124"
   },
   "4979": {
-   "close": 255.0,
-   "change": -11.0,
-   "change_pct": -4.135338345864661,
-   "vol_k": 9832,
-   "date": "20261123"
+   "close": 280.5,
+   "change": 25.5,
+   "change_pct": 10.0,
+   "vol_k": 390,
+   "date": "20261124"
   },
   "5013": {
-   "close": 46.1,
-   "change": -5.0,
-   "change_pct": -9.784735812133071,
-   "vol_k": 1236,
-   "date": "20261123"
+   "close": 50.7,
+   "change": 4.6,
+   "change_pct": 9.978308026030367,
+   "vol_k": 281,
+   "date": "20261124"
   },
   "5205": {
-   "close": 17.0,
-   "change": -1.6,
-   "change_pct": -8.602150537634408,
-   "vol_k": 4,
-   "date": "20261123"
+   "close": 17.7,
+   "change": 0.7,
+   "change_pct": 4.117647058823529,
+   "vol_k": 9,
+   "date": "20261124"
   },
   "5228": {
-   "close": 30.5,
-   "change": 1.8,
-   "change_pct": 6.2717770034843205,
-   "vol_k": 411,
-   "date": "20261123"
+   "close": 33.55,
+   "change": 3.05,
+   "change_pct": 10.0,
+   "vol_k": 221,
+   "date": "20261124"
   },
   "5475": {
-   "close": 141.5,
-   "change": 6.0,
-   "change_pct": 4.428044280442804,
-   "vol_k": 8452,
-   "date": "20261123"
+   "close": 155.5,
+   "change": 14.0,
+   "change_pct": 9.89399293286219,
+   "vol_k": 180,
+   "date": "20261124"
   },
   "6108": {
-   "close": 31.05,
-   "change": -3.4,
-   "change_pct": -9.869375907111754,
-   "vol_k": 3259,
-   "monthly_avg": 34.37,
-   "date": "20261123"
+   "close": 34.15,
+   "change": 3.1,
+   "change_pct": 9.983896940418681,
+   "vol_k": 1396,
+   "monthly_avg": 34.36,
+   "date": "20261124"
   },
   "6140": {
-   "close": 27.5,
-   "change": -2.1,
-   "change_pct": -7.094594594594595,
-   "vol_k": 879,
-   "date": "20261123"
+   "close": 29.75,
+   "change": 2.25,
+   "change_pct": 8.181818181818182,
+   "vol_k": 957,
+   "date": "20261124"
   },
   "6141": {
-   "close": 28.0,
-   "change": 0.75,
-   "change_pct": 2.7522935779816518,
-   "vol_k": 1070,
-   "monthly_avg": 38.08,
-   "date": "20261123"
+   "close": 30.8,
+   "change": 2.8,
+   "change_pct": 10.0,
+   "vol_k": 88,
+   "monthly_avg": 37.65,
+   "date": "20261124"
   },
   "6213": {
-   "close": 391.0,
-   "change": 35.5,
-   "change_pct": 9.985935302390999,
-   "vol_k": 27929,
-   "monthly_avg": 506.31,
-   "date": "20261123"
+   "close": 430.0,
+   "change": 39.0,
+   "change_pct": 9.974424552429667,
+   "vol_k": 480,
+   "monthly_avg": 501.82,
+   "date": "20261124"
   },
   "6451": {
-   "close": 184.5,
-   "change": -3.5,
-   "change_pct": -1.8617021276595744,
-   "vol_k": 2533,
-   "monthly_avg": 258.53,
-   "date": "20261123"
+   "close": 202.5,
+   "change": 18.0,
+   "change_pct": 9.75609756097561,
+   "vol_k": 210,
+   "monthly_avg": 255.24,
+   "date": "20261124"
   },
   "6456": {
-   "close": 65.2,
-   "change": -2.5,
-   "change_pct": -3.6927621861152145,
-   "vol_k": 17977,
-   "monthly_avg": 85.8,
-   "date": "20261123"
+   "close": 64.8,
+   "change": -0.4,
+   "change_pct": -0.6134969325153374,
+   "vol_k": 87399,
+   "monthly_avg": 84.56,
+   "date": "20261124"
   },
   "6472": {
-   "close": 272.5,
-   "change": -7.5,
-   "change_pct": -2.6785714285714284,
-   "vol_k": 1712,
-   "monthly_avg": 364.03,
-   "date": "20261123"
+   "close": 284.0,
+   "change": 11.5,
+   "change_pct": 4.220183486238533,
+   "vol_k": 1644,
+   "monthly_avg": 359.32,
+   "date": "20261124"
   },
   "6533": {
-   "close": 202.0,
-   "change": 8.0,
-   "change_pct": 4.123711340206185,
-   "vol_k": 1377,
-   "monthly_avg": 228.12,
-   "date": "20261123"
+   "close": 222.0,
+   "change": 20.0,
+   "change_pct": 9.900990099009901,
+   "vol_k": 240,
+   "monthly_avg": 227.76,
+   "date": "20261124"
   },
   "6538": {
-   "close": 185.5,
-   "change": 2.5,
-   "change_pct": 1.366120218579235,
-   "vol_k": 1531,
-   "date": "20261123"
-  },
-  "6609": {
-   "close": 38.6,
-   "change": -0.95,
-   "change_pct": -2.4020227560050564,
-   "vol_k": 1101,
-   "date": "20261123"
+   "close": 204.0,
+   "change": 18.5,
+   "change_pct": 9.973045822102426,
+   "vol_k": 177,
+   "date": "20261124"
   },
   "6672": {
-   "close": 360.0,
-   "change": 15.5,
-   "change_pct": 4.499274310595065,
-   "vol_k": 12429,
-   "monthly_avg": 460.94,
-   "date": "20261123"
+   "close": 396.0,
+   "change": 36.0,
+   "change_pct": 10.0,
+   "vol_k": 510,
+   "monthly_avg": 457.12,
+   "date": "20261124"
   },
   "6697": {
-   "close": 53.1,
-   "change": -5.9,
-   "change_pct": -10.0,
-   "vol_k": 855,
-   "date": "20261123"
+   "close": 57.4,
+   "change": 4.3,
+   "change_pct": 8.097928436911488,
+   "vol_k": 1224,
+   "date": "20261124"
   },
   "6708": {
-   "close": 67.8,
-   "change": 6.1,
-   "change_pct": 9.886547811993516,
-   "vol_k": 507,
-   "date": "20261123"
+   "close": 74.5,
+   "change": 6.7,
+   "change_pct": 9.882005899705016,
+   "vol_k": 40,
+   "date": "20261124"
   },
   "6715": {
-   "close": 274.0,
-   "change": -11.0,
-   "change_pct": -3.8596491228070176,
-   "vol_k": 1027,
-   "monthly_avg": 376.16,
-   "date": "20261123"
+   "close": 301.0,
+   "change": 27.0,
+   "change_pct": 9.854014598540147,
+   "vol_k": 55,
+   "monthly_avg": 371.74,
+   "date": "20261124"
   },
   "6716": {
-   "close": 63.9,
-   "change": 1.9,
-   "change_pct": 3.064516129032258,
-   "vol_k": 230,
-   "date": "20261123"
+   "close": 70.2,
+   "change": 6.3,
+   "change_pct": 9.859154929577464,
+   "vol_k": 188,
+   "date": "20261124"
   },
   "6751": {
-   "close": 71.0,
-   "change": -3.5,
-   "change_pct": -4.697986577181208,
-   "vol_k": 337,
-   "date": "20261123"
+   "close": 75.2,
+   "change": 4.2,
+   "change_pct": 5.915492957746479,
+   "vol_k": 1082,
+   "date": "20261124"
   },
   "6830": {
-   "close": 308.0,
-   "change": -5.0,
-   "change_pct": -1.5974440894568689,
-   "vol_k": 1608,
-   "monthly_avg": 419.53,
-   "date": "20261123"
+   "close": 338.5,
+   "change": 30.5,
+   "change_pct": 9.902597402597403,
+   "vol_k": 83,
+   "monthly_avg": 414.76,
+   "date": "20261124"
   },
   "6925": {
-   "close": 111.0,
-   "change": 10.0,
-   "change_pct": 9.900990099009901,
-   "vol_k": 8740,
-   "date": "20261123"
+   "close": 122.0,
+   "change": 11.0,
+   "change_pct": 9.90990990990991,
+   "vol_k": 637,
+   "date": "20261124"
   },
   "6957": {
-   "close": 374.0,
-   "change": 34.0,
-   "change_pct": 10.0,
-   "vol_k": 545,
-   "monthly_avg": 415.72,
-   "date": "20261123"
+   "close": 411.0,
+   "change": 37.0,
+   "change_pct": 9.893048128342247,
+   "vol_k": 104,
+   "monthly_avg": 415.44,
+   "date": "20261124"
   },
   "7584": {
-   "close": 48.5,
-   "change": 1.8,
-   "change_pct": 3.854389721627409,
-   "vol_k": 306,
-   "date": "20261123"
+   "close": 46.85,
+   "change": -1.65,
+   "change_pct": -3.402061855670103,
+   "vol_k": 349,
+   "date": "20261124"
   },
   "7610": {
-   "close": 789.0,
-   "change": 64.0,
-   "change_pct": 8.827586206896552,
-   "vol_k": 725,
-   "monthly_avg": 1078.31,
-   "date": "20261123"
+   "close": 867.0,
+   "change": 78.0,
+   "change_pct": 9.885931558935361,
+   "vol_k": 41,
+   "monthly_avg": 1065.88,
+   "date": "20261124"
   },
   "7717": {
-   "close": 465.0,
-   "change": 3.0,
-   "change_pct": 0.6493506493506493,
-   "vol_k": 513,
-   "date": "20261123"
+   "close": 511.0,
+   "change": 46.0,
+   "change_pct": 9.89247311827957,
+   "vol_k": 206,
+   "date": "20261124"
   },
   "7772": {
-   "close": 73.0,
-   "change": 4.3,
-   "change_pct": 6.25909752547307,
-   "vol_k": 228,
-   "date": "20261123"
+   "close": 80.3,
+   "change": 7.3,
+   "change_pct": 10.0,
+   "vol_k": 34,
+   "date": "20261124"
   },
   "7856": {
-   "close": 1580.0,
-   "change": -110.0,
-   "change_pct": -6.508875739644971,
-   "vol_k": 1201,
-   "date": "20261123"
+   "close": 1735.0,
+   "change": 155.0,
+   "change_pct": 9.81012658227848,
+   "vol_k": 200,
+   "date": "20261124"
   },
   "8021": {
-   "close": 247.0,
-   "change": -0.5,
-   "change_pct": -0.20202020202020202,
-   "vol_k": 9565,
-   "monthly_avg": 340.09,
-   "date": "20261123"
+   "close": 271.5,
+   "change": 24.5,
+   "change_pct": 9.919028340080972,
+   "vol_k": 251,
+   "monthly_avg": 336.06,
+   "date": "20261124"
   },
   "8042": {
-   "close": 78.0,
-   "change": 0.3,
-   "change_pct": 0.38610038610038605,
-   "vol_k": 6775,
-   "date": "20261123"
+   "close": 85.8,
+   "change": 7.8,
+   "change_pct": 10.0,
+   "vol_k": 580,
+   "date": "20261124"
   },
   "8099": {
-   "close": 140.0,
-   "change": -2.5,
-   "change_pct": -1.7543859649122806,
-   "vol_k": 4051,
-   "date": "20261123"
+   "close": 154.0,
+   "change": 14.0,
+   "change_pct": 10.0,
+   "vol_k": 549,
+   "date": "20261124"
   },
   "8111": {
-   "close": 56.1,
-   "change": -0.3,
-   "change_pct": -0.5319148936170213,
-   "vol_k": 2741,
-   "date": "20261123"
+   "close": 61.7,
+   "change": 5.6,
+   "change_pct": 9.98217468805704,
+   "vol_k": 326,
+   "date": "20261124"
   },
   "8201": {
-   "close": 12.4,
-   "change": 1.1,
-   "change_pct": 9.734513274336283,
-   "vol_k": 143,
-   "monthly_avg": 13.74,
-   "date": "20261123"
-  },
-  "8227": {
-   "close": 196.0,
-   "change": 8.5,
-   "change_pct": 4.533333333333333,
-   "vol_k": 3640,
-   "date": "20261123"
+   "close": 13.35,
+   "change": 0.95,
+   "change_pct": 7.661290322580644,
+   "vol_k": 164,
+   "monthly_avg": 13.72,
+   "date": "20261124"
   },
   "8272": {
-   "close": 76.8,
-   "change": -6.1,
-   "change_pct": -7.35826296743064,
-   "vol_k": 522,
-   "date": "20261123"
+   "close": 80.4,
+   "change": 3.6,
+   "change_pct": 4.687499999999999,
+   "vol_k": 374,
+   "date": "20261124"
   },
   "8358": {
-   "close": 243.5,
-   "change": -3.5,
-   "change_pct": -1.417004048582996,
-   "vol_k": 21333,
-   "date": "20261123"
+   "close": 267.5,
+   "change": 24.0,
+   "change_pct": 9.856262833675565,
+   "vol_k": 372,
+   "date": "20261124"
   },
   "8437": {
-   "close": 10.35,
-   "change": 0.3,
-   "change_pct": 2.985074626865672,
-   "vol_k": 114,
-   "date": "20261123"
+   "close": 11.1,
+   "change": 0.75,
+   "change_pct": 7.246376811594203,
+   "vol_k": 44,
+   "date": "20261124"
   },
   "8996": {
-   "close": 858.0,
-   "change": -65.0,
-   "change_pct": -7.042253521126761,
-   "vol_k": 5680,
-   "monthly_avg": 1261.94,
-   "date": "20261123"
+   "close": 943.0,
+   "change": 85.0,
+   "change_pct": 9.906759906759907,
+   "vol_k": 118,
+   "monthly_avg": 1243.18,
+   "date": "20261124"
   },
   "9103": {
-   "close": 4.5,
-   "change": 0.09,
-   "change_pct": 2.0408163265306123,
-   "vol_k": 1469,
-   "monthly_avg": 4.99,
-   "date": "20261123"
+   "close": 4.73,
+   "change": 0.23,
+   "change_pct": 5.111111111111112,
+   "vol_k": 1087,
+   "monthly_avg": 4.97,
+   "date": "20261124"
   }
  },
- "prev_trading": "2026-11-20",
- "announcement_asof": "2026-11-23",
- "last_trade_date": "2026-11-23",
+ "prev_trading": "2026-11-23",
+ "announcement_asof": "2026-11-24",
+ "last_trade_date": "2026-11-24",
  "sources": {
   "taiex": {
    "ok": true,
@@ -2936,8 +2774,8 @@
   },
   "tpex_quotes": {
    "ok": true,
-   "as_of": "20261123",
-   "rows": 993,
+   "as_of": "20261124",
+   "rows": 1008,
    "error": null
   },
   "tpex_warning": {
@@ -2948,8 +2786,8 @@
   },
   "trading_calendar": {
    "ok": true,
-   "as_of": "2026-11-23",
-   "rows": 55,
+   "as_of": "2026-11-24",
+   "rows": 56,
    "error": null
   },
   "twse_notetrans": {
@@ -2961,29 +2799,29 @@
   "twse_punish": {
    "ok": true,
    "as_of": null,
-   "rows": 54,
+   "rows": 56,
    "error": null,
    "endpoint": "https://www.twse.com.tw/rwd/zh/announcement/punish"
   },
   "twse_quotes": {
    "ok": true,
-   "as_of": "20261123",
+   "as_of": "20261124",
    "rows": 1394,
    "error": null
   }
  },
  "release_stats": {
   "during": {
-   "n": 151,
-   "avg": 0.015260593751238534,
-   "med": -2.2167487684729092,
-   "win": 45.033112582781456
+   "n": 154,
+   "avg": -0.339565393367749,
+   "med": -2.2711650819108753,
+   "win": 44.8051948051948
   },
   "after5": {
-   "n": 125,
-   "avg": -3.801934864503187,
-   "med": -5.333333333333334,
-   "win": 33.6
+   "n": 126,
+   "avg": -3.8342240351846746,
+   "med": -5.36936936936937,
+   "win": 33.33333333333333
   }
  },
  "trading_days": [
@@ -3041,14 +2879,15 @@
   "2026-11-18",
   "2026-11-19",
   "2026-11-20",
-  "2026-11-23"
+  "2026-11-23",
+  "2026-11-24"
  ],
  "comparison_baseline": {
-  "date": "2026-11-20",
-  "total_active": 13,
-  "twse": 3,
-  "tpex": 10,
-  "second": 1,
-  "notetrans": 13
+  "date": "2026-11-23",
+  "total_active": 18,
+  "twse": 5,
+  "tpex": 13,
+  "second": 2,
+  "notetrans": 19
  }
 }

@@ -181,16 +181,14 @@
   "period_start": "2026-09-23"
  },
  "2455:2026-11-11:2026-11-17": {
+  "after5_date": "2026-11-24",
   "after5_overlap": false,
-  "after5_pct": null,
+  "after5_pct": -7.870370370370372,
   "code": "2455",
   "during_pct": -12.313937753721248,
   "entry_close": 369.5,
   "exchange": "TWSE",
   "exit_close": 324.0,
-  "missing": [
-   "after5_pct"
-  ],
   "name": "全新",
   "period_end": "2026-11-17",
   "period_start": "2026-11-11"
@@ -289,6 +287,21 @@
   "name": "冠西電",
   "period_end": "2026-11-10",
   "period_start": "2026-11-04"
+ },
+ "2466:2026-11-17:2026-11-23": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "2466",
+  "during_pct": 5.714285714285716,
+  "entry_close": 402.5,
+  "exchange": "TWSE",
+  "exit_close": 425.5,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "冠西電",
+  "period_end": "2026-11-23",
+  "period_start": "2026-11-17"
  },
  "2468:2026-09-22:2026-10-02": {
   "after5_date": "2026-10-12",
@@ -1351,6 +1364,21 @@
   "period_end": "2026-07-09",
   "period_start": "2026-06-26"
  },
+ "6108:2026-11-17:2026-11-23": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "6108",
+  "during_pct": -23.143564356435643,
+  "entry_close": 40.4,
+  "exchange": "TWSE",
+  "exit_close": 31.05,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "競國",
+  "period_end": "2026-11-23",
+  "period_start": "2026-11-17"
+ },
  "6168:2026-09-24:2026-10-02": {
   "after5_date": "2026-10-12",
   "after5_overlap": false,
@@ -1745,6 +1773,21 @@
   "name": "智聯服務",
   "period_end": "2026-11-03",
   "period_start": "2026-10-28"
+ },
+ "6751:2026-11-17:2026-11-23": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "6751",
+  "during_pct": -37.16814159292036,
+  "entry_close": 113.0,
+  "exchange": "TPEx",
+  "exit_close": 71.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "智聯服務",
+  "period_end": "2026-11-23",
+  "period_start": "2026-11-17"
  },
  "6907:2026-07-17:2026-07-30": {
   "after5_overlap": false,
