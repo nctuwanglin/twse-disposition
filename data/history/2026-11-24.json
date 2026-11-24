@@ -14,7 +14,7 @@
   "twse": 10,
   "tpex": 19,
   "second": 3,
-  "notetrans": 14
+  "notetrans": 5
  },
  "active": [
   {
@@ -498,377 +498,71 @@
  ],
  "notetrans": [
   {
-   "code": "1528",
-   "name": "恩德",
+   "code": "3532",
+   "name": "台勝科",
    "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
+   "criteria": "連續二次 (11/23–11/24)",
+   "raw_criteria": "115年11月23日至115年11月24日連續二次",
    "thresholds": {
-    "current_close": 21.0,
+    "current_close": 184.5,
     "latest_date": "2026-11-24",
     "history_days": 36,
     "clause1": {
      "ref_date": "2026-11-16",
-     "ref_close": 27.05,
-     "cum_pct": -22.36598890942699,
+     "ref_close": 265.5,
+     "cum_pct": -30.508474576271187,
      "pct": 32.0,
-     "threshold": 35.706,
-     "diff_pct": 70.02857142857144,
+     "threshold": 350.46000000000004,
+     "diff_pct": 89.95121951219515,
      "triggered": false,
      "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 32.406000000000006
+     "next_session_threshold": 315.48
     },
     "clause2": {
      "ref_date": "2026-10-12",
-     "ref_close": 23.1,
-     "cum_pct": -9.090909090909097,
+     "ref_close": 485.5,
+     "cum_pct": -61.997940267765195,
      "pct": 100.0,
-     "threshold": 46.2,
-     "diff_pct": 120.00000000000001,
+     "threshold": 971.0,
+     "diff_pct": 426.2872628726288,
      "triggered": false
     },
-    "vol_avg": 12921.142857142857,
+    "vol_avg": 5152.285714285715,
     "vol_days": 35
    }
   },
   {
-   "code": "2426",
-   "name": "鼎元",
+   "code": "3593",
+   "name": "力銘",
    "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
+   "criteria": "連續二次 (11/23–11/24)",
+   "raw_criteria": "115年11月23日至115年11月24日連續二次",
    "thresholds": {
-    "current_close": 60.5,
+    "current_close": 5.66,
     "latest_date": "2026-11-24",
-    "history_days": 36,
+    "history_days": 32,
     "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 71.9,
-     "cum_pct": -15.855354659248963,
+     "ref_date": "2026-11-12",
+     "ref_close": 8.96,
+     "cum_pct": -36.830357142857146,
      "pct": 32.0,
-     "threshold": 94.90800000000002,
-     "diff_pct": 56.872727272727296,
+     "threshold": 11.827200000000001,
+     "diff_pct": 108.96113074204949,
      "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 90.024
+     "next_session_ref_date": "2026-11-13",
+     "next_session_threshold": 12.7776
     },
     "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 100.5,
-     "cum_pct": -39.800995024875625,
+     "ref_date": "2026-10-05",
+     "ref_close": 10.75,
+     "cum_pct": -47.348837209302324,
      "pct": 100.0,
-     "threshold": 201.0,
-     "diff_pct": 232.2314049586777,
+     "threshold": 21.5,
+     "diff_pct": 279.85865724381625,
      "triggered": false
     },
-    "vol_avg": 16411.685714285715,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "2486",
-   "name": "一詮",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 128.0,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 153.0,
-     "cum_pct": -16.33986928104575,
-     "pct": 32.0,
-     "threshold": 201.96,
-     "diff_pct": 57.78125000000001,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 188.76000000000002
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 233.5,
-     "cum_pct": -45.182012847965744,
-     "pct": 100.0,
-     "threshold": 467.0,
-     "diff_pct": 264.84375,
-     "triggered": false
-    },
-    "vol_avg": 3541.0285714285715,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "3443",
-   "name": "創意",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 5630.0,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 7750.0,
-     "cum_pct": -27.35483870967742,
-     "pct": 32.0,
-     "threshold": 10230.0,
-     "diff_pct": 81.70515097690941,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 9207.0
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 8100.0,
-     "cum_pct": -30.493827160493826,
-     "pct": 100.0,
-     "threshold": 16200.0,
-     "diff_pct": 187.7442273534636,
-     "triggered": false
-    },
-    "vol_avg": 2431.1428571428573,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "6141",
-   "name": "柏承",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 30.8,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 38.1,
-     "cum_pct": -19.160104986876643,
-     "pct": 32.0,
-     "threshold": 50.292,
-     "diff_pct": 63.28571428571429,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 45.275999999999996
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 54.7,
-     "cum_pct": -43.692870201096895,
-     "pct": 100.0,
-     "threshold": 109.4,
-     "diff_pct": 255.19480519480518,
-     "triggered": false
-    },
-    "vol_avg": 2234.285714285714,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "6456",
-   "name": "GIS-KY",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 64.8,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 91.4,
-     "cum_pct": -29.102844638949684,
-     "pct": 32.0,
-     "threshold": 120.64800000000001,
-     "diff_pct": 86.1851851851852,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 111.54
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 102.0,
-     "cum_pct": -36.47058823529412,
-     "pct": 100.0,
-     "threshold": 204.0,
-     "diff_pct": 214.81481481481478,
-     "triggered": false
-    },
-    "vol_avg": 32038.77142857143,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "6472",
-   "name": "保瑞",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 284.0,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 363.0,
-     "cum_pct": -21.763085399449036,
-     "pct": 32.0,
-     "threshold": 479.16,
-     "diff_pct": 68.71830985915494,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 467.94
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 422.5,
-     "cum_pct": -32.781065088757394,
-     "pct": 100.0,
-     "threshold": 845.0,
-     "diff_pct": 197.53521126760563,
-     "triggered": false
-    },
-    "vol_avg": 845.4285714285714,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "6830",
-   "name": "汎銓",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 338.5,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 425.5,
-     "cum_pct": -20.44653349001175,
-     "pct": 32.0,
-     "threshold": 561.6600000000001,
-     "diff_pct": 65.92614475627772,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 510.84000000000003
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 540.0,
-     "cum_pct": -37.31481481481482,
-     "pct": 100.0,
-     "threshold": 1080.0,
-     "diff_pct": 219.0546528803545,
-     "triggered": false
-    },
-    "vol_avg": 1228.2,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "2243",
-   "name": "宏旭-KY",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 34.5,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 41.8,
-     "cum_pct": -17.46411483253588,
-     "pct": 32.0,
-     "threshold": 55.176,
-     "diff_pct": 59.9304347826087,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 50.09400000000001
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 59.5,
-     "cum_pct": -42.016806722689076,
-     "pct": 100.0,
-     "threshold": 119.0,
-     "diff_pct": 244.9275362318841,
-     "triggered": false
-    },
-    "vol_avg": 325.1714285714286,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "1809",
-   "name": "中釉",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 33.25,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 40.6,
-     "cum_pct": -18.10344827586207,
-     "pct": 32.0,
-     "threshold": 53.592000000000006,
-     "diff_pct": 61.17894736842106,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 50.292
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 43.8,
-     "cum_pct": -24.086757990867575,
-     "pct": 100.0,
-     "threshold": 87.6,
-     "diff_pct": 163.45864661654133,
-     "triggered": false
-    },
-    "vol_avg": 5309.5142857142855,
-    "vol_days": 35
-   }
-  },
-  {
-   "code": "2360",
-   "name": "致茂",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/20–11/23)",
-   "raw_criteria": "115年11月20日至115年11月23日連續二次",
-   "thresholds": {
-    "current_close": 1015.0,
-    "latest_date": "2026-11-24",
-    "history_days": 36,
-    "clause1": {
-     "ref_date": "2026-11-16",
-     "ref_close": 1260.0,
-     "cum_pct": -19.444444444444446,
-     "pct": 32.0,
-     "threshold": 1663.2,
-     "diff_pct": 63.86206896551725,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-17",
-     "next_session_threshold": 1498.2
-    },
-    "clause2": {
-     "ref_date": "2026-10-12",
-     "ref_close": 2365.0,
-     "cum_pct": -57.082452431289646,
-     "pct": 100.0,
-     "threshold": 4730.0,
-     "diff_pct": 366.00985221674875,
-     "triggered": false
-    },
-    "vol_avg": 3450.2571428571428,
-    "vol_days": 35
+    "vol_avg": 12.838709677419354,
+    "vol_days": 31
    }
   },
   {
@@ -2111,14 +1805,6 @@
   }
  ],
  "quotes": {
-  "1528": {
-   "close": 21.0,
-   "change": 1.9,
-   "change_pct": 9.947643979057592,
-   "vol_k": 932,
-   "monthly_avg": 24.72,
-   "date": "20261124"
-  },
   "1569": {
    "close": 72.3,
    "change": 6.5,
@@ -2134,14 +1820,6 @@
    "monthly_avg": 46.05,
    "date": "20261124"
   },
-  "1809": {
-   "close": 33.25,
-   "change": 3.0,
-   "change_pct": 9.917355371900827,
-   "vol_k": 304,
-   "monthly_avg": 39.85,
-   "date": "20261124"
-  },
   "2033": {
    "close": 67.8,
    "change": 1.5,
@@ -2155,14 +1833,6 @@
    "change": 11.5,
    "change_pct": 9.623430962343097,
    "vol_k": 221,
-   "date": "20261124"
-  },
-  "2243": {
-   "close": 34.5,
-   "change": 3.1,
-   "change_pct": 9.872611464968154,
-   "vol_k": 27,
-   "monthly_avg": 42.52,
    "date": "20261124"
   },
   "2305": {
@@ -2189,14 +1859,6 @@
    "monthly_avg": 11.05,
    "date": "20261124"
   },
-  "2426": {
-   "close": 60.5,
-   "change": 5.5,
-   "change_pct": 10.0,
-   "vol_k": 528,
-   "monthly_avg": 71.89,
-   "date": "20261124"
-  },
   "2455": {
    "close": 298.5,
    "change": 27.0,
@@ -2211,14 +1873,6 @@
    "change_pct": -9.9882491186839,
    "vol_k": 9399,
    "monthly_avg": 378.76,
-   "date": "20261124"
-  },
-  "2486": {
-   "close": 128.0,
-   "change": 11.5,
-   "change_pct": 9.871244635193133,
-   "vol_k": 147,
-   "monthly_avg": 153.59,
    "date": "20261124"
   },
   "2492": {
@@ -2368,6 +2022,14 @@
    "change_pct": 9.821428571428571,
    "vol_k": 343,
    "monthly_avg": 262.94,
+   "date": "20261124"
+  },
+  "3593": {
+   "close": 5.66,
+   "change": -0.62,
+   "change_pct": -9.872611464968152,
+   "vol_k": 62,
+   "monthly_avg": 8.75,
    "date": "20261124"
   },
   "3597": {
@@ -2522,14 +2184,6 @@
    "vol_k": 957,
    "date": "20261124"
   },
-  "6141": {
-   "close": 30.8,
-   "change": 2.8,
-   "change_pct": 10.0,
-   "vol_k": 88,
-   "monthly_avg": 37.65,
-   "date": "20261124"
-  },
   "6213": {
    "close": 430.0,
    "change": 39.0,
@@ -2552,14 +2206,6 @@
    "change_pct": -0.6134969325153374,
    "vol_k": 87399,
    "monthly_avg": 84.56,
-   "date": "20261124"
-  },
-  "6472": {
-   "close": 284.0,
-   "change": 11.5,
-   "change_pct": 4.220183486238533,
-   "vol_k": 1644,
-   "monthly_avg": 359.32,
    "date": "20261124"
   },
   "6533": {
@@ -2619,14 +2265,6 @@
    "change": 4.2,
    "change_pct": 5.915492957746479,
    "vol_k": 1082,
-   "date": "20261124"
-  },
-  "6830": {
-   "close": 338.5,
-   "change": 30.5,
-   "change_pct": 9.902597402597403,
-   "vol_k": 83,
-   "monthly_avg": 414.76,
    "date": "20261124"
   },
   "6925": {
