@@ -1644,5 +1644,11 @@
     "exchange": "TPEx",
     "tags": "",
     "sector": "半導體"
+  },
+  "7827": {
+    "name": "漢康-KY創",
+    "exchange": "TWSE",
+    "tags": "",
+    "sector": "生技醫療"
   }
 }

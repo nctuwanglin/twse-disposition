@@ -14,7 +14,7 @@
   "twse": 12,
   "tpex": 17,
   "second": 3,
-  "notetrans": 4
+  "notetrans": 3
  },
  "active": [
   {
@@ -498,71 +498,37 @@
  ],
  "notetrans": [
   {
-   "code": "3532",
-   "name": "台勝科",
+   "code": "7827",
+   "name": "漢康-KY創",
    "exchange": "TWSE",
-   "criteria": "連續二次 (11/23–11/24)",
-   "raw_criteria": "115年11月23日至115年11月24日連續二次",
+   "criteria": "連續二次 (11/24–11/25)",
+   "raw_criteria": "115年11月24日至115年11月25日連續二次",
    "thresholds": {
-    "current_close": 176.0,
+    "current_close": 82.9,
     "latest_date": "2026-11-25",
     "history_days": 37,
     "clause1": {
      "ref_date": "2026-11-17",
-     "ref_close": 239.0,
-     "cum_pct": -26.359832635983267,
+     "ref_close": 119.5,
+     "cum_pct": -30.627615062761503,
      "pct": 32.0,
-     "threshold": 315.48,
-     "diff_pct": 79.25000000000001,
+     "threshold": 157.74,
+     "diff_pct": 90.27744270205066,
      "triggered": false,
      "next_session_ref_date": "2026-11-18",
-     "next_session_threshold": 302.94
+     "next_session_threshold": 157.74
     },
     "clause2": {
      "ref_date": "2026-10-13",
-     "ref_close": 444.0,
-     "cum_pct": -60.36036036036037,
+     "ref_close": 163.5,
+     "cum_pct": -49.29663608562691,
      "pct": 100.0,
-     "threshold": 888.0,
-     "diff_pct": 404.54545454545456,
+     "threshold": 327.0,
+     "diff_pct": 294.4511459589867,
      "triggered": false
     },
-    "vol_avg": 5018.694444444444,
+    "vol_avg": 275.25,
     "vol_days": 36
-   }
-  },
-  {
-   "code": "3593",
-   "name": "力銘",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/23–11/24)",
-   "raw_criteria": "115年11月23日至115年11月24日連續二次",
-   "thresholds": {
-    "current_close": 5.1,
-    "latest_date": "2026-11-25",
-    "history_days": 33,
-    "clause1": {
-     "ref_date": "2026-11-13",
-     "ref_close": 9.68,
-     "cum_pct": -47.31404958677686,
-     "pct": 32.0,
-     "threshold": 12.7776,
-     "diff_pct": 150.54117647058825,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-18",
-     "next_session_threshold": 11.352
-    },
-    "clause2": {
-     "ref_date": "2026-10-06",
-     "ref_close": 10.75,
-     "cum_pct": -52.55813953488372,
-     "pct": 100.0,
-     "threshold": 21.5,
-     "diff_pct": 321.5686274509804,
-     "triggered": false
-    },
-    "vol_avg": 14.375,
-    "vol_days": 32
    }
   },
   {
@@ -2246,6 +2212,14 @@
    "change": -7.3,
    "change_pct": -9.090909090909092,
    "vol_k": 138,
+   "date": "20261125"
+  },
+  "7827": {
+   "close": 82.9,
+   "change": 4.1,
+   "change_pct": 5.203045685279187,
+   "vol_k": 949,
+   "monthly_avg": 112.49,
    "date": "20261125"
   },
   "7856": {
