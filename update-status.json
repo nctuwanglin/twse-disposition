@@ -1,14 +1,14 @@
 {
-  "data_date": "2026-11-24",
+  "data_date": "2026-11-25",
   "degraded_sources": [],
   "last_attempt": {
-    "at": "2026-11-24T22:31:10Z",
+    "at": "2026-11-25T19:32:08Z",
     "outcome": "success",
-    "run_id": "45501584853"
+    "run_id": "45686017990"
   },
-  "last_market_change_at": "2026-11-24T22:31:10Z",
-  "last_successful_check_at": "2026-11-24T22:31:10Z",
-  "market_hash": "2812d3710c0102d3e919ec8709d9c8add9346a98960c4709e7b5cd38038b621d",
+  "last_market_change_at": "2026-11-25T19:32:08Z",
+  "last_successful_check_at": "2026-11-25T19:32:08Z",
+  "market_hash": "d39dc17d045e72cab2e6cef1ca8821fe69af0081569a87e128f71bcfe66ec870",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -24,13 +24,13 @@
       "endpoint": "https://www.tpex.org.tw/www/zh-tw/bulletin/disposal",
       "error": null,
       "ok": true,
-      "rows": 83
+      "rows": 85
     },
     "tpex_quotes": {
-      "as_of": "20261124",
+      "as_of": "20261125",
       "error": null,
       "ok": true,
-      "rows": 1008
+      "rows": 986
     },
     "tpex_warning": {
       "as_of": null,
@@ -39,10 +39,10 @@
       "rows": null
     },
     "trading_calendar": {
-      "as_of": "2026-11-24",
+      "as_of": "2026-11-25",
       "error": null,
       "ok": true,
-      "rows": 56
+      "rows": 57
     },
     "twse_notetrans": {
       "as_of": null,
@@ -55,10 +55,10 @@
       "endpoint": "https://www.twse.com.tw/rwd/zh/announcement/punish",
       "error": null,
       "ok": true,
-      "rows": 56
+      "rows": 58
     },
     "twse_quotes": {
-      "as_of": "20261124",
+      "as_of": "20261125",
       "error": null,
       "ok": true,
       "rows": 1394
