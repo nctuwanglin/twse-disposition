@@ -756,6 +756,11 @@
     "code": "3532",
     "period_end": "2026-11-27",
     "period_start": "2026-11-23"
+   },
+   {
+    "code": "3532",
+    "period_end": "2026-12-02",
+    "period_start": "2026-11-26"
    }
   ],
   "after5_pct": -36.77966101694915,
@@ -967,6 +972,21 @@
   "name": "浩鼎",
   "period_end": "2026-10-15",
   "period_start": "2026-10-08"
+ },
+ "4174:2026-11-18:2026-11-24": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "4174",
+  "during_pct": -13.52040816326532,
+  "entry_close": 78.4,
+  "exchange": "TPEx",
+  "exit_close": 67.8,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "浩鼎",
+  "period_end": "2026-11-24",
+  "period_start": "2026-11-18"
  },
  "4526:2026-10-30:2026-11-09": {
   "after5_date": "2026-11-16",
@@ -1378,6 +1398,21 @@
   "name": "競國",
   "period_end": "2026-11-23",
   "period_start": "2026-11-17"
+ },
+ "6140:2026-11-18:2026-11-24": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "6140",
+  "during_pct": -5.254777070063687,
+  "entry_close": 31.4,
+  "exchange": "TPEx",
+  "exit_close": 29.75,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "訊達",
+  "period_end": "2026-11-24",
+  "period_start": "2026-11-18"
  },
  "6168:2026-09-24:2026-10-02": {
   "after5_date": "2026-10-12",
@@ -1864,6 +1899,21 @@
   "period_end": "2026-07-30",
   "period_start": "2026-07-17"
  },
+ "7717:2026-11-18:2026-11-24": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "7717",
+  "during_pct": -4.12757973733584,
+  "entry_close": 533.0,
+  "exchange": "TPEx",
+  "exit_close": 511.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "萊德光電-KY",
+  "period_end": "2026-11-24",
+  "period_start": "2026-11-18"
+ },
  "7772:2026-09-24:2026-10-02": {
   "after5_date": "2026-10-12",
   "after5_overlap": false,
@@ -2048,6 +2098,21 @@
   "name": "巨虹",
   "period_end": "2026-10-19",
   "period_start": "2026-10-13"
+ },
+ "8084:2026-11-18:2026-11-24": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "8084",
+  "during_pct": 0.0,
+  "entry_close": 5.54,
+  "exchange": "TPEx",
+  "exit_close": 5.54,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "巨虹",
+  "period_end": "2026-11-24",
+  "period_start": "2026-11-18"
  },
  "8096:2026-07-16:2026-07-29": {
   "after5_overlap": false,

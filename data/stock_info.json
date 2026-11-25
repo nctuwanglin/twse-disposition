@@ -1638,5 +1638,11 @@
     "exchange": "TWSE",
     "tags": "",
     "sector": "電子零組件"
+  },
+  "3259": {
+    "name": "鑫創",
+    "exchange": "TPEx",
+    "tags": "",
+    "sector": "半導體"
   }
 }
