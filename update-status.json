@@ -1,14 +1,16 @@
 {
   "data_date": "2026-11-26",
-  "degraded_sources": [],
+  "degraded_sources": [
+    "twse_notetrans"
+  ],
   "last_attempt": {
-    "at": "2026-11-26T19:14:49Z",
-    "outcome": "success",
-    "run_id": "45882100404"
+    "at": "2026-11-26T21:39:08Z",
+    "outcome": "partial",
+    "run_id": "45899537355"
   },
-  "last_market_change_at": "2026-11-26T19:14:49Z",
-  "last_successful_check_at": "2026-11-26T19:14:49Z",
-  "market_hash": "63d111c239b0305a180a4ea136e2626886d99970497bb3fd7e030552fd2a8d97",
+  "last_market_change_at": "2026-11-26T21:39:08Z",
+  "last_successful_check_at": "2026-11-26T21:39:08Z",
+  "market_hash": "6ce0510f4b9a5112c9dd5953a9a914cded7da5264d487add05056705cb83b4e8",
   "pipeline_since_run_id": "37106777249",
   "pipeline_version": 2,
   "schema": 1,
@@ -46,8 +48,8 @@
     },
     "twse_notetrans": {
       "as_of": null,
-      "error": null,
-      "ok": true,
+      "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')",
+      "ok": false,
       "rows": null
     },
     "twse_punish": {
