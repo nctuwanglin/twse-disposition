@@ -14,7 +14,7 @@
   "twse": 13,
   "tpex": 16,
   "second": 3,
-  "notetrans": 2
+  "notetrans": 1
  },
  "active": [
   {
@@ -525,40 +525,6 @@
   }
  ],
  "notetrans": [
-  {
-   "code": "7827",
-   "name": "漢康-KY創",
-   "exchange": "TWSE",
-   "criteria": "連續二次 (11/24–11/25)",
-   "raw_criteria": "115年11月24日至115年11月25日連續二次",
-   "thresholds": {
-    "current_close": 74.7,
-    "latest_date": "2026-11-26",
-    "history_days": 38,
-    "clause1": {
-     "ref_date": "2026-11-18",
-     "ref_close": 119.5,
-     "cum_pct": -37.48953974895397,
-     "pct": 32.0,
-     "threshold": 157.74,
-     "diff_pct": 111.16465863453814,
-     "triggered": false,
-     "next_session_ref_date": "2026-11-19",
-     "next_session_threshold": 142.56
-    },
-    "clause2": {
-     "ref_date": "2026-10-14",
-     "ref_close": 168.5,
-     "cum_pct": -55.667655786350146,
-     "pct": 100.0,
-     "threshold": 337.0,
-     "diff_pct": 351.13788487282466,
-     "triggered": false
-    },
-    "vol_avg": 293.4594594594595,
-    "vol_days": 37
-   }
-  },
   {
    "code": "5013",
    "name": "強新",
@@ -2233,10 +2199,10 @@
    "error": null
   },
   "twse_notetrans": {
-   "ok": true,
+   "ok": false,
    "as_of": null,
    "rows": null,
-   "error": null
+   "error": "格式驗證失敗：第 1 列缺少有效欄位 ('Code', 'RecentlyMetAttentionSecuritiesCriteria')"
   },
   "twse_punish": {
    "ok": true,
