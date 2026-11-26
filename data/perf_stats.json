@@ -697,6 +697,21 @@
   "period_end": "2026-11-06",
   "period_start": "2026-10-29"
  },
+ "3441:2026-11-17:2026-11-25": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "3441",
+  "during_pct": -29.97198879551821,
+  "entry_close": 178.5,
+  "exchange": "TPEx",
+  "exit_close": 125.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "聯一光",
+  "period_end": "2026-11-25",
+  "period_start": "2026-11-17"
+ },
  "3443:2026-09-29:2026-10-05": {
   "after5_date": "2026-10-13",
   "after5_overlap": false,
