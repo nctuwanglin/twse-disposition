@@ -554,6 +554,28 @@
   "period_end": "2026-10-29",
   "period_start": "2026-10-22"
  },
+ "3287:2026-11-20:2026-11-26": {
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "3287",
+    "period_end": "2026-12-01",
+    "period_start": "2026-11-25"
+   }
+  ],
+  "after5_pct": null,
+  "code": "3287",
+  "during_pct": -16.615067079463376,
+  "entry_close": 48.45,
+  "exchange": "TPEx",
+  "exit_close": 40.4,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "廣寰科",
+  "period_end": "2026-11-26",
+  "period_start": "2026-11-20"
+ },
  "3288:2026-07-22:2026-08-04": {
   "after5_overlap": false,
   "after5_pct": -12.770137524557956,
@@ -1022,6 +1044,21 @@
   "name": "東台",
   "period_end": "2026-11-09",
   "period_start": "2026-10-30"
+ },
+ "4534:2026-11-20:2026-11-26": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "4534",
+  "during_pct": -2.7027027027026973,
+  "entry_close": 22.2,
+  "exchange": "TPEx",
+  "exit_close": 21.6,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "慶騰",
+  "period_end": "2026-11-26",
+  "period_start": "2026-11-20"
  },
  "4542:2026-07-15:2026-07-28": {
   "after5_overlap": false,
@@ -1721,6 +1758,28 @@
   "period_end": "2026-08-04",
   "period_start": "2026-07-22"
  },
+ "6697:2026-11-18:2026-11-26": {
+  "after5_overlap": true,
+  "after5_overlap_events": [
+   {
+    "code": "6697",
+    "period_end": "2026-12-02",
+    "period_start": "2026-11-26"
+   }
+  ],
+  "after5_pct": null,
+  "code": "6697",
+  "during_pct": -40.22556390977443,
+  "entry_close": 79.8,
+  "exchange": "TPEx",
+  "exit_close": 47.7,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "東捷資訊",
+  "period_end": "2026-11-26",
+  "period_start": "2026-11-18"
+ },
  "6708:2026-10-06:2026-10-13": {
   "after5_date": "2026-10-20",
   "after5_overlap": true,
@@ -1901,6 +1960,21 @@
   "name": "聯友金屬-創",
   "period_end": "2026-08-07",
   "period_start": "2026-07-30"
+ },
+ "7610:2026-11-20:2026-11-26": {
+  "after5_overlap": false,
+  "after5_pct": null,
+  "code": "7610",
+  "during_pct": 6.8322981366459645,
+  "entry_close": 805.0,
+  "exchange": "TWSE",
+  "exit_close": 860.0,
+  "missing": [
+   "after5_pct"
+  ],
+  "name": "聯友金屬-創",
+  "period_end": "2026-11-26",
+  "period_start": "2026-11-20"
  },
  "7714:2026-07-17:2026-07-30": {
   "after5_overlap": false,
